@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F0EDE9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Trip">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<title>Trip Overview</title>
+<style>
+  :root{
+    --bg:#F0EDE9; --ink:#3A3836; --calc:#8B857C; --head:#8F8982; --line:#DDD8D0; --rule:#8F8982;
+    --band:#796C5F; --band2:#E3DDD5; --card:#E9E4DD; --tobook:#D97757; --sand:#F7E4DC; --sandink:#D97757;
+    --today:#E2DBD2;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+    -webkit-text-size-adjust:100%}
+  .wrap{max-width:760px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom))}
+  button{font:inherit;color:inherit}
+  .muted{color:var(--calc)}
+  .caps{text-transform:uppercase;letter-spacing:.08em;font-weight:700;font-size:10.5px}
+
+  /* header */
+  .top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+  .top h1{margin:0;font-size:21px;line-height:1.2}
+  .top .sub{color:var(--calc);font-size:12px;margin-top:3px}
+  .top .grow{flex:1;min-width:0}
+  .iconbtn{border:0;background:transparent;width:36px;height:36px;border-radius:18px;display:grid;place-items:center;cursor:pointer;color:var(--head)}
+  .iconbtn:active{background:var(--card)}
+  .iconbtn svg{width:20px;height:20px}
+  .spin svg{animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* timeline */
+  .timeline{display:flex;height:30px;border-radius:6px;overflow:hidden;position:relative;margin:4px 0 4px}
+  .timeline button{border:0;padding:0 4px;color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;min-width:0}
+  .marker{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--ink);border-radius:2px;pointer-events:none;box-shadow:0 0 0 2px var(--bg)}
+  .tl-dates{display:flex;justify-content:space-between;font-size:11px;color:var(--calc);margin-bottom:16px}
+
+  /* today */
+  .today{display:flex;background:#FBFAF8;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--line);margin-bottom:20px;cursor:pointer}
+  .today .strip{width:8px;flex:none}
+  .today .in{padding:14px 16px 10px;flex:1;min-width:0}
+  .today .meta{color:var(--calc)}
+  .today .where{font-size:23px;font-weight:700;line-height:1.2;margin:5px 0 4px}
+  .today .what{font-size:15px;margin-bottom:10px}
+  .today .r{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+  .today .r svg{width:17px;height:17px;flex:none;margin-top:1px;color:var(--head);fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .today .r div{white-space:pre-line;min-width:0}
+
+  /* section headings */
+  h2.sec{margin:22px 0 6px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--head);
+    border-bottom:2px solid var(--rule);padding-bottom:5px}
+
+  /* next 7 days */
+  .row{display:grid;grid-template-columns:78px 1fr;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+  .row:active{background:var(--card)}
+  .row .d{color:var(--calc);font-size:12px;font-weight:700;padding-top:1px}
+  .row .t{min-width:0}
+  .row .where{font-size:11.5px;font-weight:700;color:var(--calc);margin-bottom:1px}
+  .row .x{color:var(--calc);font-size:12px;white-space:pre-line;margin-top:2px}
+
+  /* phases */
+  .phase{margin-top:18px;scroll-margin-top:12px}
+  .ph-head{color:#fff;text-align:center;padding:8px 12px 7px;border-radius:4px}
+  .ph-name{font-weight:700;font-size:13px;letter-spacing:.06em}
+  .ph-dates{font-size:11.5px;opacity:.88;margin-top:1px}
+  .pill{display:block;text-align:center;font-size:12px;font-weight:600;padding:5px 8px;margin:6px 0 4px;border-radius:3px;color:var(--calc)}
+  .pill.open{background:var(--sand);color:var(--sandink);font-weight:700}
+  .ph-body .label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--head);border-bottom:2px solid var(--rule);padding:8px 0 4px;margin-bottom:2px}
+  .prow{display:grid;grid-template-columns:24px 56px 1fr 14px;gap:6px;padding:6px 2px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
+  .prow:active{background:var(--card)}
+  .prow .n{color:var(--calc);text-align:right;font-size:11px;padding-top:2px}
+  .prow .dt{color:var(--calc);font-weight:700;font-size:11.5px;padding-top:1px}
+  .prow .bk{color:var(--tobook);font-weight:700;text-align:right;font-size:13px}
+  .prow.is-today{background:var(--today);font-weight:700}
+  .tobook{color:var(--tobook);font-weight:700}
+  a.stay-link{color:inherit;text-decoration:underline;text-decoration-color:var(--rule);text-decoration-thickness:1px;text-underline-offset:3px}
+  a.stay-link::after{content:'\2197';font-size:.75em;margin-left:2px;color:var(--calc);text-decoration:none;display:inline-block}
+  .addr{color:var(--calc);font-size:.88em;word-break:break-word}
+
+  /* footer + messages */
+  .status{margin-top:26px;text-align:center;color:var(--calc);font-size:11.5px}
+  .status .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px;background:#7FA37F}
+  .status.offline .dot{background:var(--tobook)}
+  .status.demo .dot{background:var(--head)}
+  .notice{background:var(--sand);color:var(--sandink);border-radius:6px;padding:10px 12px;font-size:12.5px;margin-bottom:14px}
+  .notice button{border:0;background:transparent;text-decoration:underline;color:inherit;padding:0;cursor:pointer;font-weight:600}
+
+  /* sheets */
+  .scrim{position:fixed;inset:0;background:rgba(58,56,54,.35);display:none;z-index:10}
+  .sheet{position:fixed;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--bg);z-index:11;
+    border-radius:14px 14px 0 0;padding:8px 18px calc(22px + env(safe-area-inset-bottom));
+    transform:translateY(105%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s;max-width:760px;margin:0 auto;box-shadow:0 -6px 24px rgba(0,0,0,.12)}
+  .sheet.open{transform:none;visibility:visible;transition:transform .22s ease}
+  .scrim.open{display:block}
+  .grab{width:36px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 12px}
+  .sheet h3{margin:0 0 2px;font-size:18px}
+  .sheet .chip{display:inline-block;color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:3px;margin-bottom:8px}
+  .sheet dl{display:grid;grid-template-columns:96px 1fr;gap:10px 12px;margin:14px 0 0}
+  .sheet dt{color:var(--calc);font-size:12px;padding-top:1px}
+  .sheet dd{margin:0;white-space:pre-line}
+  .sheet label{display:block;font-size:12px;color:var(--calc);margin:14px 0 6px}
+  .sheet textarea,.sheet input{width:100%;font:inherit;font-size:13px;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:#FBFAF8;color:var(--ink)}
+  .sheet textarea{height:84px;resize:vertical}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .btn{border:1px solid var(--line);background:#FBFAF8;border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:600;font-size:13px}
+  .btn.primary{background:var(--band);color:#fff;border-color:var(--band)}
+  .help{font-size:12px;color:var(--calc);margin-top:8px}
+  .err{color:#9B3328;font-size:12.5px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="grow">
+      <h1 id="tripName">Trip</h1>
+      <div class="sub" id="tripSub"></div>
+    </div>
+    <button class="iconbtn" id="syncBtn" aria-label="Sync now" title="Sync now">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+    </button>
+    <button class="iconbtn" id="setBtn" aria-label="Settings" title="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </div>
+  <div id="notice"></div>
+  <div id="timeline"></div>
+  <div id="today"></div>
+  <div id="next"></div>
+  <div id="phases"></div>
+  <div class="status" id="status"></div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="daySheet" role="dialog" aria-modal="true"><div class="grab"></div><div id="dayBody"></div></div>
+<div class="sheet" id="setSheet" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <h3>Settings</h3>
+  <label for="urlIn">Link from your sheet (Trip → Get app link)</label>
+  <textarea id="urlIn" placeholder="https://script.google.com/macros/s/…/exec?key=…" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+  <div class="btns">
+    <button class="btn primary" id="saveUrl">Save &amp; sync</button>
+    <button class="btn" id="useDemo">Show demo trip</button>
+  </div>
+  <div class="err" id="urlErr"></div>
+  <label for="previewIn">Preview a date (only on this screen, not saved)</label>
+  <input type="date" id="previewIn">
+  <div class="btns"><button class="btn" id="clearPreview">Back to today</button></div>
+  <div class="help">The app keeps the last synced copy of your trip on this device, so it opens without a connection. It syncs when it opens online, when you tap ↻, and when your connection comes back.</div>
+</div>
+
+<script id="demoData" type="application/json">{"trip":{"name":"Sample Trip","subtitle":"Lisbon · Alentejo · Algarve","start":"2027-06-01","end":"2027-06-12"},"phases":[{"name":"Lisbon","start":"2027-06-01","end":"2027-06-04","days":4,"colour":"#5f7895","summary":"✓  All booked"},{"name":"Alentejo","start":"2027-06-05","end":"2027-06-08","days":4,"colour":"#c08949","summary":"✓  All booked"},{"name":"Algarve","start":"2027-06-09","end":"2027-06-12","days":4,"colour":"#b55f4f","summary":"1 stay  ·  1 open to-do"}],"days":[{"day":1,"date":"2027-06-01","phase":"Lisbon","location":"Lisbon","plan":"Arrive in Lisbon","nights":"4","stay":"Sample Apartment, Alfama","flights":"✈ DM101 · Arrive LIS 09:30","car":"","transfers":"","keyTimes":"Check-in 15:00 · Sample Apartment, Alfama","notes":"This is a demo trip. Connect your sheet in Settings to see your own."},{"day":2,"date":"2027-06-02","phase":"Lisbon","location":"Lisbon","plan":"🥾 Alfama to Castelo walk (2 hrs)","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"","keyTimes":"","notes":""},{"day":3,"date":"2027-06-03","phase":"Lisbon","location":"Sintra","plan":"Day trip to Sintra palaces","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"Train · Lisbon Rossio → Sintra","keyTimes":"","notes":"Go early to beat the crowds"},{"day":4,"date":"2027-06-04","phase":"Lisbon","location":"Lisbon","plan":"Belém & the riverfront","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"","keyTimes":"","notes":"Pastry stop"},{"day":5,"date":"2027-06-05","phase":"Alentejo","location":"Évora","plan":"Pick up car · drive to Évora","nights":"2","stay":"Quinta Exemplo (farm stay)","flights":"","car":"🚗 Demo Rentals · Pick-up 10:00 Lisbon","transfers":"","keyTimes":"Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)","notes":"incl. breakfast"},{"day":6,"date":"2027-06-06","phase":"Alentejo","location":"Évora","plan":"Old town & Roman temple","nights":"","stay":"Quinta Exemplo (farm stay)","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":""},{"day":7,"date":"2027-06-07","phase":"Alentejo","location":"Monsaraz","plan":"Drive to Monsaraz · lake swim","nights":"2","stay":"Casa do Lago Demo","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo","notes":""},{"day":8,"date":"2027-06-08","phase":"Alentejo","location":"Monsaraz","plan":"🥾 Hilltop loop (8 km · 3 hrs · 250m)","nights":"","stay":"Casa do Lago Demo","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":"Stargazing night"},{"day":9,"date":"2027-06-09","phase":"Algarve","location":"Lagos","plan":"Drive to Lagos","nights":"3","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"Check-out 10:00 · Casa do Lago Demo","notes":""},{"day":10,"date":"2027-06-10","phase":"Algarve","location":"Lagos","plan":"🥾 Ponta da Piedade cliffs (2 hrs)","nights":"","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"✱ To Book · Kayak tour · Lagos marina","keyTimes":"","notes":""},{"day":11,"date":"2027-06-11","phase":"Algarve","location":"Lagos","plan":"Beach day","nights":"","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":""},{"day":12,"date":"2027-06-12","phase":"Algarve","location":"Faro","plan":"Return car · fly home","nights":"","stay":"","flights":"✈ DM202 · FAO 14:10 → LIS 15:05","car":"🚗 Demo Rentals · Return 12:00 Faro Airport","transfers":"","keyTimes":"Check-out 10:00","notes":""}],"updated":"2026-11-15T11:30:00-08:00","addresses":{"Sample Apartment, Alfama":"Rua do Exemplo 12, Lisbon","Quinta Exemplo (farm stay)":"Estrada Demo km 4, Évora","Casa do Lago Demo":"Rua da Amostra 3, Monsaraz"}}</script>
+<script>
+(function(){
+  'use strict';
+  var KEY_URL='tripFeedUrl', KEY_DATA='tripFeedData', KEY_SYNC='tripFeedSyncedAt';
+  var store={
+    get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},
+    set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}},
+    del:function(k){try{localStorage.removeItem(k);}catch(e){}}
+  };
+  var DEMO=JSON.parse(document.getElementById('demoData').textContent);
+  var state={data:null, demo:false, syncing:false, error:'', preview:null};
+
+  // ---------- helpers ----------
+  function $(id){return document.getElementById(id);}
+  function el(tag,cls,text){var n=document.createElement(tag); if(cls)n.className=cls; if(text!=null)n.textContent=text; return n;}
+  function parseDay(s){var p=String(s||'').split('-'); return p.length===3?new Date(+p[0],+p[1]-1,+p[2]):null;}
+  function midnight(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+  function daysBetween(a,b){return Math.round((midnight(b)-midnight(a))/864e5);}
+  var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var WDL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function md(d){return MON[d.getMonth()]+' '+d.getDate();}
+  function wmd(d){return WD[d.getDay()]+' '+MON[d.getMonth()]+' '+d.getDate();}
+  function roman(n){var r='',m=[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];m.forEach(function(x){while(n>=x[0]){r+=x[1];n-=x[0];}});return r;}
+  function ago(t){var s=(Date.now()-t)/1000; if(s<60)return 'just now'; if(s<3600)return Math.round(s/60)+' min ago'; if(s<86400)return Math.round(s/3600)+' h ago';
+    var d=new Date(t); return md(d)+', '+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});}
+  function today(){return state.preview?parseDay(state.preview):midnight(new Date());}
+  // Text where lines starting with ✱ are coloured as "to book".
+  // Stay name -> address, from the feed (and from each day, for older feeds).
+  function addrMap(){
+    var m={}, d=state.data||{};
+    (d.days||[]).forEach(function(x){ if(x.stayName&&x.stayAddress) m[x.stayName]=x.stayAddress; });
+    var a=d.addresses||{}; Object.keys(a).forEach(function(k){ if(a[k]) m[k]=a[k]; });
+    return m;
+  }
+  function mapLink(text,address){
+    var link=el('a','stay-link',text);
+    link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address);
+    link.target='_blank'; link.rel='noopener'; link.title=address;
+    link.onclick=function(e){e.stopPropagation();};
+    return link;
+  }
+  // Appends one line of text, turning every mention of a known stay into a Maps link.
+  function linkLine(parent,line,names,map){
+    var i=0;
+    while(i<line.length){
+      var best=-1, name='';
+      names.forEach(function(n){ var p=line.indexOf(n,i); if(p>=0&&(best<0||p<best||(p===best&&n.length>name.length))){best=p;name=n;} });
+      if(best<0){ parent.appendChild(document.createTextNode(line.slice(i))); break; }
+      if(best>i) parent.appendChild(document.createTextNode(line.slice(i,best)));
+      parent.appendChild(mapLink(name,map[name])); i=best+name.length;
+    }
+  }
+  // Text where lines starting with ✱ are coloured as "to book", and stay names link to Maps.
+  function rich(parent,text){
+    var map=addrMap(), names=Object.keys(map).filter(function(n){return n.length>2;}).sort(function(a,b){return b.length-a.length;});
+    String(text||'').split('\n').forEach(function(line,i){
+      if(i) parent.appendChild(document.createElement('br'));
+      if(/^\s*✱/.test(line)) parent.appendChild(el('span','tobook',line)); else linkLine(parent,line,names,map);
+    });
+    return parent;
+  }
+  var ICONS={bed:'<path d="M3 18v-7m0 4h18v3m0-3v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
+    bus:'<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 20v-3m8 3v-3"/>',
+    clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+    note:'<path d="M5 4h14v16H5zM9 9h6M9 13h6"/>'};
+  function icon(n){var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('aria-hidden','true'); s.innerHTML=ICONS[n]; return s;}
+  // Stay text, plus the address as a Maps link when the Stays tab has one.
+  function stayNode(parent,d){
+    rich(parent,d.stay);
+    var a=String(d.stayAddress||'').trim();
+    if(a && d.stay && !/^\s*(✱|🛎)/.test(d.stay)){
+      parent.appendChild(document.createElement('br')); parent.appendChild(el('span','addr',a));
+    }
+    return parent;
+  }
+  function travelLines(d){return [d.flights,d.car,d.transfers].filter(Boolean).join('\n');}
+
+  // ---------- data ----------
+  function loadCached(){
+    var raw=store.get(KEY_DATA);
+    if(raw){try{state.data=JSON.parse(raw); state.demo=false; return;}catch(e){}}
+    state.data=DEMO; state.demo=true;
+  }
+  function sync(){
+    var url=store.get(KEY_URL);
+    if(!url||state.syncing) return Promise.resolve();
+    if(!navigator.onLine){render(); return Promise.resolve();}
+    state.syncing=true; state.error=''; render();
+    return fetch(url,{cache:'no-store',redirect:'follow'})
+      .then(function(r){ if(!r.ok) throw new Error('The sheet answered '+r.status+'.'); return r.json(); })
+      .then(function(j){
+        if(j&&j.error) throw new Error(j.error);
+        if(!j||!j.trip||!Array.isArray(j.days)) throw new Error('That link did not return trip data.');
+        state.data=j; state.demo=false;
+        store.set(KEY_DATA,JSON.stringify(j)); store.set(KEY_SYNC,String(Date.now()));
+      })
+      .catch(function(e){ state.error=(e&&e.message)||'Could not reach the sheet.'; })
+      .then(function(){ state.syncing=false; render(); });
+  }
+
+  // ---------- render ----------
+  function render(){
+    var data=state.data||DEMO, trip=data.trip||{}, days=data.days||[], phases=data.phases||[];
+    var t=today(), start=parseDay(trip.start)||(days[0]&&parseDay(days[0].date)), end=parseDay(trip.end)||(days.length&&parseDay(days[days.length-1].date));
+    var total=start&&end?daysBetween(start,end)+1:days.length;
+    document.title=(trip.name||'Trip')+' · Overview';
+    $('tripName').textContent=trip.name||'Trip';
+    $('tripSub').textContent=[trip.subtitle, start&&end?md(start)+' → '+md(end):'', total?total+' days':''].filter(Boolean).join('  ·  ');
+    $('syncBtn').classList.toggle('spin',state.syncing);
+
+    // notice
+    var nb=$('notice'); nb.textContent='';
+    if(state.demo){
+      var n=el('div','notice'); n.appendChild(document.createTextNode('You’re looking at the demo trip. '));
+      var b=el('button',null,'Connect your sheet'); b.onclick=openSettings; n.appendChild(b); nb.appendChild(n);
+    } else if(state.error){
+      nb.appendChild(el('div','notice','Couldn’t sync: '+state.error+' Showing your last synced copy.'));
+    }
+    if(state.preview){ nb.appendChild(el('div','notice','Previewing '+wmd(t)+'. Open Settings to go back to today.')); }
+
+    // timeline
+    var tl=$('timeline'); tl.textContent='';
+    if(phases.length&&total){
+      var bar=el('div','timeline');
+      phases.forEach(function(p,i){
+        var ps=parseDay(p.start), pe=i+1<phases.length?parseDay(phases[i+1].start):end;
+        var w=ps&&pe?Math.max(1,daysBetween(ps,pe)+(i+1<phases.length?0:1)):(p.days||1);
+        var b=el('button',null,p.name); b.style.background=p.colour||'#8F8982'; b.style.flex=String(w);
+        b.title=p.name; b.onclick=function(){goPhase(i);}; bar.appendChild(b);
+      });
+      if(start&&t>=start&&t<=end){ var m=el('div','marker'); m.style.left='calc('+(daysBetween(start,t)+.5)/total*100+'% - 1.5px)'; bar.appendChild(m); }
+      tl.appendChild(bar);
+      var dl=el('div','tl-dates'); dl.appendChild(el('span',null,start?md(start):'')); dl.appendChild(el('span',null,end?md(end):'')); tl.appendChild(dl);
+    }
+
+    // today card
+    var dayNo=start?daysBetween(start,t)+1:1, before=dayNo<1, after=dayNo>total;
+    var idx=before?0:after?days.length-1:dayNo-1, d=days[idx];
+    var tc=$('today'); tc.textContent='';
+    if(d){
+      // Ticket layout: phase-colour edge, the place large, then icon rows.
+      var card=el('div','today'), strip=el('div','strip'), inner=el('div','in');
+      var pc=phases.filter(function(p){return p.name===d.phase;})[0];
+      strip.style.background=(pc&&pc.colour)||'#8F8982'; card.appendChild(strip);
+      var dd0=parseDay(d.date);
+      var meta=[after?'Trip complete':'', 'Day '+d.day, dd0?wmd(dd0):'', d.phase, before?'in '+(1-dayNo)+(1-dayNo===1?' day':' days'):'']
+        .filter(Boolean).join('  ·  ');
+      inner.appendChild(el('div','meta caps',meta));
+      inner.appendChild(el('div','where',d.location||'—'));
+      inner.appendChild(rich(el('div','what'),d.plan||'No plans yet'));
+      [['bed',d.stay],['bus',travelLines(d)],['clock',d.keyTimes],['note',d.notes]].forEach(function(r){
+        if(!r[1]) return; var row=el('div','r'); row.appendChild(icon(r[0]));
+        row.appendChild(r[0]==='bed'?stayNode(el('div'),d):rich(el('div'),r[1])); inner.appendChild(row);
+      });
+      card.appendChild(inner);
+      card.onclick=function(){openDay(d);};
+      tc.appendChild(card);
+    }
+
+    // next 7 days
+    var nx=$('next'); nx.textContent='';
+    var from=before?0:dayNo, list=after?[]:days.slice(from,from+7);
+    if(list.length){
+      nx.appendChild(el('h2','sec',before?'First week':'Next 7 days'));
+      list.forEach(function(x){
+        var r=el('div','row'), dd=parseDay(x.date);
+        r.appendChild(el('div','d',dd?wmd(dd):''));
+        var c=el('div','t');
+        if(x.location) c.appendChild(el('div','where',x.location));
+        rich(c,x.plan||'');
+        var extra=[travelLines(x),x.keyTimes].filter(Boolean).join('\n');
+        if(extra) c.appendChild(rich(el('div','x'),extra));
+        r.appendChild(c); r.onclick=function(){openDay(x);}; nx.appendChild(r);
+      });
+    }
+
+    // phases
+    var ph=$('phases'); ph.textContent='';
+    if(phases.length) ph.appendChild(el('h2','sec','Phases'));
+    var cur=-1; phases.forEach(function(p,i){ if(days[idx]&&days[idx].phase===p.name) cur=i; });
+    phases.forEach(function(p,i){
+      var box=el('section','phase'); box.id='phase-'+i;
+      var h=el('div','ph-head'); h.style.background=p.colour||'#8F8982';
+      h.appendChild(el('div','ph-name',roman(i+1)+'  ·  '+String(p.name).toUpperCase()));
+      var ps=parseDay(p.start), pe=parseDay(p.end);
+      h.appendChild(el('div','ph-dates',(ps&&pe?md(ps)+' – '+md(pe):'No days yet')+(p.days?'  ·  '+p.days+' days':'')));
+      box.appendChild(h);
+      if(p.summary){ var open=p.summary.trim().charAt(0)!=='✓'; box.appendChild(el('div','pill'+(open?' open':''),p.summary)); }
+      var body=el('div','ph-body'); body.appendChild(el('div','label','PLAN'));
+      days.filter(function(x){return x.phase===p.name;}).forEach(function(x){
+        var r=el('div','prow'+(x.date===(days[idx]&&days[idx].date)&&!before&&!after?' is-today':''));
+        var dd=parseDay(x.date);
+        r.appendChild(el('div','n',String(x.day))); r.appendChild(el('div','dt',dd?md(dd):''));
+        r.appendChild(rich(el('div'),x.plan||x.location||''));
+        var tb=['stay','flights','car','transfers'].some(function(k){return /✱|\bto book\b/i.test(String(x[k]||''));});
+        var bk=el('div','bk',tb?'✱':''); if(tb) bk.title='Something to book'; r.appendChild(bk);
+        r.onclick=function(){openDay(x);}; body.appendChild(r);
+      });
+      box.appendChild(body); ph.appendChild(box);
+    });
+
+    // status
+    var st=$('status'); st.className='status'; st.textContent='';
+    var syncedAt=+store.get(KEY_SYNC)||0, msg;
+    if(state.demo){ st.classList.add('demo'); msg='Demo trip'; }
+    else if(state.syncing){ msg='Syncing…'; }
+    else if(!navigator.onLine){ st.classList.add('offline'); msg='Offline  ·  last synced '+(syncedAt?ago(syncedAt):'—'); }
+    else { msg='Synced '+(syncedAt?ago(syncedAt):'—'); }
+    st.appendChild(el('span','dot')); st.appendChild(document.createTextNode(msg));
+    if(data.updated&&!state.demo){ st.appendChild(el('div',null,'Sheet data from '+ago(Date.parse(data.updated)))); }
+  }
+
+  function goPhase(i){ var n=$('phase-'+i); if(n) n.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+  // ---------- sheets ----------
+  var scrim=$('scrim');
+  function show(s){scrim.classList.add('open'); s.classList.add('open');}
+  function hideAll(){scrim.classList.remove('open'); $('daySheet').classList.remove('open'); $('setSheet').classList.remove('open');}
+  scrim.onclick=hideAll;
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')hideAll();});
+
+  function openDay(d){
+    var b=$('dayBody'); b.textContent='';
+    var p=(state.data.phases||[]).filter(function(x){return x.name===d.phase;})[0];
+    if(d.phase){ var c=el('div','chip',String(d.phase).toUpperCase()); c.style.background=(p&&p.colour)||'#8F8982'; b.appendChild(c); }
+    var dd=parseDay(d.date);
+    b.appendChild(el('h3',null,'Day '+d.day+'  ·  '+(dd?WDL[dd.getDay()]+', '+MONL[dd.getMonth()]+' '+dd.getDate():'')));
+    if(d.location) b.appendChild(el('div','muted',d.location));
+    var l=el('dl');
+    [['Plan',d.plan],['Stay tonight',d.stay],['Nights',d.nights],['Flights',d.flights],['Car rental',d.car],['Buses & transfers',d.transfers],['Key times',d.keyTimes],['Notes',d.notes]]
+      .forEach(function(r){ if(!r[1])return; l.appendChild(el('dt',null,r[0])); l.appendChild(r[0]==='Stay tonight'?stayNode(el('dd'),d):rich(el('dd'),r[1])); });
+    b.appendChild(l); show($('daySheet'));
+  }
+  function openSettings(){
+    $('urlIn').value=store.get(KEY_URL)||''; $('urlErr').textContent=''; $('previewIn').value=state.preview||'';
+    show($('setSheet'));
+  }
+  $('setBtn').onclick=openSettings;
+  $('syncBtn').onclick=function(){ if(!store.get(KEY_URL)){openSettings();return;} sync(); };
+  $('saveUrl').onclick=function(){
+    var u=$('urlIn').value.trim();
+    if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)){ $('urlErr').textContent='Paste the link from Trip → Get app link (it starts with https://script.google.com/).'; return; }
+    store.set(KEY_URL,u); hideAll(); sync();
+  };
+  $('useDemo').onclick=function(){ store.del(KEY_URL); store.del(KEY_DATA); store.del(KEY_SYNC); state.data=DEMO; state.demo=true; state.error=''; hideAll(); render(); };
+  $('previewIn').onchange=function(){ state.preview=this.value||null; render(); };
+  $('clearPreview').onclick=function(){ state.preview=null; $('previewIn').value=''; render(); };
+
+  window.addEventListener('online',function(){ sync(); });
+  window.addEventListener('offline',render);
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible'){ var at=+store.get(KEY_SYNC)||0; if(Date.now()-at>10*60*1000) sync(); else render(); }
+  });
+
+  loadCached(); render(); sync();
+  if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
