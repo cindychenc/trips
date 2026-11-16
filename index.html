@@ -159,7 +159,11 @@
   .hero .tripline,.hero .kick,.hero .t-display,.hero .sub{text-shadow:0 1px 12px rgba(0,0,0,.3)}
   .bar{display:flex;align-items:flex-start;gap:8px}.bar .grow{flex:1;min-width:0}
   .todaycard{position:relative;margin-top:18px;background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(255,255,255,.55);color:var(--ink);border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:16px;text-shadow:none}
-  .todaycard .card{background:rgba(255,255,255,.88);border-color:rgba(255,255,255,.7)}
+  .todaycard .card{background:rgba(255,255,255,.5);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.65)}
+  .todaycard .row + .row::before{border-top-color:rgba(0,0,0,.08)}
+  .todaycard .btn-secondary{background:rgba(255,255,255,.7)}
+  .hero.roomy{min-height:calc(300px + env(safe-area-inset-top))}
+  .stay .via a{color:inherit}
   .todaycard > * + *{margin-top:12px}
   .plaintop{padding:calc(22px + env(safe-area-inset-top)) 20px 6px}
   .plaintop .t-small{margin-top:6px}
@@ -501,12 +505,19 @@
     var title=r.text?rich(h('span'),r.title):r.title;
     return row(tile(r.icon,r.icon==='plane'||r.icon==='bus'?'move':'stay'),title,sub,r.time?h('span','t-time',r.time):null);
   }
+  // "Booked via" → that site's bookings page. These are universal links, so on a phone they open the app when it's installed.
+  // Only general "my trips" pages, never a specific booking.
+  var VIA=[[/booking\.?com/i,'https://secure.booking.com/myreservations.html'],[/airbnb/i,'https://www.airbnb.com/trips'],
+    [/hostelworld/i,'https://www.hostelworld.com/account/bookings'],[/expedia/i,'https://www.expedia.com/trips'],[/hotels\.?com/i,'https://www.hotels.com/trips'],
+    [/agoda/i,'https://www.agoda.com/account/bookings.html'],[/vrbo/i,'https://www.vrbo.com/traveler/th/bookings'],[/trip\.?com/i,'https://www.trip.com/order/all']];
+  function viaUrl(v){ for(var i=0;i<VIA.length;i++) if(VIA[i][0].test(v)) return VIA[i][1]; return ''; }
   function stayCard(s,d){
     var nights=s.nights||'';
     var kids=[h('span','t-label',['Stay tonight',nights?' · '+plural(nights,'night'):'']),
       h('div','t-h3 name',s.name)];
     if(s.address) kids.push(h('div','t-small addr',s.address));
-    if(s.via) kids.push(h('div','via',['Booked via ',h('b',null,s.via)]));
+    if(s.via){ var vu=viaUrl(s.via), vb=h('b',null,s.via);
+      kids.push(h('div','via',['Booked via ',vu?(function(){ var a=h('a','lk',[vb,I('ext','lkic')]); a.href=vu; a.target='_blank'; a.rel='noopener'; return a; })():vb])); }
     // No address (camping, overnight bus): nothing to navigate to, so no buttons.
     if(s.address){
       kids.push(h('div','btn-row',[linkbtn('Directions','secondary',null,mapsUrl(s.address)),
@@ -634,7 +645,7 @@
 
     // header: photo/colour header on Today, plain bar elsewhere
     var onToday=state.tab==='today';
-    $('hero').hidden=!onToday; $('plainTop').hidden=onToday; $('panel').classList.toggle('over',onToday);
+    $('hero').hidden=!onToday; $('hero').classList.toggle('roomy',onToday&&(before||after)); $('plainTop').hidden=onToday; $('panel').classList.toggle('over',onToday);
     if(onToday){
       var ph=before?phases[0]:phaseOf(d&&d.phase)||phases[phases.length-1];
       var hero=$('hero'), img=$('heroImg'), blur=$('heroBlur'), photo=ph&&ph.photo||'';
