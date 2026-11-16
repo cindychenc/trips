@@ -191,12 +191,16 @@
   .sheet.open{transform:translate(-50%,0);visibility:visible;transition:transform .22s ease,height .26s cubic-bezier(.2,.8,.2,1)}
   .grab{width:40px;height:5px;border-radius:3px;background:#D9D9D9;margin:2px auto 14px}
   #dayBody{transition:transform .2s ease,opacity .2s ease}
-  .sheethead{display:flex;align-items:center;gap:8px}
+  /* day sheet header stays at the top while the sheet scrolls; once the place name has scrolled away it moves into the header */
+  .sheethead{display:flex;align-items:center;gap:8px;position:sticky;top:-10px;z-index:3;background:#fff;margin:-10px -20px 0;padding:10px 20px 8px;border-bottom:1px solid transparent;transition:border-color .15s}
+  .sheethead.stuck{border-bottom-color:var(--line)}
+  .sheethead .mid .pl{display:none}
+  .sheethead.stuck .mid .dn{display:none}.sheethead.stuck .mid .pl{display:inline}
   .sheethead .mid{flex:1;min-width:0;text-align:center;line-height:1.2}
   .sheethead .mid b{display:block;font-weight:800;font-size:17px}
   .sheethead .mid span{font-weight:600;font-size:13px;color:var(--text3)}
   .sheet .pill.phase{margin-top:18px}
-  .place{font-weight:800;font-size:32px;line-height:1.05;letter-spacing:-.03em;margin-top:8px;overflow-wrap:anywhere}
+  .place{font-weight:800;font-size:28px;line-height:1.05;letter-spacing:-.03em;margin-top:8px;overflow-wrap:anywhere}
   .sheet .daystack{margin-top:16px}
   .foot{font-weight:600;font-size:13px;color:var(--text3);text-align:center;margin-top:16px}
   .field label{display:block;font-weight:700;font-size:14px;margin:18px 0 8px}
@@ -1213,7 +1217,7 @@
     var dd=parseDay(d.date);
     var prev=iconbtn('left','Previous day',null,function(){stepDay(-1);}); prev.disabled=i===0;
     var next=iconbtn('right','Next day',null,function(){stepDay(1);}); next.disabled=i===days.length-1;
-    b.appendChild(h('div','sheethead',[prev,h('div','mid',[h('b',null,dd?wmd(dd):''),h('span',null,'Day '+d.day)]),next,iconbtn('close','Close','dark',hideAll)]));
+    b.appendChild(h('div','sheethead',[prev,h('div','mid',[h('b',null,dd?wmd(dd):''),h('span',null,[h('span','dn','Day '+d.day),h('span','pl','Day '+d.day+(d.location?' · '+d.location:''))])]),next,iconbtn('close','Close','dark',hideAll)]));
     if(d.phase) b.appendChild(pill(d.phase,'phase',phaseColour(d.phase)));
     b.appendChild(h('div','place',d.location||'—'));
     var blocks=dayBlocks(d,{});
@@ -1229,6 +1233,11 @@
     if(fromH) animateSheetHeight(sheetEl,fromH);
     if(dir){ b.style.transition='none'; b.style.transform='translateX('+(dir*36)+'px)'; b.style.opacity='0'; void b.offsetWidth; b.style.transition=''; b.style.transform=''; b.style.opacity=''; }
   }
+  // Day sheet: mark the header "stuck" once the place name has scrolled under it.
+  $('daySheet').addEventListener('scroll',function(){
+    var hd=this.querySelector('.sheethead'), pl=this.querySelector('.place'); if(!hd||!pl) return;
+    hd.classList.toggle('stuck',this.scrollTop>pl.offsetTop+pl.offsetHeight-hd.offsetHeight-10);
+  },{passive:true});
   var heightTimer=null;
   function animateSheetHeight(sh,from){
     clearTimeout(heightTimer);
