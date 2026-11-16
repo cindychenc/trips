@@ -269,14 +269,15 @@
   .mapfull .legend i.d{border-top-style:dashed}
   .mfcards{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));z-index:1000;display:flex;gap:10px;padding:0 16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
   .mfcards::-webkit-scrollbar{display:none}
-  .pincard{flex:none;width:min(300px,82vw);scroll-snap-align:center;background:#fff;border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.16);padding:14px;border:2px solid transparent}
+  .pincard{flex:none;width:min(300px,82vw);scroll-snap-align:center;display:flex;flex-direction:column;background:#fff;border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.16);padding:14px;border:2px solid transparent}
   .pincard.on{border-color:var(--ink)}
   .pincard .hd{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
   .pincard .num{width:36px;height:36px;border-radius:18px;background:var(--ink);color:#fff;font-weight:800;font-size:15px;line-height:36px;text-align:center}
   .pincard b{display:block;font-weight:800;font-size:19px;line-height:1.2}.pincard .s{display:block;font-weight:500;font-size:13px;color:var(--text2);margin-top:2px}
   .pincard .ln{font-weight:500;font-size:14px;line-height:1.45;margin-top:10px}
   .pincard .ln span{color:var(--text3)}
-  .pincard .btn-row{margin-top:12px}.pincard .btn{min-height:44px;font-size:15px}
+  .pincard .btn-row{margin-top:auto;padding-top:12px}  /* every card is as tall as the tallest; buttons sit on the bottom edge */
+  .mfcards{align-items:stretch}.pincard .btn{min-height:44px;font-size:15px}
   /* after-trip header carousel */
   .hero .slides{position:absolute;inset:0}
   .hero .slide{position:absolute;inset:0;overflow:hidden;opacity:0;transition:opacity .9s ease}
