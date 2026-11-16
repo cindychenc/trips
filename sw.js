@@ -1,5 +1,5 @@
 // Keeps the app itself on the device so it opens offline. Trip data is stored separately by the page.
-const CACHE = 'trip-app-v21';
+const CACHE = 'trip-app-v22';
 const PHOTOS = 'trip-photos-v1';
 const TILES = 'trip-tiles-v1';
 const MAX_TILES = 2500;
@@ -19,7 +19,7 @@ self.addEventListener('fetch', e => {
   if (url.origin !== location.origin) {
     // Header photos: keep a copy once seen so they show offline. Everything else (the sheet feed) goes straight to the network.
     // Map tiles: keep the ones you've looked at (capped), so maps you've opened still draw with weak signal.
-    if (/basemaps\.cartocdn\.com$/.test(url.hostname)) {
+    if (/(basemaps\.cartocdn\.com|tile\.openstreetmap\.org)$/.test(url.hostname)) {
       e.respondWith(caches.open(TILES).then(c => c.match(req).then(hit => hit || fetch(req).then(r => {
         if (r.ok || r.type === 'opaque') { c.put(req, r.clone()).then(() => trim(c)); }
         return r;

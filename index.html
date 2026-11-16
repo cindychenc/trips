@@ -694,8 +694,11 @@
   }
 
   // ---------- maps (Leaflet, pins from the sheet's "Map places") ----------
-  var TILE_URL='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-  var TILE_ATTR='© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+  // CARTO's Voyager style needs a free key (carto.com/basemaps/apikey). Without one, use OpenStreetMap's own tiles.
+  var CARTO_KEY='';
+  var OSM_ATTR='© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
+  var TILE_URL=CARTO_KEY?'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key='+CARTO_KEY:'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  var TILE_ATTR=CARTO_KEY?OSM_ATTR+' © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>':OSM_ATTR;
   var liveMaps=[], mapObserver=null;
   function placeKey(loc){ var p=String(loc||'').split('\n')[0]; if(p.indexOf('→')>=0) p=p.split('→').pop(); return p.split('·')[0].trim(); }
   function dayPlace(x){ return x.place||placeKey(x.location); }
@@ -741,7 +744,7 @@
     var live=!!opts.interactive;
     var m=L.map(el,{zoomControl:false,attributionControl:true,dragging:live,touchZoom:live,doubleClickZoom:live,scrollWheelZoom:live,boxZoom:false,keyboard:false,tap:false,zoomSnap:0.25});
     m.attributionControl.setPrefix(false);
-    L.tileLayer(TILE_URL,{subdomains:'abcd',maxZoom:18,attribution:TILE_ATTR,crossOrigin:true}).addTo(m);
+    L.tileLayer(TILE_URL,{subdomains:'abcd',maxZoom:18,attribution:TILE_ATTR,crossOrigin:true,referrerPolicy:'strict-origin-when-cross-origin'}).addTo(m);
     var pts=[], prev=ps.start, markers=[];
     if(ps.start){ L.circleMarker(ps.start.ll,{radius:5,color:'#111',weight:2.5,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(m); pts.push(ps.start.ll); }
     // route follows every visit (there and back again); one pin per place
