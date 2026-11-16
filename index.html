@@ -245,6 +245,9 @@
   .mapphoto{position:relative;overflow:hidden}
   .mapphoto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .mpin span{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;background:#fff;color:var(--ink);border:2px solid var(--ink);font-weight:800;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.25);box-sizing:border-box}
+  .mpin{overflow:visible}
+  .mpin em{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:3px;white-space:nowrap;font-style:normal;font-weight:700;font-size:12px;color:var(--ink);text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff,0 0 2px #fff;pointer-events:none}
+  .mpin.on em{font-size:13px;font-weight:800}
   .mpin.on span{background:var(--ink);color:#fff;border-color:#fff;font-size:15px}
   .leaflet-container{font-family:Inter,sans-serif;background:#EEF0E6}
   .leaflet-control-attribution{font-size:9px}
@@ -751,7 +754,9 @@
     return out;
   }
   function hasMap(name){ return navigator.onLine && window.L && mapStops(name).some(function(s){return s.ll;}); }
-  function pinIcon(n,on){ return L.divIcon({className:'mpin'+(on?' on':''),html:'<span>'+n+'</span>',iconSize:on?[34,34]:[28,28],iconAnchor:on?[17,17]:[14,14]}); }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  // Numbered pin with the place name underneath (as in the design).
+  function pinIcon(n,on,name){ var s=on?34:28; return L.divIcon({className:'mpin'+(on?' on':''),html:'<span>'+n+'</span>'+(name?'<em>'+esc(name)+'</em>':''),iconSize:[s,s],iconAnchor:[s/2,s/2]}); }
   function drawMap(el,phaseName,opts){
     opts=opts||{};
     var ms=mapStops(phaseName), pins=uniqStops(ms);
@@ -768,7 +773,7 @@
     });
     pins.forEach(function(s,i){
       pts.push(s.ll);
-      var mk=L.marker(s.ll,{icon:pinIcon(i+1,opts.selected===i),interactive:live,keyboard:false}).addTo(m);
+      var mk=L.marker(s.ll,{icon:pinIcon(i+1,opts.selected===i,s.name),interactive:live,keyboard:false}).addTo(m);
       if(live&&opts.onPin) mk.on('click',function(){ opts.onPin(i); });
       markers.push(mk);
     });
@@ -821,7 +826,7 @@
   function selectStop(i,pan){
     if(!mf.map) return;
     mf.sel=i;
-    mf.map._markers.forEach(function(mk,k){ mk.setIcon(pinIcon(k+1,k===i)); mk.setZIndexOffset(k===i?1000:0); });
+    mf.map._markers.forEach(function(mk,k){ mk.setIcon(pinIcon(k+1,k===i,mf.map._pins[k].name)); mk.setZIndexOffset(k===i?1000:0); });
     Array.prototype.forEach.call($('mfCards').children,function(c,k){ c.classList.toggle('on',k===i); });
     if(pan){ var m=mf.map, pt=m.project(m._pins[i].ll,m.getZoom()).add([0,90]); m.panTo(m.unproject(pt,m.getZoom()),{animate:true}); }  // a bit above centre, clear of the cards
   }
