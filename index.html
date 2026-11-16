@@ -31,8 +31,8 @@
   .app{max-width:560px;margin:0 auto;position:relative;min-height:100vh}
 
   /* type */
-  .t-display{font-weight:800;font-size:48px;line-height:1;letter-spacing:-.035em}
-  .t-title{font-weight:800;font-size:34px;line-height:1.05;letter-spacing:-.03em;margin:0}
+  .t-display{font-weight:800;font-size:38px;line-height:1;letter-spacing:-.035em}
+  .t-title{font-weight:800;font-size:28px;line-height:1.05;letter-spacing:-.03em;margin:0}
   .t-h2{font-weight:800;font-size:23px;line-height:1.2;letter-spacing:-.02em;margin:0}
   .t-h3{font-weight:800;font-size:19px;line-height:1.2;letter-spacing:-.01em}
   .t-small{font-size:14px;line-height:1.4;color:var(--text2)}
@@ -292,9 +292,34 @@
   .dots{position:absolute;right:20px;bottom:50px;display:flex;gap:6px}
   .dots i{width:7px;height:7px;border-radius:4px;background:rgba(255,255,255,.5);transition:width .3s,background .3s}
   .dots i.on{width:20px;background:#fff}
+  /* compact header that sticks to the top once the big header has scrolled away */
+  .cbar{position:fixed;top:0;left:0;right:0;z-index:8;opacity:0;transform:translateY(-8px);visibility:hidden;transition:opacity .2s,transform .2s,visibility 0s .2s}
+  .cbar.show{opacity:1;transform:none;visibility:visible;transition:opacity .2s,transform .2s,visibility 0s}
+  .cbar .cin{position:relative;max-width:560px;margin:0 auto;padding-top:env(safe-area-inset-top)}
+  .cbar .row2{display:flex;align-items:center;gap:8px;padding:10px 16px 10px 20px}
+  .cbar .tt{flex:1;min-width:0}
+  .cbar .tt b{display:block;font-weight:800;font-size:17px;line-height:1.2;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cbar .tt span{display:block;font-weight:600;font-size:12px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cbar .iconbtn{width:36px;height:36px}.cbar .iconbtn .ic{width:18px;height:18px}
+  .cbar .cbg{position:absolute;inset:0;overflow:hidden;display:none}
+  .cbar .cbg img{position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);object-fit:cover;object-position:50% 30%;filter:blur(10px)}
+  .cbar .cbg::after{content:'';position:absolute;inset:0;background:rgba(10,14,20,.42)}
+  .cbar.photo{color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.18)}
+  .cbar.photo .cbg{display:block}
+  .cbar.photo .tt span{opacity:.85}
+  .cbar.photo .iconbtn{background:rgba(255,255,255,.22);color:#fff}
+  .cbar.plain{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .cbar.plain .tt span{color:var(--text2)}
+  .miniphase{display:flex;gap:2px;height:6px;margin:0 20px 10px;position:relative}
+  .miniphase i{border-radius:3px;min-width:3px}
+  .miniphase .mk{position:absolute;top:-3px;bottom:-3px;width:3px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px #fff}
 </style>
 </head>
 <body>
+<div class="cbar" id="cbar">
+  <div class="cbg"><img id="cbarImg" alt=""></div>
+  <div class="cin"><div class="row2"><div class="tt"><b id="cbarT"></b><span id="cbarS"></span></div><button class="iconbtn js-sync" aria-label="Sync now" title="Sync now"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button><button class="iconbtn js-set" aria-label="Settings" title="Settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div><div class="miniphase" id="cbarMini" hidden></div></div>
+</div>
 <div class="app">
   <header class="hero nophoto" id="hero" hidden>
     <img class="bg" id="heroImg" alt="" hidden><img class="bg blur" id="heroBlur" alt="" aria-hidden="true" hidden><div class="slides" id="heroSlides" hidden></div><div class="shade"></div>
@@ -931,6 +956,19 @@
       if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){ showSlide(car.i+(dx<0?1:-1)); if(car.timer){ clearInterval(car.timer); car.timer=setInterval(function(){ showSlide(car.i+1); },4500); } } },{passive:true});
   })();
 
+  // Show the compact header once the big one has scrolled out of view.
+  function updateBar(){
+    var cb=$('cbar'); if(!cb) return;
+    var big=state.tab==='today'?$('hero'):$('plainTop');
+    var lim=big&&!big.hidden?big.offsetHeight-(state.tab==='today'?72:12):60;
+    var y=lockedY!==null&&lockedY!==undefined?lockedY:(window.scrollY||window.pageYOffset||0);
+    var on=y>Math.max(20,lim);
+    if(on!==cb.classList.contains('show')){ cb.classList.toggle('show',on); cb.setAttribute('aria-hidden',on?'false':'true'); }
+  }
+  var barTick=false;
+  window.addEventListener('scroll',function(){ if(barTick) return; barTick=true; requestAnimationFrame(function(){ barTick=false; updateBar(); }); },{passive:true});
+  window.addEventListener('resize',function(){ requestAnimationFrame(updateBar); });
+
   // ---------- render ----------
   function render(){
     var data=state.data||DEMO, trip=data.trip||{}, days=data.days||[], phases=data.phases||[];
@@ -990,6 +1028,29 @@
         $('ptSub').textContent=tbItems.length?plural(tbItems.length,'item')+' · soonest first':'Everything is booked';
       }
     }
+
+    // compact sticky header
+    var cb=$('cbar'), mini=$('cbarMini'); cb.classList.toggle('photo',onToday); cb.classList.toggle('plain',!onToday); mini.textContent=''; mini.hidden=true;
+    if(onToday){
+      var cph=after?phases[car.i||0]||phases[phases.length-1]:(before?phases[0]:phaseOf(d&&d.phase)||phases[phases.length-1]);
+      cb.querySelector('.cbg').style.background=darken(cph&&cph.colour);
+      var ci=$('cbarImg'); if(cph&&cph.photo&&navigator.onLine!==false){ if(ci.getAttribute('src')!==cph.photo) ci.src=cph.photo; ci.hidden=false; } else { ci.hidden=true; ci.removeAttribute('src'); }
+      ci.onerror=function(){ ci.hidden=true; };
+      $('cbarT').textContent=$('heroBig').textContent; $('cbarS').textContent=$('heroKick').textContent;
+    } else {
+      $('cbarT').textContent=$('ptTitle').textContent;
+      if(state.tab==='trip'){
+        var curP=!before&&!after&&d?d.phase:'';
+        $('cbarS').textContent=before?'Starts in '+plural(daysBetween(t,start),'day'):after?plural(total,'day'):'Day '+dayNo+' of '+total+(curP?' · '+curP:'');
+        if(phases.length&&total){
+          phases.forEach(function(p,i){ var ps=parseDay(p.start), pe=i+1<phases.length?parseDay(phases[i+1].start):end;
+            var w=ps&&pe?Math.max(1,daysBetween(ps,pe)+(i+1<phases.length?0:1)):(p.days||1); var x=h('i'); x.style.background=darken(p.colour); x.style.flex=String(w); mini.appendChild(x); });
+          if(start&&t>=start&&t<=end){ var mk2=h('span','mk'); mk2.style.left='calc('+(daysBetween(start,t)+.5)/total*100+'% - 1px)'; mini.appendChild(mk2); }
+          mini.hidden=false;
+        }
+      } else $('cbarS').textContent=$('ptSub').textContent;
+    }
+    requestAnimationFrame(updateBar);
 
     // notices
     var nb=$('notice'); nb.textContent='';
