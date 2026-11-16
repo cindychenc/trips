@@ -502,10 +502,11 @@
       h('div','t-h3 name',s.name)];
     if(s.address) kids.push(h('div','t-small addr',s.address));
     if(s.via) kids.push(h('div','via',['Booked via ',h('b',null,s.via)]));
-    var acts=h('div','btn-row');
-    if(s.address) acts.appendChild(linkbtn('Directions','secondary',null,mapsUrl(s.address)));
-    acts.appendChild(btn('Show to driver','primary',null,function(e){ e.stopPropagation(); openDriver({name:s.name,address:s.address||'',place:s.place||(d&&d.location)||''}); }));
-    kids.push(acts);
+    // No address (camping, overnight bus): nothing to navigate to, so no buttons.
+    if(s.address){
+      kids.push(h('div','btn-row',[linkbtn('Directions','secondary',null,mapsUrl(s.address)),
+        btn('Show to driver','primary',null,function(e){ e.stopPropagation(); openDriver({name:s.name,address:s.address,place:s.place||(d&&d.location)||''}); })]));
+    }
     return card(kids,true,'stay');
   }
   function moveCard(s){
