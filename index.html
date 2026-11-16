@@ -695,9 +695,9 @@
 
   // ---------- maps (Leaflet, pins from the sheet's "Map places") ----------
   // CARTO's Voyager style needs a free key (carto.com/basemaps/apikey). Without one, use OpenStreetMap's own tiles.
-  var CARTO_KEY='';
+  var CARTO_KEY='cb1_5aen_1_29dc3fc804e3179a361fb539';
   var OSM_ATTR='© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>';
-  var TILE_URL=CARTO_KEY?'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key='+CARTO_KEY:'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  var TILE_URL=CARTO_KEY?'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key='+CARTO_KEY:'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
   var TILE_ATTR=CARTO_KEY?OSM_ATTR+' © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>':OSM_ATTR;
   var liveMaps=[], mapObserver=null;
   function placeKey(loc){ var p=String(loc||'').split('\n')[0]; if(p.indexOf('→')>=0) p=p.split('→').pop(); return p.split('·')[0].trim(); }
