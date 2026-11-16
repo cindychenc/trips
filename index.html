@@ -110,6 +110,7 @@
   .sheet label{display:block;font-size:12px;color:var(--calc);margin:14px 0 6px}
   .sheet textarea,.sheet input{width:100%;font:inherit;font-size:13px;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:#FBFAF8;color:var(--ink)}
   .sheet textarea{height:84px;resize:vertical}
+  #urlIn{font-size:17px;letter-spacing:.12em}
   .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .btn{border:1px solid var(--line);background:#FBFAF8;border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:600;font-size:13px}
   .btn.primary{background:var(--band);color:#fff;border-color:var(--band)}
@@ -144,8 +145,9 @@
 <div class="sheet" id="setSheet" role="dialog" aria-modal="true">
   <div class="grab"></div>
   <h3>Settings</h3>
-  <label for="urlIn">Link from your sheet (Trip → Get app link)</label>
-  <textarea id="urlIn" placeholder="https://script.google.com/macros/s/…/exec?key=…" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+  <label for="urlIn">Setup code from your sheet (Trip → Get app link)</label>
+  <input id="urlIn" placeholder="e.g. K7P-4QX" autocapitalize="characters" autocorrect="off" autocomplete="off" spellcheck="false">
+  <div class="help">A full app link (https://script.google.com/…) works here too.</div>
   <div class="btns">
     <button class="btn primary" id="saveUrl">Save &amp; sync</button>
     <button class="btn" id="useDemo">Show demo trip</button>
@@ -161,7 +163,20 @@
 <script>
 (function(){
   'use strict';
-  var KEY_URL='tripFeedUrl', KEY_DATA='tripFeedData', KEY_SYNC='tripFeedSyncedAt';
+  var KEY_URL='tripFeedUrl', KEY_DATA='tripFeedData', KEY_SYNC='tripFeedSyncedAt', KEY_CODE='tripFeedCode';
+  // Sheet web apps a setup code can point to. '' is the default; a prefix (e.g. 'SA') picks another sheet.
+  // The URL alone shows nothing: the feed also needs the code.
+  var FEEDS={'':'https://script.google.com/macros/s/AKfycbyD6vts40jdDYfNI0EvaIWbcNeEVb-wKSPbzp3fqIXcnecohvXf84i92cV4YmUpNA3ZoQ/exec'};
+  var CODE_LEN=6;
+  // "k7p-4qx", "SA-K7P4QX" -> {code:'K7P4QX', prefix:'SA', url:…}; null if it isn't a code.
+  function parseCode(raw){
+    var c=String(raw||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(c.length<CODE_LEN||c.length>CODE_LEN+4) return null;
+    var prefix=c.slice(0,c.length-CODE_LEN), code=c.slice(-CODE_LEN), base=FEEDS[prefix];
+    if(!base||base.indexOf('/macros/s/__')>=0) return null;   // placeholder until the real URL is filled in
+    return {code:code, prefix:prefix, url:base+'?key='+code};
+  }
+  function showCode(p){return (p.prefix?p.prefix+'-':'')+p.code.slice(0,3)+'-'+p.code.slice(3);}
   var store={
     get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},
     set:function(k,v){try{localStorage.setItem(k,v);}catch(e){}},
@@ -394,17 +409,18 @@
     b.appendChild(l); show($('daySheet'));
   }
   function openSettings(){
-    $('urlIn').value=store.get(KEY_URL)||''; $('urlErr').textContent=''; $('previewIn').value=state.preview||'';
+    $('urlIn').value=store.get(KEY_CODE)||store.get(KEY_URL)||''; $('urlErr').textContent=''; $('previewIn').value=state.preview||'';
     show($('setSheet'));
   }
   $('setBtn').onclick=openSettings;
   $('syncBtn').onclick=function(){ if(!store.get(KEY_URL)){openSettings();return;} sync(); };
   $('saveUrl').onclick=function(){
-    var u=$('urlIn').value.trim();
-    if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)){ $('urlErr').textContent='Paste the link from Trip → Get app link (it starts with https://script.google.com/).'; return; }
-    store.set(KEY_URL,u); hideAll(); sync();
+    var u=$('urlIn').value.trim(), p=parseCode(u);
+    if(p){ store.set(KEY_URL,p.url); store.set(KEY_CODE,showCode(p)); hideAll(); sync(); return; }
+    if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)){ $('urlErr').textContent='Type the 6-character code from Trip → Get app link (like K7P-4QX).'; return; }
+    store.set(KEY_URL,u); store.del(KEY_CODE); hideAll(); sync();
   };
-  $('useDemo').onclick=function(){ store.del(KEY_URL); store.del(KEY_DATA); store.del(KEY_SYNC); state.data=DEMO; state.demo=true; state.error=''; hideAll(); render(); };
+  $('useDemo').onclick=function(){ store.del(KEY_URL); store.del(KEY_CODE); store.del(KEY_DATA); store.del(KEY_SYNC); state.data=DEMO; state.demo=true; state.error=''; hideAll(); render(); };
   $('previewIn').onchange=function(){ state.preview=this.value||null; render(); };
   $('clearPreview').onclick=function(){ state.preview=null; $('previewIn').value=''; render(); };
 
@@ -413,6 +429,14 @@
   document.addEventListener('visibilitychange',function(){
     if(document.visibilityState==='visible'){ var at=+store.get(KEY_SYNC)||0; if(Date.now()-at>10*60*1000) sync(); else render(); }
   });
+
+  // trips.boringcase.com/#K7P-4QX sets up this device, then the code is taken out of the address bar.
+  (function(){
+    var h=decodeURIComponent(location.hash.slice(1)), p=h&&parseCode(h);
+    if(!h) return;
+    try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+    if(p && store.get(KEY_URL)!==p.url){ store.set(KEY_URL,p.url); store.set(KEY_CODE,showCode(p)); store.del(KEY_DATA); store.del(KEY_SYNC); }
+  })();
 
   loadCached(); render(); sync();
   if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
