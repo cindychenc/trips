@@ -218,6 +218,14 @@
     .say{font-size:clamp(15px,5vh,26px)}.dname{font-size:clamp(26px,12vh,76px)}.daddr{font-size:clamp(20px,9vh,52px)}.dplace{font-size:clamp(18px,7vh,40px)}
     .driver .hint{display:none}
   }
+  .tbgroup{background:var(--tbTint);border-radius:18px;padding:14px 16px 12px}
+  .tbgroup .tbhead{display:flex;align-items:center;gap:8px;margin-bottom:4px}.tbgroup .tbhead .t-label{color:var(--tb)}
+  .tbgroup .tbn{min-width:22px;height:22px;padding:0 7px;border-radius:11px;background:var(--tb);color:#fff;font-weight:800;font-size:12px;line-height:22px;text-align:center}
+  .tbrow{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:10px 0;position:relative}
+  .tbrow + .tbrow::before{content:'';position:absolute;left:56px;right:0;top:0;border-top:1px solid rgba(156,69,39,.18)}
+  .tbrow b{display:block;font-weight:800;font-size:17px;line-height:1.25}
+  .tbrow .s{display:block;font-weight:500;font-size:13px;color:#6B3A26;margin-top:2px}
+  .tbgroup .tbfoot{font-weight:500;font-size:13px;color:#6B3A26;margin-top:4px}
 </style>
 </head>
 <body>
@@ -442,7 +450,7 @@
           if(booked(s) && s.date<=date && (s.end||isoAdd(s.date,1))>date) out.tonight=s;
           if(booked(s) && s.end===date && s.name) out.rows.push({icon:'door',title:'Check out',sub:s.name,link:true,time:s.checkOut||''});
           if(booked(s) && s.date===date && s.name) out.rows.push({icon:'key',title:'Check in',sub:s.name,link:true,time:s.checkIn||''});
-          if(!booked(s) && s.date<=date && (s.end||isoAdd(s.date,1))>date) out.tobook.push({icon:'bed',title:'Stay in '+(s.place||s.name||'—')+(s.nights?' · '+plural(s.nights,'night'):''),date:s.date});
+          if(!booked(s) && s.date<=date && (s.end||isoAdd(s.date,1))>date) out.tobook.push({icon:'bed',title:'Stay in '+(s.place||s.name||'—')+(s.nights?' · '+plural(s.nights,'night'):''),date:s.date,sub:(parseDay(s.date)&&parseDay(s.end))?wmd(parseDay(s.date))+' → '+wmd(parseDay(s.end)):''});
         } else if(s.type==='car'){
           if(!booked(s)){ if(s.date===date) out.tobook.push({icon:'car',title:'Car'+(s.company?' · '+s.company:'')+(s.pickupPlace?' · '+s.pickupPlace:'')}); return; }
           var co=[s.company,s.car].filter(Boolean).join(' · ');
@@ -450,7 +458,7 @@
           else if(s.end===date){ out.hasCar=true; out.rows.push({icon:'car',title:'Return car',sub:[s.company,s.returnPlace].filter(Boolean).join(' · '),time:s.returnTime||''}); }
           else if(s.date<date && s.end>date){ out.hasCar=true; out.rows.push({icon:'car',title:'Car rental',sub:co||'With you today',time:'',last:true}); }
         } else if(s.date===date){
-          if(!booked(s)){ out.tobook.push({icon:s.type==='flight'?'plane':'bus',title:s.type==='flight'?('Flight'+(s.number?' '+s.number:'')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')):((s.kind||'Transfer')+(s.from&&s.to?' · '+s.from+' → '+s.to:''))}); return; }
+          if(!booked(s)){ out.tobook.push({icon:s.type==='flight'?'plane':'bus',title:s.type==='flight'?('Flight'+(s.number?' '+s.number:'')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')):((s.kind||'Transfer')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')+(s.company?' · '+s.company:''))}); return; }
           if(s.type==='flight') out.hasFlight=true; else out.hasTransfer=true;
           out.moves.push(s);
         }
@@ -517,7 +525,12 @@
   // The pieces of a day, in order: to book, plan, stay, times, flights/buses, notes.
   function dayBlocks(d,opts){
     var p=dayParts(d), out=[];
-    p.tobook.forEach(function(t){ var c=tbCard(t); c.querySelector('.t-h3').style.display='block'; c.style.marginTop='0'; out.push(c); });
+    if(p.tobook.length===1){ var c=tbCard(p.tobook[0]); c.querySelector('.t-h3').style.display='block'; out.push(c); }
+    else if(p.tobook.length>1){
+      out.push(h('div','tbgroup',[h('div','tbhead',[h('span','t-label','✱ Still to book'),h('span','tbn',String(p.tobook.length))])]
+        .concat(p.tobook.map(function(t){ return h('div','tbrow',[tile(t.icon||'bed','tbw'),h('span',null,[h('b',null,t.title),t.sub?h('span','s',t.sub):null])]); }))
+        .concat([h('div','tbfoot','Mark them booked in your sheet')])));
+    }
     if(d.plan && !opts.planInline) out.push(planCard(d.plan));
     if(p.tonight && p.tonight.name) out.push(stayCard(p.tonight,d));
     if(p.rows.length) out.push(card(p.rows.map(timeRow)));
