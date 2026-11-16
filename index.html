@@ -164,7 +164,7 @@
   .todaycard .row + .row::before{border-top-color:rgba(0,0,0,.08)}
   .todaycard .btn-secondary{background:rgba(255,255,255,.7)}
   .hero.roomy{min-height:calc(300px + env(safe-area-inset-top))}
-  .hero.roomy.done{min-height:calc(360px + env(safe-area-inset-top))}  /* after the trip: room for the photo, label and dots */
+  .hero.roomy.done{min-height:calc(360px + env(safe-area-inset-top))}  /* before and after the trip: room for the photo carousel, label and dots */
   .stay .via a{color:inherit}
   .todaycard > * + *{margin-top:12px}
   .plaintop{padding:calc(22px + env(safe-area-inset-top)) 20px 6px}
@@ -982,7 +982,7 @@
 
     // header: photo/colour header on Today, plain bar elsewhere
     var onToday=state.tab==='today';
-    $('hero').hidden=!onToday; $('hero').classList.toggle('roomy',onToday&&(before||after)); $('hero').classList.toggle('done',onToday&&after); $('plainTop').hidden=onToday; $('panel').classList.toggle('over',onToday);
+    $('hero').hidden=!onToday; $('hero').classList.toggle('roomy',onToday&&(before||after)); $('hero').classList.toggle('done',onToday&&(after||before)); $('plainTop').hidden=onToday; $('panel').classList.toggle('over',onToday);
     if(onToday){
       var ph=before?phases[0]:phaseOf(d&&d.phase)||phases[phases.length-1];
       var hero=$('hero'), img=$('heroImg'), blur=$('heroBlur'), photo=ph&&ph.photo||'';
@@ -993,8 +993,10 @@
       $('heroCredit').textContent=photo&&ph.photoCredit?'Photo: '+ph.photoCredit:'';
       $('heroTrip').textContent=tripLine;
       var tc=$('todayCard'); tc.textContent='';
-      if(!after) stopCarousel();
+      if(!after && !(before && start)) stopCarousel();
       if(before && start){
+        startCarousel(phases);
+        $('heroCredit').textContent='';
         var left=Math.max(0,daysBetween(t,start));
         $('heroKick').textContent='Trip starts '+WDL[start.getDay()]+', '+md(start);
         $('heroBig').textContent=plural(left,'day')+' to go';
