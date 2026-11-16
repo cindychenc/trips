@@ -98,8 +98,8 @@
   .scrim{position:fixed;inset:0;background:rgba(58,56,54,.35);display:none;z-index:10}
   .sheet{position:fixed;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--bg);z-index:11;
     border-radius:14px 14px 0 0;padding:8px 18px calc(22px + env(safe-area-inset-bottom));
-    transform:translateY(105%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s;max-width:760px;margin:0 auto;box-shadow:0 -6px 24px rgba(0,0,0,.12)}
-  .sheet.open{transform:none;visibility:visible;transition:transform .22s ease}
+    transform:translateY(105%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s;overscroll-behavior:contain;max-width:760px;margin:0 auto;box-shadow:0 -6px 24px rgba(0,0,0,.12)}
+  .sheet.open{transform:none;visibility:visible;transition:transform .22s ease,height .26s cubic-bezier(.2,.8,.2,1)}
   .scrim.open{display:block}
   .grab{width:36px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 12px}
   .sheet h3{margin:0 0 2px;font-size:18px}
@@ -658,8 +658,21 @@
 
   // ---------- sheets ----------
   var scrim=$('scrim');
-  function show(s){scrim.classList.add('open'); s.classList.add('open');}
-  function hideAll(){closeDriver(); scrim.classList.remove('open'); $('daySheet').classList.remove('open'); $('setSheet').classList.remove('open'); dayIdx=-1;}
+  // Keep the page behind an open sheet still (works on iOS, where overflow:hidden alone doesn't).
+  var lockedY=null;
+  function lockScroll(){
+    if(lockedY!==null) return;
+    lockedY=window.scrollY||window.pageYOffset||0;
+    var b=document.body.style; b.position='fixed'; b.top=(-lockedY)+'px'; b.left='0'; b.right='0'; b.width='100%';
+  }
+  function unlockScroll(){
+    if(lockedY===null) return;
+    var y=lockedY; lockedY=null;
+    var b=document.body.style; b.position=''; b.top=''; b.left=''; b.right=''; b.width='';
+    window.scrollTo(0,y);
+  }
+  function show(s){lockScroll(); scrim.classList.add('open'); s.classList.add('open');}
+  function hideAll(){closeDriver(); scrim.classList.remove('open'); var ds=$('daySheet'); ds.classList.remove('open'); ds.style.height=''; $('setSheet').classList.remove('open'); dayIdx=-1; unlockScroll();}
   scrim.onclick=hideAll;
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'){ if($('driver').classList.contains('open')) closeDriver(); else hideAll(); return; }
@@ -697,6 +710,7 @@
   function renderDay(i,dir){
     var days=(state.data&&state.data.days)||[], d=days[i]; if(!d) return;
     dayIdx=i;
+    var sheetEl=$('daySheet'), fromH=dir&&sheetEl.classList.contains('open')?sheetEl.getBoundingClientRect().height:0;
     var b=$('dayBody'); b.textContent='';
     var dd=parseDay(d.date);
 
@@ -757,7 +771,19 @@
 
     // slide in from the side we're moving towards
     $('daySheet').scrollTop=0;
+    if(fromH) animateSheetHeight(sheetEl,fromH);
     if(dir){ b.style.transition='none'; b.style.transform='translateX('+(dir*36)+'px)'; b.style.opacity='0'; void b.offsetWidth; b.style.transition=''; b.style.transform=''; b.style.opacity=''; }
+  }
+  // Grow or shrink the sheet smoothly from its old height to the new day's height.
+  var heightTimer=null;
+  function animateSheetHeight(sh,from){
+    clearTimeout(heightTimer);
+    sh.style.transition='none'; sh.style.height='';
+    var to=sh.getBoundingClientRect().height;
+    sh.style.height=from+'px'; void sh.offsetHeight; sh.style.transition='';
+    if(Math.abs(to-from)<2){ sh.style.height=''; return; }
+    sh.style.height=to+'px';
+    heightTimer=setTimeout(function(){ sh.style.height=''; },320);
   }
   // swipe left / right on the day sheet
   (function(){
