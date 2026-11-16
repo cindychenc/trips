@@ -12,6 +12,7 @@
 <link rel="icon" href="icon-192.png">
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <title>Trip Overview</title>
+<link rel="stylesheet" href="lib/leaflet.css">
 <style>
   /* Inter (SIL Open Font License, see fonts/Inter-OFL.txt), stored with the app so it works offline */
   @font-face{font-family:Inter;font-style:normal;font-weight:100 900;font-display:swap;src:url(fonts/inter-latin.woff2) format('woff2');
@@ -230,12 +231,64 @@
   .tbrow b{display:block;font-weight:800;font-size:17px;line-height:1.25}
   .tbrow .s{display:block;font-weight:500;font-size:13px;color:#6B3A26;margin-top:2px}
   .tbgroup .tbfoot{font-weight:500;font-size:13px;color:#6B3A26;margin-top:4px}
+  /* maps */
+  .mapcard{position:relative;isolation:isolate;border-radius:18px;overflow:hidden;border:1.5px solid var(--line);margin-bottom:12px;cursor:pointer;background:#EEF0E6}
+  .mapbox{height:190px;position:relative;z-index:0}
+  .mapbox.small{height:130px}
+  .mapcard .fs{position:absolute;top:10px;right:10px;z-index:500;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  .mapcard .cnt{position:absolute;left:10px;bottom:10px;z-index:500;height:28px;padding:0 10px;border-radius:14px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12);font-weight:700;font-size:13px;line-height:28px}
+  .mapphoto{position:relative;overflow:hidden}
+  .mapphoto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .mpin span{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;background:#fff;color:var(--ink);border:2px solid var(--ink);font-weight:800;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.25);box-sizing:border-box}
+  .mpin.on span{background:var(--ink);color:#fff;border-color:#fff;font-size:15px}
+  .leaflet-container{font-family:Inter,sans-serif;background:#EEF0E6}
+  .leaflet-control-attribution{font-size:9px}
+  .mcard{isolation:isolate;border:1.5px solid var(--line);border-radius:18px;overflow:hidden;margin-top:12px;background:#fff;cursor:pointer}
+  .mcard .bd{padding:14px 16px}
+  .mcard .nm{font-weight:800;font-size:22px;line-height:1.1;letter-spacing:-.02em}
+  .mcard .dt{font-weight:700;font-size:13px;color:var(--text2);margin-top:4px}
+  .mcard .rt{font-weight:700;font-size:14px;line-height:1.4;margin-top:8px}
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:16px 8px}
+  .stats b{display:block;font-weight:800;font-size:30px;line-height:1;letter-spacing:-.02em}
+  .stats span{display:block;font-weight:600;font-size:13px;color:var(--text3);margin-top:4px}
+  .ext{margin-top:16px;padding-top:6px;border-top:1px solid var(--line)}
+  .er{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:8px 0}
+  .ei{width:40px;height:40px;border-radius:12px;background:#F4EEE5;color:#7A5528;display:flex;align-items:center;justify-content:center}
+  .er .t-label{display:block}.er b{display:block;font-weight:800;font-size:17px;line-height:1.25;margin-top:2px}
+  .mapfull{position:fixed;inset:0;z-index:60;background:#EEF0E6;display:none}
+  .mapfull.open{display:block}
+  .mfmap{position:absolute;inset:0}
+  .mftop{position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;right:16px;display:flex;gap:8px;align-items:center;z-index:1000}
+  .mftop .iconbtn{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+  .mapfull .legend{position:absolute;right:16px;top:calc(72px + env(safe-area-inset-top));z-index:1000;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.12);padding:8px 10px;font-weight:600;font-size:12px;line-height:1.7;color:var(--text2)}
+  .mapfull .legend i{display:inline-block;width:22px;vertical-align:middle;margin-right:6px;border-top:3px solid #111}
+  .mapfull .legend i.d{border-top-style:dashed}
+  .mfcards{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));z-index:1000;display:flex;gap:10px;padding:0 16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .mfcards::-webkit-scrollbar{display:none}
+  .pincard{flex:none;width:min(300px,82vw);scroll-snap-align:center;background:#fff;border-radius:18px;box-shadow:0 6px 20px rgba(0,0,0,.16);padding:14px;border:2px solid transparent}
+  .pincard.on{border-color:var(--ink)}
+  .pincard .hd{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+  .pincard .num{width:36px;height:36px;border-radius:18px;background:var(--ink);color:#fff;font-weight:800;font-size:15px;line-height:36px;text-align:center}
+  .pincard b{display:block;font-weight:800;font-size:19px;line-height:1.2}.pincard .s{display:block;font-weight:500;font-size:13px;color:var(--text2);margin-top:2px}
+  .pincard .ln{font-weight:500;font-size:14px;line-height:1.45;margin-top:10px}
+  .pincard .ln span{color:var(--text3)}
+  .pincard .btn-row{margin-top:12px}.pincard .btn{min-height:44px;font-size:15px}
+  /* after-trip header carousel */
+  .hero .slides{position:absolute;inset:0}
+  .hero .slide{position:absolute;inset:0;overflow:hidden;opacity:0;transition:opacity .9s ease}
+  .hero .slide.on{opacity:1}
+  .capwrap{position:absolute;left:20px;bottom:40px;height:28px}
+  .capwrap .cap{position:absolute;left:0;bottom:0;white-space:nowrap;height:28px;padding:0 12px;border-radius:14px;background:rgba(0,0,0,.28);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;font-weight:700;font-size:13px;line-height:28px;opacity:0;transition:opacity .6s}
+  .capwrap .cap.on{opacity:1}
+  .dots{position:absolute;right:20px;bottom:50px;display:flex;gap:6px}
+  .dots i{width:7px;height:7px;border-radius:4px;background:rgba(255,255,255,.5);transition:width .3s,background .3s}
+  .dots i.on{width:20px;background:#fff}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="hero nophoto" id="hero" hidden>
-    <img class="bg" id="heroImg" alt="" hidden><img class="bg blur" id="heroBlur" alt="" aria-hidden="true" hidden><div class="shade"></div>
+    <img class="bg" id="heroImg" alt="" hidden><img class="bg blur" id="heroBlur" alt="" aria-hidden="true" hidden><div class="slides" id="heroSlides" hidden></div><div class="shade"></div>
     <div class="in">
       <div class="bar"><div class="grow tripline" id="heroTrip"></div>
         <button class="iconbtn glass js-sync" aria-label="Sync now" title="Sync now"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
@@ -247,6 +300,7 @@
       <div id="todayCard"></div>
     </div>
     <div class="credit" id="heroCredit"></div>
+    <div class="capwrap" id="heroCap"></div><div class="dots" id="heroDots"></div>
   </header>
   <header class="plaintop" id="plainTop" hidden>
     <div class="bar"><div class="grow"><h1 class="t-title" id="ptTitle" style="margin-top: 2px"></h1><div class="t-small" id="ptSub"></div></div>
@@ -268,6 +322,12 @@
   <button type="button" data-tab="book"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>To book<span class="badge" id="bookBadge" hidden></span></button>
 </nav>
 
+<div class="mapfull" id="mapFull" role="dialog" aria-modal="true" aria-label="Map">
+  <div class="mfmap" id="mfMap"></div>
+  <div class="mftop"><button class="iconbtn" id="mfBack" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button><span class="pill phase" id="mfPill"></span></div>
+  <div class="legend"><i></i>Drive / bus<br><i class="d"></i>Flight</div>
+  <div class="mfcards" id="mfCards"></div>
+</div>
 <div class="scrim" id="scrim"></div>
 <div class="sheet" id="daySheet" role="dialog" aria-modal="true" aria-label="Day details"><div class="grab"></div><div id="dayBody"></div></div>
 <div class="driver" id="driver" role="dialog" aria-modal="true" aria-label="Show to driver">
@@ -306,7 +366,8 @@
   <div style="margin-top: 10px"><button class="btn btn-secondary btn-block" id="clearPreview">Back to today</button></div>
   <p class="help">The app keeps the last synced copy of your trip on this phone, so it opens without signal. It syncs when it opens online, when you tap ↻, and when your connection comes back.</p>
 </div>
-<script id="demoData" type="application/json">{"trip": {"name": "Sample Trip", "subtitle": "Lisbon · Alentejo · Algarve", "start": "2027-06-01", "end": "2027-06-12"}, "phases": [{"name": "Lisbon", "start": "2027-06-01", "end": "2027-06-04", "days": 4, "colour": "#5f7895", "summary": "✓  All booked"}, {"name": "Alentejo", "start": "2027-06-05", "end": "2027-06-08", "days": 4, "colour": "#c08949", "summary": "✓  All booked"}, {"name": "Algarve", "start": "2027-06-09", "end": "2027-06-12", "days": 4, "colour": "#b55f4f", "summary": "1 stay  ·  1 open to-do"}], "days": [{"day": 1, "date": "2027-06-01", "phase": "Lisbon", "location": "Lisbon", "plan": "Arrive in Lisbon", "nights": "4", "stay": "Sample Apartment, Alfama", "flights": "✈ DM101 · Arrive LIS 09:30", "car": "", "transfers": "", "keyTimes": "Check-in 15:00 · Sample Apartment, Alfama", "notes": "This is a demo trip. Connect your sheet in Settings to see your own."}, {"day": 2, "date": "2027-06-02", "phase": "Lisbon", "location": "Lisbon", "plan": "🥾 Alfama to Castelo walk (2 hrs)", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": ""}, {"day": 3, "date": "2027-06-03", "phase": "Lisbon", "location": "Sintra", "plan": "Day trip to Sintra palaces", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "Train · Lisbon Rossio → Sintra", "keyTimes": "", "notes": "Go early to beat the crowds"}, {"day": 4, "date": "2027-06-04", "phase": "Lisbon", "location": "Lisbon", "plan": "Belém & the riverfront", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": "Pastry stop"}, {"day": 5, "date": "2027-06-05", "phase": "Alentejo", "location": "Évora", "plan": "Pick up car · drive to Évora", "nights": "2", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals · Pick-up 10:00 Lisbon", "transfers": "", "keyTimes": "Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)", "notes": "incl. breakfast"}, {"day": 6, "date": "2027-06-06", "phase": "Alentejo", "location": "Évora", "plan": "Old town & Roman temple", "nights": "", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": ""}, {"day": 7, "date": "2027-06-07", "phase": "Alentejo", "location": "Monsaraz", "plan": "Drive to Monsaraz · lake swim", "nights": "2", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo", "notes": ""}, {"day": 8, "date": "2027-06-08", "phase": "Alentejo", "location": "Monsaraz", "plan": "🥾 Hilltop loop (8 km · 3 hrs · 250m)", "nights": "", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "Stargazing night"}, {"day": 9, "date": "2027-06-09", "phase": "Algarve", "location": "Lagos", "plan": "Drive to Lagos", "nights": "3", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 10:00 · Casa do Lago Demo", "notes": ""}, {"day": 10, "date": "2027-06-10", "phase": "Algarve", "location": "Lagos", "plan": "🥾 Ponta da Piedade cliffs (2 hrs)", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "✱ To Book · Kayak tour · Lagos marina", "keyTimes": "", "notes": ""}, {"day": 11, "date": "2027-06-11", "phase": "Algarve", "location": "Lagos", "plan": "Beach day", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": ""}, {"day": 12, "date": "2027-06-12", "phase": "Algarve", "location": "Faro", "plan": "Return car · fly home", "nights": "", "stay": "", "flights": "✈ DM202 · FAO 14:10 → LIS 15:05", "car": "🚗 Demo Rentals · Return 12:00 Faro Airport", "transfers": "", "keyTimes": "Check-out 10:00", "notes": ""}], "updated": "2026-11-15T11:30:00-08:00", "addresses": {"Sample Apartment, Alfama": "Rua do Exemplo 12, Lisbon", "Quinta Exemplo (farm stay)": "Estrada Demo km 4, Évora", "Casa do Lago Demo": "Rua da Amostra 3, Monsaraz"}, "bookings": [{"type": "stay", "status": "booked", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "time": "", "title": "Stay · Sample Apartment, Alfama", "phase": "Lisbon"}, {"type": "flight", "status": "booked", "date": "2027-06-01", "end": "", "nights": "", "time": "09:30", "title": "Flight · DM101 → Lisbon", "phase": "Lisbon"}, {"type": "stay", "status": "booked", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "time": "", "title": "Stay · Quinta Exemplo (farm stay)", "phase": "Alentejo"}, {"type": "car", "status": "booked", "date": "2027-06-05", "end": "2027-06-12", "nights": "", "time": "10:00", "title": "Car · Demo Rentals · Lisbon", "phase": "Alentejo"}, {"type": "stay", "status": "booked", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "time": "", "title": "Stay · Casa do Lago Demo", "phase": "Alentejo"}, {"type": "stay", "status": "to book", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "time": "", "title": "Stay · Lagos", "phase": "Algarve"}, {"type": "bus", "status": "to book", "date": "2027-06-10", "end": "", "nights": "", "time": "", "title": "Kayak tour · Lagos marina", "phase": "Algarve"}, {"type": "flight", "status": "booked", "date": "2027-06-12", "end": "", "nights": "", "time": "14:10", "title": "Flight · FAO → LIS", "phase": "Algarve"}], "segments": [{"id": "s1", "type": "stay", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "name": "Sample Apartment, Alfama", "place": "Lisbon", "address": "Rua do Exemplo 12, Lisbon", "via": "Airbnb", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "f1", "type": "flight", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "arrivalDate": "2027-06-01", "number": "DM101", "to": "LIS", "departs": "08:45", "arrives": "09:30", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM101", "from": "MAD"}, {"id": "b1", "type": "bus", "status": "", "phase": "Lisbon", "date": "2027-06-03", "kind": "Train", "from": "Rossio", "to": "Sintra", "company": "CP", "departs": "09:11", "arrives": "09:51"}, {"id": "s2", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "name": "Quinta Exemplo (farm stay)", "place": "Évora", "address": "Estrada Demo km 4, Évora", "via": "Booking.com", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "c1", "type": "car", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-12", "company": "Demo Rentals", "car": "Compact", "pickupTime": "10:00", "pickupPlace": "Lisbon", "returnTime": "12:00", "returnPlace": "Faro Airport"}, {"id": "s3", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "name": "Casa do Lago Demo", "place": "Monsaraz", "address": "Rua da Amostra 3, Monsaraz", "via": "Direct with host", "checkIn": "16:00", "checkOut": "10:00"}, {"id": "s4", "type": "stay", "status": "to book", "phase": "Algarve", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "name": "", "place": "Lagos", "address": "", "via": "", "checkIn": "", "checkOut": ""}, {"id": "b2", "type": "bus", "status": "to book", "phase": "Algarve", "date": "2027-06-10", "kind": "Kayak tour", "from": "", "to": "", "company": "Lagos marina", "departs": "", "arrives": ""}, {"id": "f2", "type": "flight", "status": "booked", "phase": "Algarve", "date": "2027-06-12", "arrivalDate": "2027-06-12", "number": "DM202", "to": "LIS", "departs": "14:10", "arrives": "15:05", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM202", "from": "FAO"}]}</script>
+<script src="lib/leaflet.js"></script>
+<script id="demoData" type="application/json">{"trip": {"name": "Sample Trip", "subtitle": "Lisbon · Alentejo · Algarve", "start": "2027-06-01", "end": "2027-06-12"}, "phases": [{"name": "Lisbon", "start": "2027-06-01", "end": "2027-06-04", "days": 4, "colour": "#5f7895", "summary": "✓  All booked"}, {"name": "Alentejo", "start": "2027-06-05", "end": "2027-06-08", "days": 4, "colour": "#c08949", "summary": "✓  All booked"}, {"name": "Algarve", "start": "2027-06-09", "end": "2027-06-12", "days": 4, "colour": "#b55f4f", "summary": "1 stay  ·  1 open to-do"}], "days": [{"day": 1, "date": "2027-06-01", "phase": "Lisbon", "location": "Lisbon", "plan": "Arrive in Lisbon", "nights": "4", "stay": "Sample Apartment, Alfama", "flights": "✈ DM101 · Arrive LIS 09:30", "car": "", "transfers": "", "keyTimes": "Check-in 15:00 · Sample Apartment, Alfama", "notes": "This is a demo trip. Connect your sheet in Settings to see your own.", "place": "Lisbon"}, {"day": 2, "date": "2027-06-02", "phase": "Lisbon", "location": "Lisbon", "plan": "🥾 Alfama to Castelo walk (2 hrs)", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": "", "place": "Lisbon"}, {"day": 3, "date": "2027-06-03", "phase": "Lisbon", "location": "Sintra", "plan": "Day trip to Sintra palaces", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "Train · Lisbon Rossio → Sintra", "keyTimes": "", "notes": "Go early to beat the crowds", "place": "Sintra"}, {"day": 4, "date": "2027-06-04", "phase": "Lisbon", "location": "Lisbon", "plan": "Belém & the riverfront", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": "Pastry stop", "place": "Lisbon"}, {"day": 5, "date": "2027-06-05", "phase": "Alentejo", "location": "Évora", "plan": "Pick up car · drive to Évora", "nights": "2", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals · Pick-up 10:00 Lisbon", "transfers": "", "keyTimes": "Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)", "notes": "incl. breakfast", "place": "Évora"}, {"day": 6, "date": "2027-06-06", "phase": "Alentejo", "location": "Évora", "plan": "Old town & Roman temple", "nights": "", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "", "place": "Évora"}, {"day": 7, "date": "2027-06-07", "phase": "Alentejo", "location": "Monsaraz", "plan": "Drive to Monsaraz · lake swim", "nights": "2", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo", "notes": "", "place": "Monsaraz"}, {"day": 8, "date": "2027-06-08", "phase": "Alentejo", "location": "Monsaraz", "plan": "🥾 Hilltop loop (8 km · 3 hrs · 250m)", "nights": "", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "Stargazing night", "place": "Monsaraz"}, {"day": 9, "date": "2027-06-09", "phase": "Algarve", "location": "Lagos", "plan": "Drive to Lagos", "nights": "3", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 10:00 · Casa do Lago Demo", "notes": "", "place": "Lagos"}, {"day": 10, "date": "2027-06-10", "phase": "Algarve", "location": "Lagos", "plan": "🥾 Ponta da Piedade cliffs (2 hrs)", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "✱ To Book · Kayak tour · Lagos marina", "keyTimes": "", "notes": "", "place": "Lagos"}, {"day": 11, "date": "2027-06-11", "phase": "Algarve", "location": "Lagos", "plan": "Beach day", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "", "place": "Lagos"}, {"day": 12, "date": "2027-06-12", "phase": "Algarve", "location": "Faro", "plan": "Return car · fly home", "nights": "", "stay": "", "flights": "✈ DM202 · FAO 14:10 → LIS 15:05", "car": "🚗 Demo Rentals · Return 12:00 Faro Airport", "transfers": "", "keyTimes": "Check-out 10:00", "notes": "", "place": "Faro"}], "updated": "2026-11-15T11:30:00-08:00", "addresses": {"Sample Apartment, Alfama": "Rua do Exemplo 12, Lisbon", "Quinta Exemplo (farm stay)": "Estrada Demo km 4, Évora", "Casa do Lago Demo": "Rua da Amostra 3, Monsaraz"}, "bookings": [{"type": "stay", "status": "booked", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "time": "", "title": "Stay · Sample Apartment, Alfama", "phase": "Lisbon"}, {"type": "flight", "status": "booked", "date": "2027-06-01", "end": "", "nights": "", "time": "09:30", "title": "Flight · DM101 → Lisbon", "phase": "Lisbon"}, {"type": "stay", "status": "booked", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "time": "", "title": "Stay · Quinta Exemplo (farm stay)", "phase": "Alentejo"}, {"type": "car", "status": "booked", "date": "2027-06-05", "end": "2027-06-12", "nights": "", "time": "10:00", "title": "Car · Demo Rentals · Lisbon", "phase": "Alentejo"}, {"type": "stay", "status": "booked", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "time": "", "title": "Stay · Casa do Lago Demo", "phase": "Alentejo"}, {"type": "stay", "status": "to book", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "time": "", "title": "Stay · Lagos", "phase": "Algarve"}, {"type": "bus", "status": "to book", "date": "2027-06-10", "end": "", "nights": "", "time": "", "title": "Kayak tour · Lagos marina", "phase": "Algarve"}, {"type": "flight", "status": "booked", "date": "2027-06-12", "end": "", "nights": "", "time": "14:10", "title": "Flight · FAO → LIS", "phase": "Algarve"}], "segments": [{"id": "s1", "type": "stay", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "name": "Sample Apartment, Alfama", "place": "Lisbon", "address": "Rua do Exemplo 12, Lisbon", "via": "Airbnb", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "f1", "type": "flight", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "arrivalDate": "2027-06-01", "number": "DM101", "to": "LIS", "departs": "08:45", "arrives": "09:30", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM101", "from": "MAD"}, {"id": "b1", "type": "bus", "status": "", "phase": "Lisbon", "date": "2027-06-03", "kind": "Train", "from": "Rossio", "to": "Sintra", "company": "CP", "departs": "09:11", "arrives": "09:51"}, {"id": "s2", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "name": "Quinta Exemplo (farm stay)", "place": "Évora", "address": "Estrada Demo km 4, Évora", "via": "Booking.com", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "c1", "type": "car", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-12", "company": "Demo Rentals", "car": "Compact", "pickupTime": "10:00", "pickupPlace": "Lisbon", "returnTime": "12:00", "returnPlace": "Faro Airport"}, {"id": "s3", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "name": "Casa do Lago Demo", "place": "Monsaraz", "address": "Rua da Amostra 3, Monsaraz", "via": "Direct with host", "checkIn": "16:00", "checkOut": "10:00"}, {"id": "s4", "type": "stay", "status": "to book", "phase": "Algarve", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "name": "", "place": "Lagos", "address": "", "via": "", "checkIn": "", "checkOut": ""}, {"id": "b2", "type": "bus", "status": "to book", "phase": "Algarve", "date": "2027-06-10", "kind": "Kayak tour", "from": "", "to": "", "company": "Lagos marina", "departs": "", "arrives": ""}, {"id": "f2", "type": "flight", "status": "booked", "phase": "Algarve", "date": "2027-06-12", "arrivalDate": "2027-06-12", "number": "DM202", "to": "LIS", "departs": "14:10", "arrives": "15:05", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM202", "from": "FAO"}], "places": {"Lisbon": {"lat": 38.7223, "lng": -9.1393, "country": "PT", "alt": 45}, "Sintra": {"lat": 38.8029, "lng": -9.3817, "country": "PT", "alt": 207}, "Évora": {"lat": 38.5714, "lng": -7.9135, "country": "PT", "alt": 301}, "Monsaraz": {"lat": 38.4431, "lng": -7.3807, "country": "PT", "alt": 342}, "Lagos": {"lat": 37.1028, "lng": -8.673, "country": "PT", "alt": 14}, "Faro": {"lat": 37.0194, "lng": -7.9322, "country": "PT", "alt": 8}}}</script>
 <script>
 (function(){
   'use strict';
@@ -367,6 +428,7 @@
     nav:'<path d="M3 11l18-8-8 18-2-8z"/>', ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
     tick:'<path d="M20 6L9 17l-5-5"/>', wifi:'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><path d="M3 3l18 18"/>',
     alert:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5h.01"/>', info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+    expand:'<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>', mount:'<path d="M3 20l6-11 4 6 3-4 5 9z"/>', up:'<path d="M12 19V5M6 11l6-6 6 6"/>', down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
     eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
   };
   function I(n,cls){var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('class',cls||'ic'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('aria-hidden','true'); s.innerHTML=ICONS[n]; return s;}
@@ -631,6 +693,222 @@
       .then(function(){ state.syncing=false; render(); });
   }
 
+  // ---------- maps (Leaflet, pins from the sheet's "Map places") ----------
+  var TILE_URL='https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  var TILE_ATTR='© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+  var liveMaps=[], mapObserver=null;
+  function placeKey(loc){ var p=String(loc||'').split('\n')[0]; if(p.indexOf('→')>=0) p=p.split('→').pop(); return p.split('·')[0].trim(); }
+  function dayPlace(x){ return x.place||placeKey(x.location); }
+  function placeInfo(name){ var P=(state.data&&state.data.places)||{}; var p=P[name]; return p&&isFinite(p.lat)&&isFinite(p.lng)?p:null; }
+  // Every run of days in one place, in trip order: {name, from, to, days:[...], ll}
+  function tripStops(){
+    var out=[], days=(state.data&&state.data.days)||[];
+    days.forEach(function(x){
+      var n=dayPlace(x); if(!n) return;
+      var last=out[out.length-1];
+      if(last && last.name===n) { last.days.push(x); last.to=x.date; return; }
+      var p=placeInfo(n);
+      out.push({name:n, from:x.date, to:x.date, days:[x], ll:p?[p.lat,p.lng]:null, info:p, phase:x.phase});
+    });
+    return out;
+  }
+  function phaseStops(name){
+    var all=tripStops(), mine=[], before=null;
+    all.forEach(function(s,i){ if(s.phase===name){ if(!mine.length&&i>0) before=all[i-1]; mine.push(s); } });
+    return {stops:mine, start:before&&before.ll&&mine.length&&before.name!==mine[0].name?before:null};
+  }
+  // Leg into a stop: dashed when that stop's first day has a flight.
+  function legKind(s){
+    var d0=s.days[0]; if(!d0) return 'drive';
+    var S=segs(); if(S&&S.some(function(g){return g.type==='flight'&&g.date===d0.date;})) return 'flight';
+    return /✈/.test(String(d0.flights||''))||(!S&&String(d0.flights||'').trim()&&!/^\s*✱/.test(d0.flights))?'flight':'drive';
+  }
+  function uniqStops(stops){
+    var out=[], at={};
+    stops.forEach(function(s){
+      if(!s.ll) return;
+      if(at[s.name]!=null){ var u=out[at[s.name]]; u.days=u.days.concat(s.days); u.visits++; return; }
+      at[s.name]=out.length; out.push({name:s.name, from:s.from, to:s.to, days:s.days.slice(), ll:s.ll, info:s.info, visits:1});
+    });
+    return out;
+  }
+  function hasMap(name){ return navigator.onLine && window.L && phaseStops(name).stops.some(function(s){return s.ll;}); }
+  function pinIcon(n,on){ return L.divIcon({className:'mpin'+(on?' on':''),html:'<span>'+n+'</span>',iconSize:on?[34,34]:[28,28],iconAnchor:on?[17,17]:[14,14]}); }
+  function drawMap(el,phaseName,opts){
+    opts=opts||{};
+    var ps=phaseStops(phaseName), pins=uniqStops(ps.stops);
+    if(!pins.length||!window.L) return null;
+    var live=!!opts.interactive;
+    var m=L.map(el,{zoomControl:false,attributionControl:true,dragging:live,touchZoom:live,doubleClickZoom:live,scrollWheelZoom:live,boxZoom:false,keyboard:false,tap:false,zoomSnap:0.25});
+    m.attributionControl.setPrefix(false);
+    L.tileLayer(TILE_URL,{subdomains:'abcd',maxZoom:18,attribution:TILE_ATTR,crossOrigin:true}).addTo(m);
+    var pts=[], prev=ps.start, markers=[];
+    if(ps.start){ L.circleMarker(ps.start.ll,{radius:5,color:'#111',weight:2.5,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(m); pts.push(ps.start.ll); }
+    // route follows every visit (there and back again); one pin per place
+    ps.stops.filter(function(s){return s.ll;}).forEach(function(s){
+      if(prev&&prev.ll&&prev.name!==s.name) L.polyline([prev.ll,s.ll],{color:'#111',weight:live?3.5:3,opacity:.9,dashArray:legKind(s)==='flight'?'7 7':null,interactive:false}).addTo(m);
+      prev=s;
+    });
+    pins.forEach(function(s,i){
+      pts.push(s.ll);
+      var mk=L.marker(s.ll,{icon:pinIcon(i+1,opts.selected===i),interactive:live,keyboard:false}).addTo(m);
+      if(live&&opts.onPin) mk.on('click',function(){ opts.onPin(i); });
+      markers.push(mk);
+    });
+    if(pts.length===1) m.setView(pts[0],live?11:9); else m.fitBounds(pts,live?{paddingTopLeft:[40,130],paddingBottomRight:[40,250],maxZoom:12}:{padding:[26,26],maxZoom:12});
+    m._pins=pins; m._markers=markers;
+    liveMaps.push(m);
+    return m;
+  }
+  function clearMaps(){ liveMaps.forEach(function(m){ try{m.remove();}catch(e){} }); liveMaps=[]; if(mapObserver){ mapObserver.disconnect(); mapObserver=null; } }
+  // Draw small maps only when they scroll into view.
+  function lazyMap(el,phaseName){
+    if(!('IntersectionObserver' in window)){ drawMap(el,phaseName); return; }
+    if(!mapObserver) mapObserver=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ mapObserver.unobserve(e.target); drawMap(e.target,e.target.dataset.phase); } }); },{rootMargin:'200px'});
+    el.dataset.phase=phaseName; mapObserver.observe(el);
+  }
+  // Offline (or no pins yet): the phase photo, or its colour, in place of the map.
+  function mapFallback(p,hgt){
+    var f=h('div','mapphoto'); f.style.height=hgt+'px'; f.style.background=darken(p.colour);
+    if(p.photo){ var im=h('img'); im.src=p.photo; im.alt=''; im.loading='lazy'; im.onerror=function(){ im.remove(); }; f.appendChild(im); }
+    return f;
+  }
+  function phaseMapCard(p,i){
+    var n=uniqStops(phaseStops(p.name).stops).length;
+    var c=h('div','mapcard');
+    if(hasMap(p.name)){
+      var box=h('div','mapbox'); c.appendChild(box); lazyMap(box,p.name);
+      var fsb=iconbtn('expand','Open map','fs',function(e){ e.stopPropagation(); openMapFull(p.name); }); c.appendChild(fsb);
+      c.appendChild(h('span','cnt',plural(n,'place')+' · tap to explore'));
+      c.onclick=function(){ openMapFull(p.name); }; c.setAttribute('role','button'); c.tabIndex=0;
+    } else c.appendChild(mapFallback(p,190));
+    return c;
+  }
+  // ---------- full-screen map ----------
+  var mf={map:null,phase:'',sel:0};
+  function stopCard(s,i){
+    var a=parseDay(s.from), b=parseDay(isoAdd(s.to,1)), nights=s.days.length, again=s.visits>1;
+    var S=segs(), stay=S&&S.filter(function(g){return g.type==='stay'&&g.date<=s.from&&(g.end||'')>s.from&&g.status!=='to book';})[0];
+    var plan=s.days.map(function(x){return x.plan;}).filter(Boolean)[0]||'';
+    var lines=[];
+    if(stay&&stay.name) lines.push(h('div',null,[h('span',null,'Stay '),stay.name]));
+    if(plan) lines.push(h('div',null,[h('span',null,'Plan '),plan]));
+    var openDayB=btn('Open day','secondary',null,function(){ var d0=s.days[0]; closeMapFull(); openDay(d0); });
+    var q=stay&&stay.address?stay.address:s.name+(s.info&&s.info.country?', '+s.info.country:'');
+    var mapsB=linkbtn('Maps','primary','nav',mapsUrl(q));
+    var c=h('div','pincard',[h('div','hd',[h('span','num',String(i+1)),h('span',null,[h('b',null,s.name),h('span','s',(a?wmd(a):'')+(b&&nights>1&&!again?' → '+wmd(b):'')+' · '+plural(nights,'day')+(again?' · '+s.visits+' visits':''))])]),
+      lines.length?h('div','ln',lines):null, h('div','btn-row',[openDayB,mapsB])]);
+    c.onclick=function(){ selectStop(i,true); };
+    return c;
+  }
+  function selectStop(i,pan){
+    if(!mf.map) return;
+    mf.sel=i;
+    mf.map._markers.forEach(function(mk,k){ mk.setIcon(pinIcon(k+1,k===i)); mk.setZIndexOffset(k===i?1000:0); });
+    Array.prototype.forEach.call($('mfCards').children,function(c,k){ c.classList.toggle('on',k===i); });
+    if(pan){ var m=mf.map, pt=m.project(m._pins[i].ll,m.getZoom()).add([0,90]); m.panTo(m.unproject(pt,m.getZoom()),{animate:true}); }  // a bit above centre, clear of the cards
+  }
+  function openMapFull(name){
+    if(!hasMap(name)) return;
+    var p=phaseOf(name)||{name:name}, ov=$('mapFull');
+    $('mfPill').textContent=p.name; $('mfPill').style.background=darken(p.colour);
+    ov.classList.add('open'); lockScroll();
+    if(mf.map){ try{mf.map.remove();}catch(e){} liveMaps=liveMaps.filter(function(m){return m!==mf.map;}); }
+    var box=$('mfMap'); box.textContent='';
+    var inner=h('div'); inner.style.cssText='position: absolute; inset: 0'; box.appendChild(inner);
+    mf.phase=name;
+    mf.map=drawMap(inner,name,{interactive:true,selected:0,onPin:function(i){ selectStop(i,true); var c=$('mfCards').children[i]; if(c) c.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); }});
+    var cards=$('mfCards'); cards.textContent='';
+    (mf.map?mf.map._pins:[]).forEach(function(s,i){ cards.appendChild(stopCard(s,i)); });
+    cards.scrollLeft=0; selectStop(0,false);
+    setTimeout(function(){ if(mf.map) mf.map.invalidateSize(); },60);
+    $('mfBack').focus();
+  }
+  function closeMapFull(){ var ov=$('mapFull'); if(!ov.classList.contains('open')) return; ov.classList.remove('open'); if(mf.map){ try{mf.map.remove();}catch(e){} liveMaps=liveMaps.filter(function(m){return m!==mf.map;}); mf.map=null; } if(!document.querySelector('.sheet.open')) unlockScroll(); }
+  $('mfBack').onclick=closeMapFull;
+  (function(){
+    var t=null, cards=$('mfCards');
+    cards.addEventListener('scroll',function(){ clearTimeout(t); t=setTimeout(function(){
+      var mid=cards.scrollLeft+cards.clientWidth/2, best=0, bd=1e9;
+      Array.prototype.forEach.call(cards.children,function(c,k){ var cm=c.offsetLeft+c.offsetWidth/2, dd=Math.abs(cm-mid); if(dd<bd){bd=dd;best=k;} });
+      if(best!==mf.sel) selectStop(best,true);
+    },120); },{passive:true});
+  })();
+
+  // ---------- after the trip ----------
+  function haversine(a,b){ var R=6371, r=Math.PI/180, dl=(b[0]-a[0])*r, dg=(b[1]-a[1])*r;
+    var x=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dg/2)*Math.sin(dg/2); return 2*R*Math.asin(Math.sqrt(x)); }
+  function fmtLat(v){ return Math.abs(v).toFixed(1)+'°'+(v<0?'S':'N'); }
+  function tripStats(total){
+    var st=tripStops(), withLL=st.filter(function(s){return s.ll;}), km=0, cc={}, names={};
+    st.forEach(function(s){ names[s.name]=1; });
+    for(var i=1;i<withLL.length;i++) km+=haversine(withLL[i-1].ll,withLL[i].ll);
+    withLL.forEach(function(s){ if(s.info.country) cc[s.info.country]=1; });
+    var hi=null, no=null, so=null;
+    withLL.forEach(function(s){
+      if(s.info.alt!=null&&isFinite(s.info.alt)&&(!hi||s.info.alt>hi.info.alt)) hi=s;
+      if(!no||s.ll[0]>no.ll[0]) no=s; if(!so||s.ll[0]<so.ll[0]) so=s;
+    });
+    return {days:total, places:Object.keys(names).length, km:withLL.length>1?Math.round(km/10)*10:null, countries:Object.keys(cc).length, hi:hi, north:no, south:so};
+  }
+  function recapView(total,phases){
+    var out=[], s=tripStats(total);
+    var cells=[[String(s.days),'days']];
+    if(s.km) cells.push([s.km.toLocaleString('en-US'),'km travelled']);
+    if(s.countries) cells.push([String(s.countries),s.countries===1?'country':'countries']);
+    cells.push([String(s.places),s.places===1?'place stayed':'places stayed']);
+    var grid=h('div','stats',cells.map(function(c){return h('div',null,[h('b',null,c[0]),h('span',null,c[1])]);}));
+    var ext=[];
+    function er(icon,label,val){ return h('div','er',[h('span','ei',I(icon)),h('span',null,[h('span','t-label',label),h('b',null,val)])]); }
+    if(s.hi) ext.push(er('mount','Highest altitude',s.hi.name+' · '+Math.round(s.hi.info.alt).toLocaleString('en-US')+' m'));
+    if(s.north&&s.south&&s.north!==s.south){ ext.push(er('up','Northernmost',s.north.name+' · '+fmtLat(s.north.ll[0]))); ext.push(er('down','Southernmost',s.south.name+' · '+fmtLat(s.south.ll[0]))); }
+    out.push(sh('Trip by the numbers','first'));
+    out.push(card([grid,ext.length?h('div','ext',ext):null],true));
+    out.push(sh('Places you explored'));
+    phases.forEach(function(p){
+      var ps=phaseStops(p.name); if(!ps.stops.length) return;
+      var names=(ps.start?[ps.start.name]:[]).concat(ps.stops.map(function(x){return x.name;}));
+      var a=parseDay(p.start), b=parseDay(p.end);
+      var top;
+      if(hasMap(p.name)){ top=h('div','mapbox small'); lazyMap(top,p.name); } else top=mapFallback(p,130);
+      var c=h('div','mcard',[top,h('div','bd',[h('div','nm',p.name),h('div','dt',(a&&b?md(a)+' – '+md(b):'')+(p.days?' · '+plural(p.days,'day'):'')),h('div','rt',names.join(' → '))])]);
+      if(hasMap(p.name)){ c.onclick=function(){ openMapFull(p.name); }; c.setAttribute('role','button'); c.tabIndex=0; }
+      out.push(c);
+    });
+    return out;
+  }
+  // Header photo carousel once the trip is over.
+  var car={timer:null,i:0,n:0};
+  function stopCarousel(){ clearInterval(car.timer); car.timer=null; var w=$('heroSlides'); w.textContent=''; w.hidden=true; $('heroCap').textContent=''; $('heroDots').textContent=''; }
+  function showSlide(i){
+    if(!car.n) return; car.i=(i+car.n)%car.n;
+    Array.prototype.forEach.call($('heroSlides').children,function(s,k){ s.classList.toggle('on',k===car.i); });
+    Array.prototype.forEach.call($('heroDots').children,function(s,k){ s.classList.toggle('on',k===car.i); });
+    Array.prototype.forEach.call($('heroCap').children,function(s,k){ s.classList.toggle('on',k===car.i); });
+  }
+  function startCarousel(phases){
+    var w=$('heroSlides'), dots=$('heroDots'), cap=$('heroCap');
+    var key=phases.map(function(p){return p.name+'|'+(p.photo||'')+'|'+p.colour;}).join(',');
+    if(w.dataset.key===key && car.timer) return;
+    stopCarousel(); w.dataset.key=key; w.hidden=false; car.n=phases.length;
+    phases.forEach(function(p){
+      var s=h('div','slide'); s.style.background=darken(p.colour);
+      if(p.photo){ var im=h('img','bg'); im.src=p.photo; im.alt=''; im.onerror=function(){im.remove();}; var bl=h('img','bg blur'); bl.src=p.photo; bl.alt=''; bl.setAttribute('aria-hidden','true'); bl.onerror=function(){bl.remove();}; s.appendChild(im); s.appendChild(bl); }
+      w.appendChild(s);
+      var a=parseDay(p.start), b=parseDay(p.end);
+      cap.appendChild(h('span','cap',p.name+(a&&b?' · '+md(a)+' – '+md(b):'')));
+      dots.appendChild(h('i'));
+    });
+    showSlide(0);
+    if(car.n>1 && !(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)) car.timer=setInterval(function(){ showSlide(car.i+1); },4500);
+  }
+  (function(){
+    var sx=0,sy=0,on=false,hero=$('hero');
+    hero.addEventListener('touchstart',function(e){ if(!car.n||e.touches.length!==1){on=false;return;} on=true; sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
+    hero.addEventListener('touchend',function(e){ if(!on) return; on=false; var t=e.changedTouches[0], dx=t.clientX-sx, dy=t.clientY-sy;
+      if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){ showSlide(car.i+(dx<0?1:-1)); if(car.timer){ clearInterval(car.timer); car.timer=setInterval(function(){ showSlide(car.i+1); },4500); } } },{passive:true});
+  })();
+
   // ---------- render ----------
   function render(){
     var data=state.data||DEMO, trip=data.trip||{}, days=data.days||[], phases=data.phases||[];
@@ -640,6 +918,7 @@
     var idx=before?0:after?days.length-1:dayNo-1, d=days[idx], todayDate=!before&&!after&&d?d.date:'';
     var tripLine=[trip.name||'Trip', start&&end?md(start)+' → '+md(end):''].filter(Boolean).join(' · ');
     var tbItems=toBookItems(data);
+    clearMaps();
     document.title=(trip.name||'Trip')+' · Overview';
     Array.prototype.forEach.call(document.querySelectorAll('.js-sync'),function(b){ b.classList.toggle('spin',state.syncing); });
 
@@ -656,12 +935,15 @@
       $('heroCredit').textContent=photo&&ph.photoCredit?'Photo: '+ph.photoCredit:'';
       $('heroTrip').textContent=tripLine;
       var tc=$('todayCard'); tc.textContent='';
+      if(!after) stopCarousel();
       if(before && start){
         var left=Math.max(0,daysBetween(t,start));
         $('heroKick').textContent='Trip starts '+WDL[start.getDay()]+', '+md(start);
         $('heroBig').textContent=plural(left,'day')+' to go';
         $('heroSub').textContent=days[0]&&days[0].location?'First stop: '+days[0].location:'';
       } else if(after){
+        startCarousel(phases);
+        $('heroCredit').textContent='';
         $('heroKick').textContent='Trip complete · '+(start&&end?md(start)+' → '+md(end):'');
         $('heroBig').textContent=trip.name||'Trip complete';
         $('heroSub').textContent=plural(total,'day');
@@ -677,6 +959,7 @@
         var todayCard=h('div','todaycard',kids); tc.appendChild(todayCard);
       }
     } else {
+      stopCarousel();
       if(state.tab==='trip'){
         $('ptTitle').textContent='Trip';
         $('ptSub').textContent=[before?'Starts in '+plural(daysBetween(t,start),'day'):after?plural(total,'day'):'Day '+dayNo+' of '+total, plural(phases.length,'phase')].join(' · ');
@@ -711,10 +994,10 @@
         if(tbItems.length){ var sa=btn('See all '+tbItems.length+' to book','primary',null,function(){setTab('book');}); sa.classList.add('btn-block'); sa.style.marginTop='12px'; vt.appendChild(sa); }
       }
     }
-    var from=before?0:after?Math.max(0,days.length-7):dayNo, list=days.slice(from,from+7);
+    if(after){ recapView(total,phases).forEach(function(n){ vt.appendChild(n); }); }
+    var from=before?0:dayNo, list=after?[]:days.slice(from,from+7);
     if(list.length){
-      var more=h('span');
-      vt.appendChild(sh(before?'First week':after?'Last week':'Next 7 days',vt.childNodes.length?null:'first'));
+      vt.appendChild(sh(before?'First week':'Next 7 days',vt.childNodes.length?null:'first'));
       vt.appendChild(card(list.map(function(x){return dayRow(x,false);})));
     }
 
@@ -744,7 +1027,7 @@
         return row(dtile(isT?'Today':(dd?WD[dd.getDay()]:''),dd?dd.getDate():x.day,isT),x.plan||x.location||'—',x.plan?x.location:'',
           [tb?el('span','star','✱'):null,CHEV()],null,'date'+(isT?' hi':''),function(){openDay(x);});
       });
-      sec.appendChild(top); sec.appendChild(dl); if(rows.length) sec.appendChild(card(rows));
+      sec.appendChild(top); sec.appendChild(dl); if(rows.length) sec.appendChild(phaseMapCard(p,i)); if(rows.length) sec.appendChild(card(rows));
       vp.appendChild(sec);
     });
 
@@ -821,7 +1104,7 @@
   function hideAll(){closeDriver(); scrim.classList.remove('open'); var ds=$('daySheet'); ds.classList.remove('open'); ds.style.height=''; $('setSheet').classList.remove('open'); dayIdx=-1; unlockScroll();}
   scrim.onclick=hideAll;
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'){ if($('driver').classList.contains('open')) closeDriver(); else hideAll(); return; }
+    if(e.key==='Escape'){ if($('mapFull').classList.contains('open')) closeMapFull(); else if($('driver').classList.contains('open')) closeDriver(); else hideAll(); return; }
     if(dayIdx>=0 && !$('driver').classList.contains('open') && !/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){
       if(e.key==='ArrowLeft') stepDay(-1); else if(e.key==='ArrowRight') stepDay(1);
     }
