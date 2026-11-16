@@ -454,8 +454,8 @@
         } else if(s.type==='car'){
           if(!booked(s)){ if(s.date===date) out.tobook.push({icon:'car',title:'Car'+(s.company?' · '+s.company:'')+(s.pickupPlace?' · '+s.pickupPlace:'')}); return; }
           var co=[s.company,s.car].filter(Boolean).join(' · ');
-          if(s.date===date){ out.hasCar=true; out.rows.push({icon:'car',title:'Pick up car',sub:[s.company,s.pickupPlace].filter(Boolean).join(' · '),time:s.pickupTime||''}); }
-          else if(s.end===date){ out.hasCar=true; out.rows.push({icon:'car',title:'Return car',sub:[s.company,s.returnPlace].filter(Boolean).join(' · '),time:s.returnTime||''}); }
+          if(s.date===date){ out.hasCar=true; out.rows.push({icon:'car',title:'Pick up car',sub:carPlace(s.company,s.pickupPlace),time:s.pickupTime||''}); }
+          else if(s.end===date){ out.hasCar=true; out.rows.push({icon:'car',title:'Return car',sub:carPlace(s.company,s.returnPlace),time:s.returnTime||''}); }
           else if(s.date<date && s.end>date){ out.hasCar=true; out.rows.push({icon:'car',title:'Car rental',sub:co||'With you today',time:'',last:true}); }
         } else if(s.date===date){
           if(!booked(s)){ out.tobook.push({icon:s.type==='flight'?'plane':'bus',title:s.type==='flight'?('Flight'+(s.number?' '+s.number:'')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')):((s.kind||'Transfer')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')+(s.company?' · '+s.company:''))}); return; }
@@ -483,6 +483,11 @@
     out.moves.sort(function(a,b){return (a.departs||'99')<(b.departs||'99')?-1:1;});
     return out;
   }
+  // Rental desk: the place links to Maps (searched with the company name so it finds the right desk).
+  function carPlace(company,place){
+    if(!place) return company||'';
+    return h('span',null,[company?company+' · ':'',mapLink(place,(company?company+' ':'')+place)]);
+  }
   // older feeds: name and address of tonight's stay from the day text
   function stayInfo(d){
     var stay=String(d.stay||'').trim(), map=addrMap(), name=String(d.stayName||'').trim(), address=String(d.stayAddress||'').trim();
@@ -492,7 +497,7 @@
     return {name:name||stay.split('\n')[0], address:address, place:String(d.stayPlace||'').trim()||String(d.location||'').split('→').pop().trim()};
   }
   function timeRow(r){
-    var sub=r.sub?(r.link?h('span',null,nameNode(r.sub)):(r.text?rich(h('span'),r.sub):r.sub)):'';
+    var sub=r.sub?(r.sub.nodeType?r.sub:r.link?h('span',null,nameNode(r.sub)):(r.text?rich(h('span'),r.sub):r.sub)):'';
     var title=r.text?rich(h('span'),r.title):r.title;
     return row(tile(r.icon,r.icon==='plane'||r.icon==='bus'?'move':'stay'),title,sub,r.time?h('span','t-time',r.time):null);
   }
