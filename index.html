@@ -3,305 +3,297 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F0EDE9">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Trip">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
+<link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <title>Trip Overview</title>
 <style>
-  :root{
-    --bg:#F0EDE9; --ink:#3A3836; --calc:#8B857C; --head:#8F8982; --line:#DDD8D0; --rule:#8F8982;
-    --band:#796C5F; --band2:#E3DDD5; --card:#E9E4DD; --tobook:#D97757; --sand:#F7E4DC; --sandink:#D97757;
-    --today:#E2DBD2; --label:#6B655D; --tobookInk:#9C4527;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);
-    font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
-    -webkit-text-size-adjust:100%}
-  .wrap{max-width:760px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom))}
-  button{font:inherit;color:inherit}
-  .muted{color:var(--calc)}
-  .caps{text-transform:uppercase;letter-spacing:.08em;font-weight:700;font-size:10.5px}
+  /* Inter (SIL Open Font License, see fonts/Inter-OFL.txt), stored with the app so it works offline */
+  @font-face{font-family:Inter;font-style:normal;font-weight:100 900;font-display:swap;src:url(fonts/inter-latin.woff2) format('woff2');
+    unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 
-  /* header */
-  .top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
-  .top h1{margin:0;font-size:21px;line-height:1.2}
-  .top .sub{color:var(--calc);font-size:12px;margin-top:3px}
-  .top .grow{flex:1;min-width:0}
-  .iconbtn{border:0;background:transparent;width:36px;height:36px;border-radius:18px;display:grid;place-items:center;cursor:pointer;color:var(--head)}
-  .iconbtn:active{background:var(--card)}
-  .iconbtn svg{width:20px;height:20px}
-  .spin svg{animation:spin 1s linear infinite}
+  /* ---------- tokens (Daybook UI kit) ---------- */
+  :root{--ink:#111111;--text2:#4A4A4A;--text3:#6B6B6B;--line:#E6E6E6;--fill:#F3F3F3;--rowhi:#F6F6F6;
+    --tb:#9C4527;--tbTint:#F7E4DC;--ok:#2E6B47;--okTint:#E9F2EC;--stayTint:#F4EEE5;--stayInk:#7A5528;--moveTint:#EEF1F6;--moveInk:#3F5675;
+    --font:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:#fff;color:var(--ink);font:500 15px/1.4 var(--font);-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit}
+  a{color:inherit}
+  [hidden]{display:none!important}
+  .app{max-width:560px;margin:0 auto;position:relative;min-height:100vh}
+
+  /* type */
+  .t-display{font-weight:800;font-size:48px;line-height:1;letter-spacing:-.035em}
+  .t-title{font-weight:800;font-size:34px;line-height:1.05;letter-spacing:-.03em;margin:0}
+  .t-h2{font-weight:800;font-size:23px;line-height:1.2;letter-spacing:-.02em;margin:0}
+  .t-h3{font-weight:800;font-size:19px;line-height:1.2;letter-spacing:-.01em}
+  .t-small{font-size:14px;line-height:1.4;color:var(--text2)}
+  .t-label{font-weight:800;font-size:12px;line-height:1.2;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+  .t-time{font-weight:800;font-size:17px;line-height:1;letter-spacing:-.01em;white-space:nowrap}
+  .plantext{font-weight:600;font-size:18px;line-height:1.45;margin:0;white-space:pre-line;overflow-wrap:anywhere}
+
+  /* icons */
+  .ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 18px;border-radius:14px;border:0;font-weight:700;font-size:16px;text-decoration:none;cursor:pointer;white-space:nowrap}
+  .btn-primary{background:var(--ink);color:#fff}
+  .btn-secondary{background:var(--fill);color:var(--ink)}
+  .btn-block{width:100%}
+  .btn-row{display:flex;gap:8px}.btn-row .btn{flex:1;padding:0 10px}
+  .btn:active{transform:scale(.98)}
+  .iconbtn{width:44px;height:44px;border-radius:22px;border:0;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none;background:var(--fill);color:var(--ink);cursor:pointer}
+  .iconbtn.dark{background:var(--ink);color:#fff}
+  .iconbtn.glass{background:rgba(255,255,255,.22);color:#fff}
+  .iconbtn:disabled{opacity:.35;cursor:default}
+  .iconbtn.spin .ic{animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* timeline */
-  .timeline{display:flex;height:30px;border-radius:6px;overflow:hidden;position:relative;margin:4px 0 4px}
-  .timeline button{border:0;padding:0 4px;color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;min-width:0}
-  .marker{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--ink);border-radius:2px;pointer-events:none;box-shadow:0 0 0 2px var(--bg)}
-  .tl-dates{display:flex;justify-content:space-between;font-size:11px;color:var(--calc);margin-bottom:16px}
+  /* pills + chips */
+  .pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:15px;font-weight:700;font-size:14px;white-space:nowrap;background:var(--fill);color:var(--ink);max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .pill.phase{color:#fff}
+  .pill.tb{background:var(--tbTint);color:var(--tb)}
+  .pill .ic{width:16px;height:16px;stroke-width:2.4}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:22px;border:0;background:var(--fill);font-weight:700;font-size:15px;cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff}
 
-  /* today */
-  .today{display:flex;background:#FBFAF8;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--line);margin-bottom:20px;cursor:pointer}
-  .today .strip{width:8px;flex:none}
-  .today .in{padding:14px 16px 10px;flex:1;min-width:0}
-  .today .meta{color:var(--calc)}
-  .today .where{font-size:23px;font-weight:700;line-height:1.2;margin:5px 0 4px}
-  .today .what{font-size:15px;margin-bottom:10px}
-  .today .r{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
-  .today .r svg{width:17px;height:17px;flex:none;margin-top:1px;color:var(--head);fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .today .r div{white-space:pre-line;min-width:0}
+  /* tiles */
+  .tile{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+  .tile .ic{width:22px;height:22px;stroke-width:1.9}
+  .tile.stay{background:var(--stayTint);color:var(--stayInk)}
+  .tile.move{background:var(--moveTint);color:var(--moveInk)}
+  .tile.tb{background:var(--tbTint);color:var(--tb)}
+  .tile.tbw{background:#fff;color:var(--tb)}
+  .dtile{width:52px;height:52px;border-radius:14px;background:var(--fill);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;flex:none}
+  .dtile small{font-weight:700;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+  .dtile strong{font-weight:800;font-size:21px;line-height:1;margin-top:3px}
+  .dtile.today{background:var(--ink)}.dtile.today small,.dtile.today strong{color:#fff}
 
-  /* section headings */
-  h2.sec{margin:22px 0 6px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--head);
-    border-bottom:2px solid var(--rule);padding-bottom:5px}
+  /* cards + rows */
+  .card{border:1.5px solid var(--line);border-radius:18px;background:#fff}
+  .card.pad{padding:16px}
+  .stack > * + *{margin-top:12px}
+  .row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;position:relative;min-height:64px;width:100%;border:0;background:none;text-align:left;cursor:default}
+  button.row{cursor:pointer}
+  .row.top{align-items:start}
+  .row + .row::before{content:'';position:absolute;left:72px;right:0;top:0;border-top:1px solid var(--line)}
+  .row.date + .row.date::before{left:80px}
+  .row.hi{background:var(--rowhi)}
+  .row:first-child.hi{border-radius:16px 16px 0 0}.row:last-child.hi{border-radius:0 0 16px 16px}.row:only-child.hi{border-radius:16px}
+  .row b{display:block;font-weight:700;font-size:17px;line-height:1.3;overflow-wrap:anywhere}
+  .row .s{display:block;font-size:14px;line-height:1.4;color:var(--text2);margin-top:1px;overflow-wrap:anywhere}
+  .row .x{display:block;font-size:13px;line-height:1.45;color:var(--text3);margin-top:4px;overflow-wrap:anywhere}
+  .row .end{display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .row .end .ic{width:16px;height:16px;color:#8A8A8A;stroke-width:2.2}
+  .rel{font-weight:700;font-size:13px;color:var(--text3)}.rel.soon{color:var(--tb)}
+  .star{font-weight:800;font-size:16px;color:var(--tb)}
+  .tobook{color:var(--tb);font-weight:700}
+  .lk{color:inherit;text-decoration:underline;text-decoration-color:#BDBDBD;text-decoration-thickness:1.5px;text-underline-offset:3px}
+  .lk .lkic{display:inline-block;width:.78em;height:.78em;margin-left:4px;vertical-align:-.04em;fill:none;stroke:var(--text3);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .cardlabel{display:block;margin-bottom:6px}
+  .stay .name{margin-top:2px}
+  .stay .addr{margin-top:3px}
+  .stay .via{font-size:13px;color:var(--text3);margin-top:4px}.stay .via b{font-weight:700;color:var(--text2)}
+  .stay .btn-row{margin-top:24px}
+  .tcard{border:1.5px solid var(--line);border-radius:18px;padding:16px;background:#fff}
+  .tcard .head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center}
+  .route{display:grid;grid-template-columns:auto minmax(24px,1fr) auto;gap:12px;align-items:center;margin-top:14px}
+  .route .code{display:block;font-weight:800;font-size:30px;line-height:1;letter-spacing:-.02em}
+  .route .code.long{font-size:20px;line-height:1.15;max-width:130px;overflow-wrap:anywhere}
+  .route .tm{display:block;font-weight:800;font-size:17px;line-height:1;margin-top:6px}
+  .route .line{display:flex;align-items:center;gap:6px;color:#8A8A8A}
+  .route .line i{flex:1;border-top:2px dashed #CFCFCF}
+  .tcard .btn{margin-top:14px}
+  .tbcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;background:var(--tbTint);border-radius:18px;padding:14px 16px}
+  .tbcard .t-label{color:var(--tb)}
+  .tbcard .s{display:block;font-size:13px;color:#6B3A26;margin-top:2px}
+  .prog .top{display:flex;align-items:baseline;gap:6px}
+  .prog .n{font-weight:800;font-size:30px;line-height:1;letter-spacing:-.02em}
+  .prog .left{margin-left:auto;font-weight:800;font-size:15px;color:var(--tb)}
+  .segbar{display:flex;gap:4px;margin-top:14px}.segbar i{flex:1;height:8px;border-radius:4px;background:#EDEDED}.segbar i.on{background:var(--ink)}
+  .bar8{height:8px;border-radius:4px;background:#EDEDED;margin-top:14px;overflow:hidden}.bar8 div{height:100%;background:var(--ink)}
+  .empty{text-align:center;padding:32px 20px}
+  .empty .okc{width:64px;height:64px;border-radius:32px;background:var(--okTint);color:var(--ok);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+  .empty .okc .ic{width:30px;height:30px;stroke-width:2.4}
 
-  /* next 7 days */
-  .row{display:grid;grid-template-columns:78px 1fr;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);cursor:pointer}
-  .row:active{background:var(--card)}
-  .row .d{color:var(--calc);font-size:12px;font-weight:700;padding-top:1px}
-  .row .t{min-width:0}
-  .row .where{font-size:11.5px;font-weight:700;color:var(--calc);margin-bottom:1px}
-  .row .x{color:var(--calc);font-size:12px;white-space:pre-line;margin-top:2px}
+  /* notices */
+  .notice{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45;margin-bottom:12px}
+  .notice b{font-weight:700}
+  .notice.info{background:var(--fill)}
+  .notice.warn{background:var(--tbTint);color:#6B3A26}.notice.warn .ic{color:var(--tb)}
+  .notice button{border:0;background:none;padding:0;font-weight:700;text-decoration:underline;cursor:pointer}
 
-  /* phases */
-  .phase{margin-top:18px;scroll-margin-top:12px}
-  .ph-head{color:#fff;text-align:center;padding:8px 12px 7px;border-radius:4px}
-  .ph-name{font-weight:700;font-size:13px;letter-spacing:.06em}
-  .ph-dates{font-size:11.5px;opacity:.88;margin-top:1px}
-  .pill{display:block;text-align:center;font-size:12px;font-weight:600;padding:5px 8px;margin:6px 0 4px;border-radius:3px;color:var(--calc)}
-  .pill.open{background:var(--sand);color:var(--sandink);font-weight:700}
-  .ph-body .label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--head);border-bottom:2px solid var(--rule);padding:8px 0 4px;margin-bottom:2px}
-  .prow{display:grid;grid-template-columns:24px 56px 1fr 14px;gap:6px;padding:6px 2px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
-  .prow:active{background:var(--card)}
-  .prow .n{color:var(--calc);text-align:right;font-size:11px;padding-top:2px}
-  .prow .dt{color:var(--calc);font-weight:700;font-size:11.5px;padding-top:1px}
-  .prow .bk{color:var(--tobook);font-weight:700;text-align:right;font-size:13px}
-  .prow.is-today{background:var(--today);font-weight:700}
-  .tobook{color:var(--tobook);font-weight:700}
-  a.stay-link{color:inherit;text-decoration:underline;text-decoration-color:var(--rule);text-decoration-thickness:1px;text-underline-offset:3px}
-  a.stay-link::after{content:'\2197';font-size:.75em;margin-left:2px;color:var(--calc);text-decoration:none;display:inline-block}
-  .addr{color:var(--calc);font-size:.88em;word-break:break-word}
+  /* section heading */
+  .sh{display:flex;align-items:center;gap:8px;margin:32px 0 12px}
+  .sh.first{margin-top:4px}
+  .sh.tb .t-h2{color:var(--tb)}
 
-  /* footer + messages */
-  .status{margin-top:26px;text-align:center;color:var(--calc);font-size:11.5px}
-  .status .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:1px;background:#7FA37F}
-  .status.offline .dot{background:var(--tobook)}
-  .status.demo .dot{background:var(--head)}
-  .notice{background:var(--sand);color:var(--sandink);border-radius:6px;padding:10px 12px;font-size:12.5px;margin-bottom:14px}
-  .notice button{border:0;background:transparent;text-decoration:underline;color:inherit;padding:0;cursor:pointer;font-weight:600}
+  /* phase bar */
+  .phasebar{display:flex;gap:3px;height:36px;position:relative}
+  .phasebar button{display:block;flex-basis:0;line-height:36px;text-align:center;color:#fff;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px;border:0;min-width:6px;cursor:pointer}
+  .phasebar button:first-of-type{border-radius:12px 0 0 12px}.phasebar button:last-of-type{border-radius:0 12px 12px 0}
+  .phasebar button:only-of-type{border-radius:12px}
+  .phasebar .mk{position:absolute;top:-5px;bottom:-5px;width:4px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 3px #fff;pointer-events:none}
+  .phasedates{display:flex;justify-content:space-between;margin-top:8px;font-weight:600}
+
+  /* headers */
+  .hero{position:relative;color:#fff;padding:calc(20px + env(safe-area-inset-top)) 20px 44px;overflow:hidden;background:#4E6684}
+  .hero .bg{position:absolute;inset:-12px;width:calc(100% + 24px);height:calc(100% + 24px);object-fit:cover;object-position:50% 35%;transform:scale(1.04)}
+  .hero .bg.blur{filter:blur(8px);-webkit-mask-image:linear-gradient(180deg,#000 0,#000 160px,rgba(0,0,0,.4) 260px,transparent 360px);mask-image:linear-gradient(180deg,#000 0,#000 160px,rgba(0,0,0,.4) 260px,transparent 360px)}
+  .hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,20,.5) 0,rgba(10,14,20,.38) 70px,rgba(10,14,20,.1) 150px,rgba(10,14,20,0) 220px)}
+  .hero.nophoto .shade{background:linear-gradient(180deg,rgba(0,0,0,.12) 0,rgba(0,0,0,0) 180px)}
+  .hero .in{position:relative}
+  .hero .tripline{font-weight:700;font-size:13px;opacity:.95;padding-top:12px}
+  .hero .kick{font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-top:24px}
+  .hero .t-display{margin-top:6px;overflow-wrap:anywhere}
+  .hero .sub{font-size:16px;margin-top:8px}
+  .hero .credit{position:absolute;right:12px;bottom:30px;font-size:10px;opacity:.8}
+  .hero .tripline,.hero .kick,.hero .t-display,.hero .sub{text-shadow:0 1px 12px rgba(0,0,0,.3)}
+  .bar{display:flex;align-items:flex-start;gap:8px}.bar .grow{flex:1;min-width:0}
+  .todaycard{position:relative;margin-top:18px;background:#fff;color:var(--ink);border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:16px;text-shadow:none}
+  .todaycard > * + *{margin-top:12px}
+  .plaintop{padding:calc(22px + env(safe-area-inset-top)) 20px 6px}
+  .plaintop .t-small{margin-top:6px}
+  .panel{position:relative;background:#fff;padding:20px 20px calc(130px + env(safe-area-inset-bottom))}
+  .panel.over{margin-top:-24px;border-radius:24px 24px 0 0}
+  .status{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px;font-weight:600;font-size:13px;color:var(--text3);text-align:center;flex-wrap:wrap}
+  .status i{width:8px;height:8px;border-radius:4px;background:#2E7D4F;flex:none}
+  .status.off i{background:var(--tb)}.status.demo i{background:#8A8A8A}
+  .status .sub{flex-basis:100%;font-weight:500;font-size:12px}
+
+  /* tab bar */
+  .nav{position:fixed;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 40px));bottom:calc(16px + env(safe-area-inset-bottom));height:74px;border-radius:37px;background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.14);display:flex;align-items:center;padding:0 8px;z-index:5}
+  .nav button{flex:1;height:58px;border:0;border-radius:29px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:600;font-size:12px;color:var(--text3);position:relative;cursor:pointer}
+  .nav button[aria-current="page"]{background:#F1F1F1;color:var(--ink);font-weight:800}
+  .nav .ic{width:24px;height:24px}
+  .badge{position:absolute;top:6px;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--tb);color:#fff;font-weight:800;font-size:11px;line-height:18px;text-align:center}
 
   /* sheets */
-  .scrim{position:fixed;inset:0;background:rgba(58,56,54,.35);display:none;z-index:10}
-  .sheet{position:fixed;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--bg);z-index:11;
-    border-radius:14px 14px 0 0;padding:8px 18px calc(22px + env(safe-area-inset-bottom));
-    transform:translateY(105%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s;overscroll-behavior:contain;max-width:760px;margin:0 auto;box-shadow:0 -6px 24px rgba(0,0,0,.12)}
-  .sheet.open{transform:none;visibility:visible;transition:transform .22s ease,height .26s cubic-bezier(.2,.8,.2,1)}
-  .scrim.open{display:block}
-  .grab{width:36px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 12px}
-  .sheet h3{margin:0 0 2px;font-size:18px}
-  .sheet .chip{display:inline-block;color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:3px;margin-bottom:8px}
-  .sheet dl{display:grid;grid-template-columns:96px 1fr;gap:10px 12px;margin:14px 0 0}
-  .sheet dt{color:var(--calc);font-size:12px;padding-top:1px}
-  .sheet dd{margin:0;white-space:pre-line}
-  .sheet label{display:block;font-size:12px;color:var(--calc);margin:14px 0 6px}
-  .sheet textarea,.sheet input{width:100%;font:inherit;font-size:13px;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:#FBFAF8;color:var(--ink)}
-  .sheet textarea{height:84px;resize:vertical}
-  #urlIn{font-size:17px;letter-spacing:.12em}
-  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .btn{border:1px solid var(--line);background:#FBFAF8;border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:600;font-size:13px}
-  .btn.primary{background:var(--band);color:#fff;border-color:var(--band)}
-  /* day sheet: header with prev / next / close, to-book first, stacked sections */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:50%;bottom:0;width:min(560px,100%);max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;z-index:11;background:#fff;border-radius:24px 24px 0 0;
+    padding:10px 20px calc(28px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.18);transform:translate(-50%,105%);visibility:hidden;transition:transform .22s ease,visibility 0s linear .22s}
+  .sheet.open{transform:translate(-50%,0);visibility:visible;transition:transform .22s ease,height .26s cubic-bezier(.2,.8,.2,1)}
+  .grab{width:40px;height:5px;border-radius:3px;background:#D9D9D9;margin:2px auto 14px}
   #dayBody{transition:transform .2s ease,opacity .2s ease}
-  .dhead{display:flex;align-items:center;gap:6px;margin-bottom:14px}
-  .rbtn{width:44px;height:44px;border-radius:22px;border:1px solid var(--line);background:#FBFAF8;display:grid;place-items:center;cursor:pointer;flex:none;padding:0;color:var(--ink)}
-  .rbtn:disabled{opacity:.3;cursor:default}
-  .rbtn.dark{background:var(--ink);border-color:var(--ink);color:#fff;margin-left:4px}
-  .rbtn svg,.abtn svg,.drv-btn svg,.drv-close svg{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-  .rbtn svg{width:18px;height:18px}
-  .dtitle{flex:1;min-width:0;text-align:center;line-height:1.25}
-  .dtitle b{display:block;font-size:15px}
-  .dtitle span{font-size:12px;color:var(--label)}
-  .dwhere{font-size:22px;font-weight:700;line-height:1.2;margin:2px 0 12px}
-  .tbbox{background:var(--sand);border-radius:10px;padding:11px 13px;margin-bottom:4px}
-  .tbbox .caps{color:var(--tobookInk)}
-  .tbbox .ln{margin-top:5px;font-weight:700}
-  .tbbox .ln span{font-weight:600;color:var(--tobookInk);margin-right:6px}
-  .dsec{padding:12px 0;border-top:1px solid var(--line)}
-  .dsec.first{border-top:0}
-  .dsec .caps{display:block;color:var(--label);margin-bottom:4px}
-  .dsec .v{white-space:pre-line;word-break:break-word}
-  .dsec .addr{display:block;margin-top:2px;color:var(--label)}
-  .dacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  .abtn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none;color:var(--ink)}
-  .abtn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
-  .abtn svg{width:16px;height:16px;stroke-width:2}
-  .dfoot{font-size:12px;color:var(--label);text-align:center;margin-top:14px}
+  .sheethead{display:flex;align-items:center;gap:8px}
+  .sheethead .mid{flex:1;min-width:0;text-align:center;line-height:1.2}
+  .sheethead .mid b{display:block;font-weight:800;font-size:17px}
+  .sheethead .mid span{font-weight:600;font-size:13px;color:var(--text3)}
+  .sheet .pill.phase{margin-top:18px}
+  .place{font-weight:800;font-size:32px;line-height:1.05;letter-spacing:-.03em;margin-top:8px;overflow-wrap:anywhere}
+  .sheet .daystack{margin-top:16px}
+  .foot{font-weight:600;font-size:13px;color:var(--text3);text-align:center;margin-top:16px}
+  .field label{display:block;font-weight:700;font-size:14px;margin:18px 0 8px}
+  .input{width:100%;min-height:56px;border-radius:12px;border:1.5px solid #BDBDBD;background:#fff;padding:0 16px;font:700 20px var(--font);letter-spacing:.14em;color:var(--ink);box-shadow:inset 0 1px 2px rgba(0,0,0,.06)}
+  .input:focus{outline:none;border:2px solid var(--ink)}
+  .input.plain{font:600 16px var(--font);letter-spacing:0}
+  .help{font-size:13px;line-height:1.45;color:var(--text2);margin-top:8px}
+  .err{color:var(--tb);font-weight:700;font-size:14px;margin-top:10px}
+  .err:empty{display:none}
 
-  /* show-to-driver: full screen, black on white, as large as fits */
+  /* show to driver */
   .driver{position:fixed;inset:0;z-index:30;background:#fff;color:#111;display:none;flex-direction:column;overflow:auto;
     padding:calc(16px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom))}
   .driver.open{display:flex}
-  .drv-top{display:flex;align-items:center;gap:10px}
-  .drv-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#3A3836;background:#EFEDEA;padding:6px 10px;border-radius:14px}
-  .drv-close{margin-left:auto;width:48px;height:48px;border-radius:24px;border:0;background:#111;color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
-  .drv-close svg{width:18px;height:18px;stroke-width:2.6}
-  .drv-main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(12px,3vh,24px);width:100%;max-width:960px;margin:0 auto;padding:20px 0}
-  .drv-phrase{align-self:flex-start;border:0;background:none;padding:4px 0;text-align:left;cursor:pointer;font-weight:600;color:#3A3836;font-size:clamp(17px,4.6vw,28px)}
-  .drv-name{font-size:clamp(34px,11vw,76px);font-weight:800;line-height:1.05;letter-spacing:-.02em;overflow-wrap:anywhere}
-  .drv-addr{font-size:clamp(26px,8vw,56px);font-weight:600;line-height:1.2;overflow-wrap:anywhere}
-  .drv-place{font-size:clamp(22px,6.5vw,42px);line-height:1.2}
-  .drv-rule{height:2px;background:#111}
-  .drv-meta{font-size:17px;color:#3A3836;white-space:pre-line}
-  .drv-acts{display:flex;gap:10px;width:100%;max-width:960px;margin:0 auto}
-  .drv-btn{flex:1;min-height:52px;border-radius:12px;border:1.5px solid #111;background:#fff;color:#111;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none}
-  .drv-btn.dark{background:#111;color:#fff}
-  .drv-btn svg{width:18px;height:18px;stroke-width:2}
-  .drv-hint{font-size:12px;color:#3A3836;text-align:center;margin-top:10px}
+  .driver .main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:clamp(12px,3vh,22px);width:100%;max-width:960px;margin:0 auto;padding:20px 0}
+  .say{font-weight:600;font-size:clamp(18px,5.4vw,26px);line-height:1.2;color:var(--text2)}
+  .dname{font-weight:800;font-size:clamp(32px,11vw,76px);line-height:1.04;letter-spacing:-.035em;overflow-wrap:anywhere}
+  .daddr{font-weight:700;font-size:clamp(24px,7.6vw,52px);line-height:1.2;letter-spacing:-.01em;overflow-wrap:anywhere}
+  .dplace{font-weight:600;font-size:clamp(20px,6vw,40px);line-height:1.2}
+  .langbtn{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:22px;border:1.5px solid var(--line);background:#fff;font-weight:800;font-size:14px;letter-spacing:.04em;cursor:pointer}
+  .driver .acts{width:100%;max-width:960px;margin:0 auto}
   @media (orientation:landscape) and (max-height:600px){
     .driver{padding-top:calc(10px + env(safe-area-inset-top));padding-bottom:calc(12px + env(safe-area-inset-bottom))}
-    .drv-main{gap:2vh;padding:6px 0}
-    .drv-phrase{font-size:clamp(15px,5vh,26px)}
-    .drv-name{font-size:clamp(26px,12vh,76px)}
-    .drv-addr{font-size:clamp(20px,9vh,56px)}
-    .drv-place{font-size:clamp(18px,7vh,42px)}
-    .drv-rule,.drv-hint{display:none}
-    .drv-meta{font-size:15px}
-    .drv-btn{min-height:44px}
+    .driver .main{gap:2vh;padding:6px 0}
+    .say{font-size:clamp(15px,5vh,26px)}.dname{font-size:clamp(26px,12vh,76px)}.daddr{font-size:clamp(20px,9vh,52px)}.dplace{font-size:clamp(18px,7vh,40px)}
+    .driver .hint{display:none}
   }
-
-  /* bottom navigation */
-  .wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
-  .nav{position:fixed;left:0;right:0;bottom:0;z-index:5;background:#FBFAF8;border-top:1px solid var(--line);padding:4px 8px env(safe-area-inset-bottom)}
-  .nav .in{display:flex;max-width:760px;margin:0 auto}
-  .nav button{flex:1;min-height:56px;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-    font-size:11px;font-weight:600;color:var(--label);cursor:pointer;position:relative}
-  .nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .nav button[aria-current="page"]{color:var(--ink)}
-  .nav button.bk[aria-current="page"]{color:var(--tobookInk)}
-  .nav .badge{position:absolute;top:5px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--tobookInk);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
-  .view[hidden]{display:none}
-
-  /* before the trip: countdown */
-  .count{background:#FBFAF8;border-radius:12px;box-shadow:0 0 0 1px var(--line);padding:18px 18px 16px;margin-bottom:20px}
-  .count .caps{color:var(--label)}
-  .count .big{display:flex;align-items:baseline;gap:10px;margin:8px 0 14px}
-  .count .big b{font-size:60px;line-height:.9;letter-spacing:-.03em}
-  .count .big span{font-size:18px;font-weight:600}
-  .count .prog{display:flex;font-size:13px;font-weight:600}
-  .count .prog span:first-child{flex:1}
-  .count .prog .left{color:var(--tobookInk);font-weight:700}
-  .count .bar{height:8px;border-radius:4px;background:var(--sand);overflow:hidden;margin-top:7px}
-  .count .bar div{height:100%;background:#55735F}
-
-  /* to-book lists */
-  h2.sec.tbhead{color:var(--tobookInk);border-bottom-color:var(--tobook);margin-top:0}
-  .tblist{background:#FBFAF8;border-radius:12px;box-shadow:0 0 0 1px var(--line);overflow:hidden}
-  .tbi{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;width:100%;min-height:56px;padding:10px 14px;border:0;border-top:1px solid var(--line);background:none;text-align:left;cursor:pointer}
-  .tbi:first-child{border-top:0}
-  .tbi:active{background:var(--card)}
-  .tbi .ic{width:36px;height:36px;border-radius:10px;background:var(--sand);display:grid;place-items:center;color:var(--tobookInk)}
-  .tbi .ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-  .tbi .tt{min-width:0}
-  .tbi .tt b{display:block;font-size:14px;font-weight:600;overflow-wrap:anywhere}
-  .tbi .tt span{display:block;font-size:12px;color:var(--label);margin-top:1px}
-  .tbi .rel{font-size:12px;font-weight:700;color:var(--label);white-space:nowrap}
-  .tbi .rel.soon{color:var(--tobookInk)}
-  .seeall{display:block;width:100%;min-height:48px;border:0;border-top:1px solid var(--line);background:none;color:var(--tobookInk);font-weight:600;font-size:14px;cursor:pointer}
-
-  /* to-book view */
-  .vtitle{font-size:26px;font-weight:700;margin:6px 0 2px}
-  .vsub{font-size:13px;color:var(--label);margin-bottom:14px}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
-  .chips button{min-height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line);background:#FBFAF8;font-weight:600;font-size:13px;cursor:pointer}
-  .chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
-  .tbgroup{margin-top:18px}
-  .tbgroup .gh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-  .tbgroup .gh i{width:10px;height:10px;border-radius:5px;flex:none}
-  .tbgroup .gh .caps{flex:1;color:var(--label)}
-  .tbgroup .gh span:last-child{font-size:12px;color:var(--label)}
-  .tbnote{font-size:12px;color:var(--label);line-height:1.5;margin-top:18px}
-  .tbempty{background:#FBFAF8;border-radius:12px;box-shadow:0 0 0 1px var(--line);padding:28px 18px;text-align:center;font-weight:600;margin-top:12px}
-
-  .help{font-size:12px;color:var(--calc);margin-top:8px}
-  .err{color:#9B3328;font-size:12.5px;margin-top:8px}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top">
-    <div class="grow">
-      <h1 id="tripName">Trip</h1>
-      <div class="sub" id="tripSub"></div>
+<div class="app">
+  <header class="hero nophoto" id="hero" hidden>
+    <img class="bg" id="heroImg" alt="" hidden><img class="bg blur" id="heroBlur" alt="" aria-hidden="true" hidden><div class="shade"></div>
+    <div class="in">
+      <div class="bar"><div class="grow tripline" id="heroTrip"></div>
+        <button class="iconbtn glass js-sync" aria-label="Sync now" title="Sync now"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        <button class="iconbtn glass js-set" aria-label="Settings" title="Settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      </div>
+      <div class="kick" id="heroKick"></div>
+      <h1 class="t-display" id="heroBig" style="margin-bottom: 0"></h1>
+      <div class="sub" id="heroSub"></div>
+      <div id="todayCard"></div>
     </div>
-    <button class="iconbtn" id="syncBtn" aria-label="Sync now" title="Sync now">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
-    </button>
-    <button class="iconbtn" id="setBtn" aria-label="Settings" title="Settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
-    </button>
-  </div>
-  <div id="notice"></div>
-  <div class="view" id="viewToday">
-    <div id="timeline"></div>
-    <div id="today"></div>
-    <div id="next"></div>
-  </div>
-  <div class="view" id="viewTrip" hidden>
-    <div id="timeline2"></div>
-    <div id="phases"></div>
-  </div>
-  <div class="view" id="viewBook" hidden></div>
-  <div class="status" id="status"></div>
+    <div class="credit" id="heroCredit"></div>
+  </header>
+  <header class="plaintop" id="plainTop" hidden>
+    <div class="bar"><div class="grow"><div class="t-small" style="font-weight: 700" id="ptTrip"></div><h1 class="t-title" id="ptTitle"></h1><div class="t-small" id="ptSub"></div></div>
+      <button class="iconbtn js-sync" aria-label="Sync now" title="Sync now"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+      <button class="iconbtn js-set" aria-label="Settings" title="Settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </div>
+  </header>
+  <main class="panel" id="panel">
+    <div id="notice"></div>
+    <div id="viewToday"></div>
+    <div id="viewTrip" hidden></div>
+    <div id="viewBook" hidden></div>
+    <div class="status" id="status"></div>
+  </main>
 </div>
-<nav class="nav" aria-label="Sections"><div class="in">
-  <button type="button" data-tab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Today</button>
-  <button type="button" data-tab="trip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>Trip</button>
-  <button type="button" data-tab="book" class="bk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>To book<span class="badge" id="bookBadge" hidden></span></button>
-</div></nav>
+<nav class="nav" aria-label="Sections">
+  <button type="button" data-tab="today"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Today</button>
+  <button type="button" data-tab="trip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>Trip</button>
+  <button type="button" data-tab="book"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>To book<span class="badge" id="bookBadge" hidden></span></button>
+</nav>
 
 <div class="scrim" id="scrim"></div>
 <div class="sheet" id="daySheet" role="dialog" aria-modal="true" aria-label="Day details"><div class="grab"></div><div id="dayBody"></div></div>
 <div class="driver" id="driver" role="dialog" aria-modal="true" aria-label="Show to driver">
-  <div class="drv-top">
-    <span class="drv-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Saved on this phone</span>
-    <button class="drv-close" id="drvClose" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <div class="bar" style="align-items: center">
+    <span class="pill"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Saved on this phone</span>
+    <span class="grow"></span>
+    <button class="langbtn" id="drvLang"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span id="drvLangCode">ES</span></button>
+    <button class="iconbtn dark" id="drvClose" aria-label="Close"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
-  <div class="drv-main">
-    <button class="drv-phrase" id="drvPhrase" title="Tap to change language"></button>
-    <div class="drv-name" id="drvName"></div>
-    <div class="drv-addr" id="drvAddr"></div>
-    <div class="drv-place" id="drvPlace"></div>
-    <div class="drv-rule"></div>
-    <div class="drv-meta" id="drvMeta"></div>
+  <div class="main">
+    <div class="say" id="drvPhrase"></div>
+    <div class="dname" id="drvName"></div>
+    <div class="daddr" id="drvAddr"></div>
+    <div class="dplace" id="drvPlace"></div>
   </div>
-  <div class="drv-acts">
-    <button class="drv-btn" id="drvCopy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>Copy address</span></button>
-    <a class="drv-btn dark" id="drvMaps" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"/></svg>Maps</a>
+  <div class="acts">
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="drvCopy"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>Copy address</span></button>
+      <a class="btn btn-primary" id="drvMaps" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"/></svg>Maps</a>
+    </div>
+    <p class="help hint" style="text-align: center; margin-top: 10px">Turn the phone sideways for bigger text · Maps needs signal</p>
   </div>
-  <div class="drv-hint">Turn the phone sideways for bigger text · Maps needs signal</div>
 </div>
-<div class="sheet" id="setSheet" role="dialog" aria-modal="true">
+<div class="sheet" id="setSheet" role="dialog" aria-modal="true" aria-label="Settings">
   <div class="grab"></div>
-  <h3>Settings</h3>
-  <label for="urlIn">Setup code from your sheet (Trip → Get app link)</label>
-  <input id="urlIn" placeholder="e.g. K7P-4QX" autocapitalize="characters" autocorrect="off" autocomplete="off" spellcheck="false">
-  <div class="help">A full app link (https://script.google.com/…) works here too.</div>
-  <div class="btns">
-    <button class="btn primary" id="saveUrl">Save &amp; sync</button>
-    <button class="btn" id="useDemo">Show demo trip</button>
-  </div>
+  <div class="bar" style="align-items: center"><h2 class="t-title grow" style="font-size: 28px">Settings</h2>
+    <button class="iconbtn dark" id="setClose" aria-label="Close"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="field"><label for="urlIn">Setup code from your sheet</label>
+    <input class="input" id="urlIn" placeholder="K7P-4QX" autocapitalize="characters" autocorrect="off" autocomplete="off" spellcheck="false"></div>
+  <p class="help">In your sheet: Trip → Get app link. A full app link (https://script.google.com/…) works here too.</p>
   <div class="err" id="urlErr"></div>
-  <label for="previewIn">Preview a date (only on this screen, not saved)</label>
-  <input type="date" id="previewIn">
-  <div class="btns"><button class="btn" id="clearPreview">Back to today</button></div>
-  <div class="help">The app keeps the last synced copy of your trip on this device, so it opens without a connection. It syncs when it opens online, when you tap ↻, and when your connection comes back.</div>
+  <div style="margin-top: 12px"><button class="btn btn-primary btn-block" id="saveUrl"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>Save &amp; sync</button></div>
+  <div style="margin-top: 10px"><button class="btn btn-secondary btn-block" id="useDemo">Show demo trip</button></div>
+  <div class="field"><label for="previewIn">Preview a date</label><input class="input plain" type="date" id="previewIn"></div>
+  <p class="help">Only on this screen, not saved.</p>
+  <div style="margin-top: 10px"><button class="btn btn-secondary btn-block" id="clearPreview">Back to today</button></div>
+  <p class="help">The app keeps the last synced copy of your trip on this phone, so it opens without signal. It syncs when it opens online, when you tap ↻, and when your connection comes back.</p>
 </div>
-
-<script id="demoData" type="application/json">{"trip":{"name":"Sample Trip","subtitle":"Lisbon · Alentejo · Algarve","start":"2027-06-01","end":"2027-06-12"},"phases":[{"name":"Lisbon","start":"2027-06-01","end":"2027-06-04","days":4,"colour":"#5f7895","summary":"✓  All booked"},{"name":"Alentejo","start":"2027-06-05","end":"2027-06-08","days":4,"colour":"#c08949","summary":"✓  All booked"},{"name":"Algarve","start":"2027-06-09","end":"2027-06-12","days":4,"colour":"#b55f4f","summary":"1 stay  ·  1 open to-do"}],"days":[{"day":1,"date":"2027-06-01","phase":"Lisbon","location":"Lisbon","plan":"Arrive in Lisbon","nights":"4","stay":"Sample Apartment, Alfama","flights":"✈ DM101 · Arrive LIS 09:30","car":"","transfers":"","keyTimes":"Check-in 15:00 · Sample Apartment, Alfama","notes":"This is a demo trip. Connect your sheet in Settings to see your own."},{"day":2,"date":"2027-06-02","phase":"Lisbon","location":"Lisbon","plan":"🥾 Alfama to Castelo walk (2 hrs)","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"","keyTimes":"","notes":""},{"day":3,"date":"2027-06-03","phase":"Lisbon","location":"Sintra","plan":"Day trip to Sintra palaces","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"Train · Lisbon Rossio → Sintra","keyTimes":"","notes":"Go early to beat the crowds"},{"day":4,"date":"2027-06-04","phase":"Lisbon","location":"Lisbon","plan":"Belém & the riverfront","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"","keyTimes":"","notes":"Pastry stop"},{"day":5,"date":"2027-06-05","phase":"Alentejo","location":"Évora","plan":"Pick up car · drive to Évora","nights":"2","stay":"Quinta Exemplo (farm stay)","flights":"","car":"🚗 Demo Rentals · Pick-up 10:00 Lisbon","transfers":"","keyTimes":"Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)","notes":"incl. breakfast"},{"day":6,"date":"2027-06-06","phase":"Alentejo","location":"Évora","plan":"Old town & Roman temple","nights":"","stay":"Quinta Exemplo (farm stay)","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":""},{"day":7,"date":"2027-06-07","phase":"Alentejo","location":"Monsaraz","plan":"Drive to Monsaraz · lake swim","nights":"2","stay":"Casa do Lago Demo","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo","notes":""},{"day":8,"date":"2027-06-08","phase":"Alentejo","location":"Monsaraz","plan":"🥾 Hilltop loop (8 km · 3 hrs · 250m)","nights":"","stay":"Casa do Lago Demo","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":"Stargazing night"},{"day":9,"date":"2027-06-09","phase":"Algarve","location":"Lagos","plan":"Drive to Lagos","nights":"3","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"Check-out 10:00 · Casa do Lago Demo","notes":""},{"day":10,"date":"2027-06-10","phase":"Algarve","location":"Lagos","plan":"🥾 Ponta da Piedade cliffs (2 hrs)","nights":"","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"✱ To Book · Kayak tour · Lagos marina","keyTimes":"","notes":""},{"day":11,"date":"2027-06-11","phase":"Algarve","location":"Lagos","plan":"Beach day","nights":"","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":""},{"day":12,"date":"2027-06-12","phase":"Algarve","location":"Faro","plan":"Return car · fly home","nights":"","stay":"","flights":"✈ DM202 · FAO 14:10 → LIS 15:05","car":"🚗 Demo Rentals · Return 12:00 Faro Airport","transfers":"","keyTimes":"Check-out 10:00","notes":""}],"updated":"2026-11-15T11:30:00-08:00","addresses":{"Sample Apartment, Alfama":"Rua do Exemplo 12, Lisbon","Quinta Exemplo (farm stay)":"Estrada Demo km 4, Évora","Casa do Lago Demo":"Rua da Amostra 3, Monsaraz"},"bookings":[{"type":"stay","status":"booked","date":"2027-06-01","end":"2027-06-05","nights":4,"time":"","title":"Stay · Sample Apartment, Alfama","phase":"Lisbon"},{"type":"flight","status":"booked","date":"2027-06-01","end":"","nights":"","time":"09:30","title":"Flight · DM101 → Lisbon","phase":"Lisbon"},{"type":"stay","status":"booked","date":"2027-06-05","end":"2027-06-07","nights":2,"time":"","title":"Stay · Quinta Exemplo (farm stay)","phase":"Alentejo"},{"type":"car","status":"booked","date":"2027-06-05","end":"2027-06-12","nights":"","time":"10:00","title":"Car · Demo Rentals · Lisbon","phase":"Alentejo"},{"type":"stay","status":"booked","date":"2027-06-07","end":"2027-06-09","nights":2,"time":"","title":"Stay · Casa do Lago Demo","phase":"Alentejo"},{"type":"stay","status":"to book","date":"2027-06-09","end":"2027-06-12","nights":3,"time":"","title":"Stay · Lagos","phase":"Algarve"},{"type":"bus","status":"to book","date":"2027-06-10","end":"","nights":"","time":"","title":"Kayak tour · Lagos marina","phase":"Algarve"},{"type":"flight","status":"booked","date":"2027-06-12","end":"","nights":"","time":"14:10","title":"Flight · FAO → LIS","phase":"Algarve"}]}</script>
+<script id="demoData" type="application/json">{"trip": {"name": "Sample Trip", "subtitle": "Lisbon · Alentejo · Algarve", "start": "2027-06-01", "end": "2027-06-12"}, "phases": [{"name": "Lisbon", "start": "2027-06-01", "end": "2027-06-04", "days": 4, "colour": "#5f7895", "summary": "✓  All booked"}, {"name": "Alentejo", "start": "2027-06-05", "end": "2027-06-08", "days": 4, "colour": "#c08949", "summary": "✓  All booked"}, {"name": "Algarve", "start": "2027-06-09", "end": "2027-06-12", "days": 4, "colour": "#b55f4f", "summary": "1 stay  ·  1 open to-do"}], "days": [{"day": 1, "date": "2027-06-01", "phase": "Lisbon", "location": "Lisbon", "plan": "Arrive in Lisbon", "nights": "4", "stay": "Sample Apartment, Alfama", "flights": "✈ DM101 · Arrive LIS 09:30", "car": "", "transfers": "", "keyTimes": "Check-in 15:00 · Sample Apartment, Alfama", "notes": "This is a demo trip. Connect your sheet in Settings to see your own."}, {"day": 2, "date": "2027-06-02", "phase": "Lisbon", "location": "Lisbon", "plan": "🥾 Alfama to Castelo walk (2 hrs)", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": ""}, {"day": 3, "date": "2027-06-03", "phase": "Lisbon", "location": "Sintra", "plan": "Day trip to Sintra palaces", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "Train · Lisbon Rossio → Sintra", "keyTimes": "", "notes": "Go early to beat the crowds"}, {"day": 4, "date": "2027-06-04", "phase": "Lisbon", "location": "Lisbon", "plan": "Belém & the riverfront", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": "Pastry stop"}, {"day": 5, "date": "2027-06-05", "phase": "Alentejo", "location": "Évora", "plan": "Pick up car · drive to Évora", "nights": "2", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals · Pick-up 10:00 Lisbon", "transfers": "", "keyTimes": "Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)", "notes": "incl. breakfast"}, {"day": 6, "date": "2027-06-06", "phase": "Alentejo", "location": "Évora", "plan": "Old town & Roman temple", "nights": "", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": ""}, {"day": 7, "date": "2027-06-07", "phase": "Alentejo", "location": "Monsaraz", "plan": "Drive to Monsaraz · lake swim", "nights": "2", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo", "notes": ""}, {"day": 8, "date": "2027-06-08", "phase": "Alentejo", "location": "Monsaraz", "plan": "🥾 Hilltop loop (8 km · 3 hrs · 250m)", "nights": "", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "Stargazing night"}, {"day": 9, "date": "2027-06-09", "phase": "Algarve", "location": "Lagos", "plan": "Drive to Lagos", "nights": "3", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 10:00 · Casa do Lago Demo", "notes": ""}, {"day": 10, "date": "2027-06-10", "phase": "Algarve", "location": "Lagos", "plan": "🥾 Ponta da Piedade cliffs (2 hrs)", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "✱ To Book · Kayak tour · Lagos marina", "keyTimes": "", "notes": ""}, {"day": 11, "date": "2027-06-11", "phase": "Algarve", "location": "Lagos", "plan": "Beach day", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": ""}, {"day": 12, "date": "2027-06-12", "phase": "Algarve", "location": "Faro", "plan": "Return car · fly home", "nights": "", "stay": "", "flights": "✈ DM202 · FAO 14:10 → LIS 15:05", "car": "🚗 Demo Rentals · Return 12:00 Faro Airport", "transfers": "", "keyTimes": "Check-out 10:00", "notes": ""}], "updated": "2026-11-15T11:30:00-08:00", "addresses": {"Sample Apartment, Alfama": "Rua do Exemplo 12, Lisbon", "Quinta Exemplo (farm stay)": "Estrada Demo km 4, Évora", "Casa do Lago Demo": "Rua da Amostra 3, Monsaraz"}, "bookings": [{"type": "stay", "status": "booked", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "time": "", "title": "Stay · Sample Apartment, Alfama", "phase": "Lisbon"}, {"type": "flight", "status": "booked", "date": "2027-06-01", "end": "", "nights": "", "time": "09:30", "title": "Flight · DM101 → Lisbon", "phase": "Lisbon"}, {"type": "stay", "status": "booked", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "time": "", "title": "Stay · Quinta Exemplo (farm stay)", "phase": "Alentejo"}, {"type": "car", "status": "booked", "date": "2027-06-05", "end": "2027-06-12", "nights": "", "time": "10:00", "title": "Car · Demo Rentals · Lisbon", "phase": "Alentejo"}, {"type": "stay", "status": "booked", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "time": "", "title": "Stay · Casa do Lago Demo", "phase": "Alentejo"}, {"type": "stay", "status": "to book", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "time": "", "title": "Stay · Lagos", "phase": "Algarve"}, {"type": "bus", "status": "to book", "date": "2027-06-10", "end": "", "nights": "", "time": "", "title": "Kayak tour · Lagos marina", "phase": "Algarve"}, {"type": "flight", "status": "booked", "date": "2027-06-12", "end": "", "nights": "", "time": "14:10", "title": "Flight · FAO → LIS", "phase": "Algarve"}], "segments": [{"id": "s1", "type": "stay", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "name": "Sample Apartment, Alfama", "place": "Lisbon", "address": "Rua do Exemplo 12, Lisbon", "via": "Airbnb", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "f1", "type": "flight", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "arrivalDate": "2027-06-01", "number": "DM101", "to": "LIS", "departs": "08:45", "arrives": "09:30", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM101", "from": "MAD"}, {"id": "b1", "type": "bus", "status": "", "phase": "Lisbon", "date": "2027-06-03", "kind": "Train", "from": "Rossio", "to": "Sintra", "company": "CP", "departs": "09:11", "arrives": "09:51"}, {"id": "s2", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "name": "Quinta Exemplo (farm stay)", "place": "Évora", "address": "Estrada Demo km 4, Évora", "via": "Booking.com", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "c1", "type": "car", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-12", "company": "Demo Rentals", "car": "Compact", "pickupTime": "10:00", "pickupPlace": "Lisbon", "returnTime": "12:00", "returnPlace": "Faro Airport"}, {"id": "s3", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "name": "Casa do Lago Demo", "place": "Monsaraz", "address": "Rua da Amostra 3, Monsaraz", "via": "Direct with host", "checkIn": "16:00", "checkOut": "10:00"}, {"id": "s4", "type": "stay", "status": "to book", "phase": "Algarve", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "name": "", "place": "Lagos", "address": "", "via": "", "checkIn": "", "checkOut": ""}, {"id": "b2", "type": "bus", "status": "to book", "phase": "Algarve", "date": "2027-06-10", "kind": "Kayak tour", "from": "", "to": "", "company": "Lagos marina", "departs": "", "arrives": ""}, {"id": "f2", "type": "flight", "status": "booked", "phase": "Algarve", "date": "2027-06-12", "arrivalDate": "2027-06-12", "number": "DM202", "to": "LIS", "departs": "14:10", "arrives": "15:05", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM202", "from": "FAO"}]}</script>
 <script>
 (function(){
   'use strict';
@@ -310,12 +302,11 @@
   // The URL alone shows nothing: the feed also needs the code.
   var FEEDS={'':'https://script.google.com/macros/s/AKfycbyD6vts40jdDYfNI0EvaIWbcNeEVb-wKSPbzp3fqIXcnecohvXf84i92cV4YmUpNA3ZoQ/exec'};
   var CODE_LEN=6;
-  // "k7p-4qx", "SA-K7P4QX" -> {code:'K7P4QX', prefix:'SA', url:…}; null if it isn't a code.
   function parseCode(raw){
     var c=String(raw||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
     if(c.length<CODE_LEN||c.length>CODE_LEN+4) return null;
     var prefix=c.slice(0,c.length-CODE_LEN), code=c.slice(-CODE_LEN), base=FEEDS[prefix];
-    if(!base||base.indexOf('/macros/s/__')>=0) return null;   // placeholder until the real URL is filled in
+    if(!base||base.indexOf('/macros/s/__')>=0) return null;
     return {code:code, prefix:prefix, url:base+'?key='+code};
   }
   function showCode(p){return (p.prefix?p.prefix+'-':'')+p.code.slice(0,3)+'-'+p.code.slice(3);}
@@ -330,35 +321,69 @@
   // ---------- helpers ----------
   function $(id){return document.getElementById(id);}
   function el(tag,cls,text){var n=document.createElement(tag); if(cls)n.className=cls; if(text!=null)n.textContent=text; return n;}
+  // h('div','card',[child, 'text', …])
+  function h(tag,cls,kids){
+    var n=document.createElement(tag); if(cls) n.className=cls;
+    [].concat(kids==null?[]:kids).forEach(function(k){ if(k==null||k===false||k==='') return; n.appendChild(typeof k==='string'||typeof k==='number'?document.createTextNode(String(k)):k); });
+    return n;
+  }
   function parseDay(s){var p=String(s||'').split('-'); return p.length===3?new Date(+p[0],+p[1]-1,+p[2]):null;}
   function midnight(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
   function daysBetween(a,b){return Math.round((midnight(b)-midnight(a))/864e5);}
+  function iso(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function isoAdd(s,n){var d=parseDay(s); if(!d) return ''; d.setDate(d.getDate()+n); return iso(d);}
   var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
   var WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var WDL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   function md(d){return MON[d.getMonth()]+' '+d.getDate();}
-  function wmd(d){return WD[d.getDay()]+' '+MON[d.getMonth()]+' '+d.getDate();}
-  function roman(n){var r='',m=[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];m.forEach(function(x){while(n>=x[0]){r+=x[1];n-=x[0];}});return r;}
+  function wmd(d){return WD[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate();}
   function ago(t){var s=(Date.now()-t)/1000; if(s<60)return 'just now'; if(s<3600)return Math.round(s/60)+' min ago'; if(s<86400)return Math.round(s/3600)+' h ago';
     var d=new Date(t); return md(d)+', '+d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});}
   function today(){return state.preview?parseDay(state.preview):midnight(new Date());}
-  // Text where lines starting with ✱ are coloured as "to book".
-  // Stay name -> address, from the feed (and from each day, for older feeds).
+  function plural(n,one,many){return n+' '+(+n===1?one:(many||one+'s'));}
+  function mapsUrl(a){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a);}
+
+  var ICONS={
+    bed:'<path d="M3 18v-7m0 4h18v3m0-3v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
+    bus:'<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 20v-3m8 3v-3"/>',
+    plane:'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+    car:'<path d="M5 17h14v-5l-2-5H7l-2 5z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/>',
+    door:'<path d="M14 3H6v18h8"/><path d="M10 12h11M18 9l3 3-3 3"/>', key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/>',
+    note:'<path d="M5 4h14v16H5zM9 9h6M9 13h6"/>', clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+    chev:'<path d="M9 6l6 6-6 6"/>', left:'<path d="M15 18l-6-6 6-6"/>', right:'<path d="M9 18l6-6-6-6"/>', close:'<path d="M6 6l12 12M18 6L6 18"/>',
+    nav:'<path d="M3 11l18-8-8 18-2-8z"/>', ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    tick:'<path d="M20 6L9 17l-5-5"/>', wifi:'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><path d="M3 3l18 18"/>',
+    alert:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5h.01"/>', info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+    eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
+  };
+  function I(n,cls){var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('class',cls||'ic'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('aria-hidden','true'); s.innerHTML=ICONS[n]; return s;}
+  var CHEV=function(){return I('chev');};
+
+  // Phase colours from the sheet, darkened so white text on them stays readable (UI kit).
+  var DARK={'#6e8f78':'#55735F','#5f7895':'#4E6684','#c08949':'#8A5F2C','#85698f':'#6E5577','#b55f4f':'#9E5243','#4f898a':'#3F7071','#89894e':'#6B6B3C','#9b5e6d':'#84505D'};
+  function darken(hex){
+    var k=String(hex||'').toLowerCase(); if(DARK[k]) return DARK[k];
+    var m=k.match(/^#([0-9a-f]{6})$/); if(!m) return '#5E5E5E';
+    var n=parseInt(m[1],16), f=.78, r=Math.round((n>>16&255)*f), g=Math.round((n>>8&255)*f), b=Math.round((n&255)*f);
+    return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+  }
+  function phaseOf(name){return ((state.data&&state.data.phases)||[]).filter(function(p){return p.name===name;})[0]||null;}
+  function phaseColour(name){var p=phaseOf(name); return darken(p&&p.colour);}
+
+  // ---------- stays + Maps links ----------
   function addrMap(){
     var m={}, d=state.data||{};
     (d.days||[]).forEach(function(x){ if(x.stayName&&x.stayAddress) m[x.stayName]=x.stayAddress; });
+    (d.segments||[]).forEach(function(s){ if(s.type==='stay'&&s.name&&s.address) m[s.name]=s.address; });
     var a=d.addresses||{}; Object.keys(a).forEach(function(k){ if(a[k]) m[k]=a[k]; });
     return m;
   }
   function mapLink(text,address){
-    var link=el('a','stay-link',text);
-    link.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address);
-    link.target='_blank'; link.rel='noopener'; link.title=address;
+    var link=h('a','lk',[text,I('ext','lkic')]);
+    link.href=mapsUrl(address); link.target='_blank'; link.rel='noopener'; link.title='Open in Maps';
     link.onclick=function(e){e.stopPropagation();};
     return link;
   }
-  // Appends one line of text, turning every mention of a known stay into a Maps link.
   function linkLine(parent,line,names,map){
     var i=0;
     while(i<line.length){
@@ -369,7 +394,7 @@
       parent.appendChild(mapLink(name,map[name])); i=best+name.length;
     }
   }
-  // Text where lines starting with ✱ are coloured as "to book", and stay names link to Maps.
+  // Text where lines starting with ✱ are "to book", and stay names link to Maps.
   function rich(parent,text){
     var map=addrMap(), names=Object.keys(map).filter(function(n){return n.length>2;}).sort(function(a,b){return b.length-a.length;});
     String(text||'').split('\n').forEach(function(line,i){
@@ -378,27 +403,135 @@
     });
     return parent;
   }
-  var ICONS={bed:'<path d="M3 18v-7m0 4h18v3m0-3v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
-    bus:'<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 20v-3m8 3v-3"/>',
-    clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
-    note:'<path d="M5 4h14v16H5zM9 9h6M9 13h6"/>',
-    plane:'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
-    car:'<path d="M5 17h14v-5l-2-5H7l-2 5z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/>'};
-  function icon(n){var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('aria-hidden','true'); s.innerHTML=ICONS[n]; return s;}
-  // Stay text, plus the address as a Maps link when the Stays tab has one.
-  function stayNode(parent,d){
-    rich(parent,d.stay);
-    var a=String(d.stayAddress||'').trim();
-    if(a && d.stay && !/^\s*(✱|🛎)/.test(d.stay)){
-      parent.appendChild(document.createElement('br')); parent.appendChild(el('span','addr',a));
-    }
-    return parent;
-  }
+  function nameNode(name){var a=addrMap()[name]; return a?mapLink(name,a):document.createTextNode(name);}
+  function isToBookLine(l){return /^\s*✱/.test(l);}
+  function cleanToBook(l){return l.replace(/^\s*✱\s*/,'').replace(/^to book\s*[·:-]?\s*/i,'').trim();}
   function travelLines(d){return [d.flights,d.car,d.transfers].filter(Boolean).join('\n');}
-  function isoAdd(s,n){var d=parseDay(s); if(!d) return ''; d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+  // ---------- components ----------
+  function iconbtn(n,label,cls,onclick){var b=h('button','iconbtn'+(cls?' '+cls:''),I(n)); b.type='button'; b.setAttribute('aria-label',label); b.title=label; if(onclick) b.onclick=onclick; return b;}
+  function btn(text,kind,icon,onclick){var b=h('button','btn btn-'+kind,[icon?I(icon):null,text]); b.type='button'; if(onclick) b.onclick=onclick; return b;}
+  function linkbtn(text,kind,icon,href){var a=h('a','btn btn-'+kind,[icon?I(icon):null,text]); a.href=href; a.target='_blank'; a.rel='noopener'; return a;}
+  function pill(text,kind,colour){var p=h('span','pill'+(kind?' '+kind:''),text); if(colour) p.style.background=colour; return p;}
+  function tile(n,kind){return h('span','tile '+kind,I(n));}
+  function dtile(top,num,isToday){return h('span','dtile'+(isToday?' today':''),[h('small',null,top),h('strong',null,String(num))]);}
+  function row(lead,title,sub,end,x,cls,onclick){
+    var tag=onclick?'button':'div', r=h(tag,'row'+(cls?' '+cls:''));
+    if(onclick){ r.type='button'; r.onclick=onclick; }
+    r.appendChild(lead);
+    var mid=h('span',null,[h('b',null,title)]); mid.style.minWidth='0';
+    if(sub) mid.appendChild(typeof sub==='string'?h('span','s',sub):h('span','s',sub));
+    if(x) mid.appendChild(x.nodeType?x:h('span','x',x));
+    r.appendChild(mid); r.appendChild(h('span','end',end||null));
+    return r;
+  }
+  function card(kids,pad,cls){return h('div','card'+(pad?' pad':'')+(cls?' '+cls:''),kids);}
+  function sh(title,cls,more){return h('div','sh'+(cls?' '+cls:''),[h('h2','t-h2',title),more||null]);}
+  function notice(kind,icon,kids){return h('div','notice '+kind,[I(icon),h('span',null,kids)]);}
+
+  // ---------- segments (stays, flights, cars, buses with times) ----------
+  function segs(){var s=state.data&&state.data.segments; return Array.isArray(s)?s:null;}
+  function booked(s){return s.status!=='to book';}
+  // Everything that happens on one day, from segments when the feed has them, else from the day's text.
+  function dayParts(d){
+    var date=d.date, S=segs(), out={tonight:null, rows:[], moves:[], tobook:[], hasFlight:false, hasCar:false, hasTransfer:false};
+    if(S){
+      S.forEach(function(s){
+        if(s.type==='stay'){
+          if(booked(s) && s.date<=date && (s.end||isoAdd(s.date,1))>date) out.tonight=s;
+          if(booked(s) && s.end===date && s.name) out.rows.push({icon:'door',title:'Check out',sub:s.name,link:true,time:s.checkOut||''});
+          if(booked(s) && s.date===date && s.name) out.rows.push({icon:'key',title:'Check in',sub:s.name,link:true,time:s.checkIn||''});
+          if(!booked(s) && s.date<=date && (s.end||isoAdd(s.date,1))>date) out.tobook.push({icon:'bed',title:'Stay in '+(s.place||s.name||'—')+(s.nights?' · '+plural(s.nights,'night'):''),date:s.date});
+        } else if(s.type==='car'){
+          if(!booked(s)){ if(s.date===date) out.tobook.push({icon:'car',title:'Car'+(s.company?' · '+s.company:'')+(s.pickupPlace?' · '+s.pickupPlace:'')}); return; }
+          var co=[s.company,s.car].filter(Boolean).join(' · ');
+          if(s.date===date){ out.hasCar=true; out.rows.push({icon:'car',title:'Pick up car',sub:[s.company,s.pickupPlace].filter(Boolean).join(' · '),time:s.pickupTime||''}); }
+          else if(s.end===date){ out.hasCar=true; out.rows.push({icon:'car',title:'Return car',sub:[s.company,s.returnPlace].filter(Boolean).join(' · '),time:s.returnTime||''}); }
+          else if(s.date<date && s.end>date){ out.hasCar=true; out.rows.push({icon:'car',title:'Car rental',sub:co||'With you today',time:'',last:true}); }
+        } else if(s.date===date){
+          if(!booked(s)){ out.tobook.push({icon:s.type==='flight'?'plane':'bus',title:s.type==='flight'?('Flight'+(s.number?' '+s.number:'')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')):((s.kind||'Transfer')+(s.from&&s.to?' · '+s.from+' → '+s.to:''))}); return; }
+          if(s.type==='flight') out.hasFlight=true; else out.hasTransfer=true;
+          out.moves.push(s);
+        }
+      });
+    } else {
+      // older feed: build the same pieces from the day's text
+      ['stay','flights','car','transfers'].forEach(function(k){
+        String(d[k]||'').split('\n').forEach(function(l){ if(isToBookLine(l)) out.tobook.push({icon:k==='stay'?'bed':k==='car'?'car':k==='flights'?'plane':'bus',title:cleanToBook(l)||'To book'}); });
+      });
+      var si=stayInfo(d); if(si) out.tonight={name:si.name,address:si.address,place:si.place,nights:d.nights||'',via:''};
+      String(d.keyTimes||'').split('\n').forEach(function(l){
+        if(!l.trim()) return; var m=l.match(/^(.*?)\s*(\d{1,2}:\d{2})\s*[·-]?\s*(.*)$/);
+        var title=m?m[1].trim():l, low=title.toLowerCase();
+        out.rows.push({icon:/check-?out/.test(low)?'door':/check-?in/.test(low)?'key':'clock',title:m?(title||'At'):l,sub:m?m[3]:'',text:true,time:m?m[2]:''});
+      });
+      [['flights','plane'],['car','car'],['transfers','bus']].forEach(function(k){
+        String(d[k[0]]||'').split('\n').forEach(function(l){ if(!l.trim()||isToBookLine(l)) return; out.rows.push({icon:k[1],title:l.replace(/^[✈🚗🚌⛴]\s*/u,''),sub:'',text:true,time:'',last:true}); });
+      });
+      out.hasFlight=!!String(d.flights||'').trim(); out.hasCar=!!String(d.car||'').trim(); out.hasTransfer=!!String(d.transfers||'').trim();
+    }
+    out.rows.sort(function(a,b){ if(!!a.last!==!!b.last) return a.last?1:-1; if(!a.time||!b.time) return a.time?-1:b.time?1:0; return a.time<b.time?-1:a.time>b.time?1:0; });
+    out.moves.sort(function(a,b){return (a.departs||'99')<(b.departs||'99')?-1:1;});
+    return out;
+  }
+  // older feeds: name and address of tonight's stay from the day text
+  function stayInfo(d){
+    var stay=String(d.stay||'').trim(), map=addrMap(), name=String(d.stayName||'').trim(), address=String(d.stayAddress||'').trim();
+    if(!stay || isToBookLine(stay)) return null;
+    if(!name){ Object.keys(map).sort(function(a,b){return b.length-a.length;}).some(function(n){ if(stay.indexOf(n)>=0){name=n; return true;} }); }
+    if(!address && name) address=map[name]||'';
+    return {name:name||stay.split('\n')[0], address:address, place:String(d.stayPlace||'').trim()||String(d.location||'').split('→').pop().trim()};
+  }
+  function timeRow(r){
+    var sub=r.sub?(r.link?h('span',null,nameNode(r.sub)):(r.text?rich(h('span'),r.sub):r.sub)):'';
+    var title=r.text?rich(h('span'),r.title):r.title;
+    return row(tile(r.icon,r.icon==='plane'||r.icon==='bus'?'move':'stay'),title,sub,r.time?h('span','t-time',r.time):null);
+  }
+  function stayCard(s,d){
+    var nights=s.nights||'';
+    var kids=[h('span','t-label',['Stay tonight',nights?' · '+plural(nights,'night'):'']),
+      h('div','t-h3 name',[s.address?mapLink(s.name,s.address):s.name])];
+    if(s.address) kids.push(h('div','t-small addr',s.address));
+    if(s.via) kids.push(h('div','via',['Booked via ',h('b',null,s.via)]));
+    var acts=h('div','btn-row');
+    if(s.address) acts.appendChild(linkbtn('Directions','secondary',null,mapsUrl(s.address)));
+    acts.appendChild(btn('Show to driver','primary',null,function(e){ e.stopPropagation(); openDriver({name:s.name,address:s.address||'',place:s.place||(d&&d.location)||''}); }));
+    kids.push(acts);
+    return card(kids,true,'stay');
+  }
+  function moveCard(s){
+    var isF=s.type==='flight', label=isF?'Flight':(s.kind||'Transfer');
+    var title=isF?(s.number||'Flight'):(s.company||[s.from,s.to].filter(Boolean).join(' → ')||label);
+    var nextDay=isF&&s.arrivalDate&&s.arrivalDate>s.date;
+    var head=h('div','head',[tile(isF?'plane':'bus','move'),h('span',null,[h('span','t-label',label),h('span','t-h3',title)]),nextDay?pill('Arrives +1'):null]);
+    head.children[1].children[1].style.display='block';
+    function end(code,tm){ var long=String(code||'').length>4; return h('div',null,[h('span','code'+(long?' long':''),code||'—'),tm?h('span','tm',tm):null]); }
+    var right=end(s.to,s.arrives); right.style.textAlign='right';
+    var kids=[head,h('div','route',[end(s.from,s.departs),h('div','line',[h('i'),I(isF?'plane':'bus'),h('i')]),right])];
+    if(isF && s.statusLink){ var b=linkbtn('Check flight status','secondary','ext',s.statusLink); b.classList.add('btn-block'); kids.push(b); }
+    return h('div','tcard',kids);
+  }
+  function tbCard(t){return h('div','tbcard',[tile(t.icon||'bed','tbw'),h('span',null,[h('span','t-label','✱ Still to book'),h('span','t-h3',t.title),h('span','s','Mark it booked in your sheet')])]);}
+  function planCard(text,label){return card([h('span','t-label cardlabel',label||'Plan'),rich(h('p','plantext'),text)],true);}
+  // The pieces of a day, in order: to book, plan, stay, times, flights/buses, notes.
+  function dayBlocks(d,opts){
+    var p=dayParts(d), out=[];
+    p.tobook.forEach(function(t){ var c=tbCard(t); c.querySelector('.t-h3').style.display='block'; c.style.marginTop='0'; out.push(c); });
+    if(d.plan && !opts.planInline) out.push(planCard(d.plan));
+    if(p.tonight && p.tonight.name) out.push(stayCard(p.tonight,d));
+    if(p.rows.length) out.push(card(p.rows.map(timeRow)));
+    p.moves.forEach(function(s){ out.push(moveCard(s)); });
+    if(d.notes) out.push(card(row(tile('note','stay'),'Notes',rich(h('span'),d.notes))));
+    return {nodes:out, parts:p};
+  }
+  function dayRow(x,isToday){
+    var dd=parseDay(x.date), extra=travelLines(x);
+    var tb=['stay','flights','car','transfers'].some(function(k){return /✱/.test(String(x[k]||''));});
+    return row(dtile(isToday?'Today':(dd?WD[dd.getDay()]:''),dd?dd.getDate():x.day,isToday),x.location||x.plan||'—',x.location?rich(h('span'),x.plan||''):'',
+      [tb?el('span','star','✱'):null,CHEV()],extra?rich(h('span','x'),extra):null,'top date'+(isToday?' hi':''),function(){openDay(x);});
+  }
 
   // ---------- to-book items ----------
-  // From the feed's bookings list (newer script) or, failing that, from the ✱ lines on each day.
   var KIND_TYPE={stay:'stay',flights:'flight',car:'car',transfers:'bus'}, TYPE_WORD={stay:'Stay',flight:'Flight',car:'Car',bus:'Transfer'};
   function toBookItems(data){
     var items=[];
@@ -409,8 +542,8 @@
       (data.days||[]).forEach(function(d){
         Object.keys(KIND_TYPE).forEach(function(k){
           String(d[k]||'').split('\n').forEach(function(l){
-            if(!/^\s*✱/.test(l)) return;
-            var text=l.replace(/^\s*✱\s*/,'').replace(/^to book\s*[·:-]?\s*/i,'').trim(), type=KIND_TYPE[k], key=k+'|'+text, it=open[key];
+            if(!isToBookLine(l)) return;
+            var text=cleanToBook(l), type=KIND_TYPE[k], key=k+'|'+text, it=open[key];
             if(it && it.last===isoAdd(d.date,-1)){ it.last=d.date; if(type==='stay'){ it.nights++; it.end=isoAdd(d.date,1); } return; }
             var word=TYPE_WORD[type];
             it={type:type, title:text.toLowerCase().indexOf(word.toLowerCase())===0?text:word+' · '+(text||'to book'), date:d.date, last:d.date, phase:d.phase||'',
@@ -422,15 +555,14 @@
     }
     return items.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
   }
-  // "9 of 14 bookings done": only when the feed carries the full bookings list.
   function bookingProgress(data){
     if(!Array.isArray(data.bookings)||!data.bookings.length) return null;
     var done=data.bookings.filter(function(b){return b.status!=='to book';}).length;
     return {done:done,total:data.bookings.length};
   }
   function itemWhen(it){
-    var a=parseDay(it.date), e=parseDay(it.end), s=a?WD[a.getDay()]+', '+MON[a.getMonth()]+' '+a.getDate():'';
-    if(it.type==='stay'&&e) return s+' → '+WD[e.getDay()]+', '+MON[e.getMonth()]+' '+e.getDate()+(it.nights?' · '+it.nights+(+it.nights===1?' night':' nights'):'');
+    var a=parseDay(it.date), e=parseDay(it.end), s=a?wmd(a):'';
+    if(it.type==='stay'&&e) return s+' → '+wmd(e)+(it.nights?' · '+plural(it.nights,'night'):'');
     return s+(it.time?' · '+it.time:'');
   }
   function itemRel(it){
@@ -439,12 +571,9 @@
     return {t:n<0?(-n===1?'yesterday':-n+' days ago'):n===0?'today':n===1?'tomorrow':'in '+n+' days', soon:n<=7};
   }
   function itemRow(it){
-    var b=el('button','tbi'); b.type='button';
-    var ic=el('span','ic'); ic.appendChild(icon(it.type==='stay'?'bed':it.type==='flight'?'plane':it.type==='car'?'car':'bus')); b.appendChild(ic);
-    var tt=el('span','tt'); tt.appendChild(el('b',null,it.title)); tt.appendChild(el('span',null,itemWhen(it))); b.appendChild(tt);
-    var r=itemRel(it); b.appendChild(el('span','rel'+(r.soon?' soon':''),r.t));
-    b.onclick=function(){ var d=(state.data.days||[]).filter(function(x){return x.date===it.date;})[0]; if(d) openDay(d); };
-    return b;
+    var r=itemRel(it);
+    return row(tile(it.type==='stay'?'bed':it.type==='flight'?'plane':it.type==='car'?'car':'bus','tb'),it.title,itemWhen(it),[el('span','rel'+(r.soon?' soon':''),r.t),CHEV()],null,null,
+      function(){ var d=(state.data.days||[]).filter(function(x){return x.date===it.date;})[0]; if(d) openDay(d); });
   }
   function setTab(t){ state.tab=t; render(); window.scrollTo(0,0); }
 
@@ -476,140 +605,128 @@
     var data=state.data||DEMO, trip=data.trip||{}, days=data.days||[], phases=data.phases||[];
     var t=today(), start=parseDay(trip.start)||(days[0]&&parseDay(days[0].date)), end=parseDay(trip.end)||(days.length&&parseDay(days[days.length-1].date));
     var total=start&&end?daysBetween(start,end)+1:days.length;
+    var dayNo=start?daysBetween(start,t)+1:1, before=dayNo<1, after=dayNo>total;
+    var idx=before?0:after?days.length-1:dayNo-1, d=days[idx], todayDate=!before&&!after&&d?d.date:'';
+    var tripLine=[trip.name||'Trip', start&&end?md(start)+' → '+md(end):''].filter(Boolean).join(' · ');
+    var tbItems=toBookItems(data);
     document.title=(trip.name||'Trip')+' · Overview';
-    $('tripName').textContent=trip.name||'Trip';
-    $('tripSub').textContent=[trip.subtitle, start&&end?md(start)+' → '+md(end):'', total?total+' days':''].filter(Boolean).join('  ·  ');
-    $('syncBtn').classList.toggle('spin',state.syncing);
+    Array.prototype.forEach.call(document.querySelectorAll('.js-sync'),function(b){ b.classList.toggle('spin',state.syncing); });
 
-    // notice
-    var nb=$('notice'); nb.textContent='';
-    if(state.demo){
-      var n=el('div','notice'); n.appendChild(document.createTextNode('You’re looking at the demo trip. '));
-      var b=el('button',null,'Connect your sheet'); b.onclick=openSettings; n.appendChild(b); nb.appendChild(n);
-    } else if(state.error){
-      nb.appendChild(el('div','notice','Couldn’t sync: '+state.error+' Showing your last synced copy.'));
+    // header: photo/colour header on Today, plain bar elsewhere
+    var onToday=state.tab==='today';
+    $('hero').hidden=!onToday; $('plainTop').hidden=onToday; $('panel').classList.toggle('over',onToday);
+    if(onToday){
+      var ph=before?phases[0]:phaseOf(d&&d.phase)||phases[phases.length-1];
+      var hero=$('hero'), img=$('heroImg'), blur=$('heroBlur'), photo=ph&&ph.photo||'';
+      hero.style.background=darken(ph&&ph.colour);
+      if(photo){ if(img.getAttribute('src')!==photo){ img.src=photo; blur.src=photo; } img.hidden=false; blur.hidden=false; hero.classList.remove('nophoto'); }
+      else { img.hidden=true; blur.hidden=true; img.removeAttribute('src'); blur.removeAttribute('src'); hero.classList.add('nophoto'); }
+      img.onerror=function(){ img.hidden=true; blur.hidden=true; hero.classList.add('nophoto'); };
+      $('heroCredit').textContent=photo&&ph.photoCredit?'Photo: '+ph.photoCredit:'';
+      $('heroTrip').textContent=tripLine;
+      var tc=$('todayCard'); tc.textContent='';
+      if(before && start){
+        var left=Math.max(0,daysBetween(t,start));
+        $('heroKick').textContent='Trip starts '+WDL[start.getDay()]+', '+md(start);
+        $('heroBig').textContent=plural(left,'day')+' to go';
+        $('heroSub').textContent=days[0]&&days[0].location?'First stop: '+days[0].location:'';
+      } else if(after){
+        $('heroKick').textContent='Trip complete · '+(start&&end?md(start)+' → '+md(end):'');
+        $('heroBig').textContent=trip.name||'Trip complete';
+        $('heroSub').textContent=plural(total,'day');
+      } else if(d){
+        var dd0=parseDay(d.date);
+        $('heroKick').textContent=['Day '+d.day, dd0?wmd(dd0):'', d.phase].filter(Boolean).join(' · ');
+        $('heroBig').textContent=d.location||'—';
+        $('heroSub').textContent='';
+        var blocks=dayBlocks(d,{planInline:true}), kids=[];
+        if(d.plan) kids.push(h('div',null,[h('span','t-label cardlabel','Today’s plan'),rich(h('p','plantext'),d.plan)]));
+        kids=kids.concat(blocks.nodes);
+        if(!kids.length) kids.push(h('p','plantext','No plans yet'));
+        var todayCard=h('div','todaycard',kids); tc.appendChild(todayCard);
+      }
+    } else {
+      $('ptTrip').textContent=tripLine;
+      if(state.tab==='trip'){
+        $('ptTitle').textContent='Trip';
+        $('ptSub').textContent=[before?'Starts in '+plural(daysBetween(t,start),'day'):after?plural(total,'day'):'Day '+dayNo+' of '+total, plural(phases.length,'phase')].join(' · ');
+      } else {
+        $('ptTitle').textContent='To book';
+        $('ptSub').textContent=tbItems.length?plural(tbItems.length,'item')+' · soonest first':'Everything is booked';
+      }
     }
-    if(state.preview){ nb.appendChild(el('div','notice','Previewing '+wmd(t)+'. Open Settings to go back to today.')); }
 
-    // timeline
-    ['timeline','timeline2'].forEach(function(id){
-      var tl=$(id); tl.textContent='';
-      if(!(phases.length&&total)) return;
-      var bar=el('div','timeline');
+    // notices
+    var nb=$('notice'); nb.textContent='';
+    var syncedAt=+store.get(KEY_SYNC)||0;
+    if(state.demo){ var cb=el('button',null,'Connect your sheet'); cb.onclick=openSettings; nb.appendChild(notice('info','info',['You’re looking at the demo trip. ',cb])); }
+    else if(state.error){ nb.appendChild(notice('warn','alert',[h('b',null,'Couldn’t sync: '),state.error+' Showing your last synced copy.'])); }
+    else if(!navigator.onLine){ nb.appendChild(notice('warn','wifi',[h('b',null,'Offline'),' · showing the copy saved '+(syncedAt?ago(syncedAt):'on this phone')+'.'])); }
+    if(state.preview){ var bb0=el('button',null,'Back to today'); bb0.onclick=function(){state.preview=null; render();}; nb.appendChild(notice('info','eye',['Previewing ',h('b',null,wmd(t)),'. ',bb0])); }
+
+    // ---------- Today tab ----------
+    var vt=$('viewToday'); vt.textContent='';
+    if(before){
+      if(tbItems.length || bookingProgress(data)){
+        var pr=bookingProgress(data);
+        vt.appendChild(sh(tbItems.length?'✱ Still to book':'Bookings',(tbItems.length?'tb ':'')+'first'));
+        if(pr){
+          var bars=h('div','segbar'); for(var k=0;k<pr.total;k++) bars.appendChild(h('i',k<pr.done?'on':null));
+          if(pr.total>24){ bars=h('div','bar8',h('div')); bars.firstChild.style.width=Math.round(pr.done/pr.total*100)+'%'; }
+          bars.setAttribute('role','img'); bars.setAttribute('aria-label',pr.done+' of '+pr.total+' bookings done');
+          vt.appendChild(card(h('div','prog',[h('div','top',[h('span','n',pr.done+' of '+pr.total),h('span','t-small','bookings done'),h('span','left',tbItems.length?tbItems.length+' left':'✓ All booked')]),bars]),true));
+        } else {
+          vt.appendChild(card(h('div','prog',[h('div','top',[h('span','n',String(tbItems.length)),h('span','t-small','still to book')])]),true));
+        }
+        if(tbItems.length){ var sa=btn('See all '+tbItems.length+' to book','primary',null,function(){setTab('book');}); sa.classList.add('btn-block'); sa.style.marginTop='12px'; vt.appendChild(sa); }
+      }
+    }
+    var from=before?0:after?Math.max(0,days.length-7):dayNo, list=days.slice(from,from+7);
+    if(list.length){
+      var more=h('span');
+      vt.appendChild(sh(before?'First week':after?'Last week':'Next 7 days',vt.childNodes.length?null:'first'));
+      vt.appendChild(card(list.map(function(x){return dayRow(x,false);})));
+    }
+
+    // ---------- Trip tab ----------
+    var vp=$('viewTrip'); vp.textContent='';
+    if(phases.length&&total){
+      var bar=h('div','phasebar');
       phases.forEach(function(p,i){
         var ps=parseDay(p.start), pe=i+1<phases.length?parseDay(phases[i+1].start):end;
         var w=ps&&pe?Math.max(1,daysBetween(ps,pe)+(i+1<phases.length?0:1)):(p.days||1);
-        var b=el('button',null,p.name); b.style.background=p.colour||'#8F8982'; b.style.flex=String(w);
-        b.title=p.name; b.onclick=function(){goPhase(i);}; bar.appendChild(b);
+        var b=h('button',null,p.name); b.type='button'; b.style.background=darken(p.colour); b.style.flex=String(w); b.title=p.name; b.onclick=function(){goPhase(i);}; bar.appendChild(b);
       });
-      if(start&&t>=start&&t<=end){ var m=el('div','marker'); m.style.left='calc('+(daysBetween(start,t)+.5)/total*100+'% - 1.5px)'; bar.appendChild(m); }
-      tl.appendChild(bar);
-      var dl=el('div','tl-dates'); dl.appendChild(el('span',null,start?md(start):'')); dl.appendChild(el('span',null,end?md(end):'')); tl.appendChild(dl);
-    });
-    var tbItems=toBookItems(data);
-
-    // today card
-    var dayNo=start?daysBetween(start,t)+1:1, before=dayNo<1, after=dayNo>total;
-    var idx=before?0:after?days.length-1:dayNo-1, d=days[idx];
-    var tc=$('today'); tc.textContent='';
-    if(before && start){
-      // Before the trip: countdown, bookings progress, then the soonest things to book.
-      var cd=el('div','count'), left=Math.max(0,daysBetween(t,start));
-      cd.appendChild(el('div','caps','Trip starts '+WDL[start.getDay()]+', '+MON[start.getMonth()]+' '+start.getDate()));
-      var big=el('div','big'); big.appendChild(el('b',null,String(left))); big.appendChild(el('span',null,left===1?'day to go':'days to go')); cd.appendChild(big);
-      var pr=bookingProgress(data), line=el('div','prog');
-      if(pr){
-        line.appendChild(el('span',null,pr.done+' of '+pr.total+' bookings done'));
-        line.appendChild(el('span','left',tbItems.length?tbItems.length+' left':'✓ All booked'));
-        cd.appendChild(line);
-        var bw=el('div','bar'), bf=el('div'); bf.style.width=(pr.total?Math.round(pr.done/pr.total*100):100)+'%'; bw.appendChild(bf); cd.appendChild(bw);
-        bw.setAttribute('role','img'); bw.setAttribute('aria-label',pr.done+' of '+pr.total+' bookings done');
-      } else {
-        line.appendChild(el('span',null,'Bookings'));
-        line.appendChild(el('span','left',tbItems.length?tbItems.length+' still to book':'✓ All booked'));
-        cd.appendChild(line);
-      }
-      tc.appendChild(cd);
-      if(tbItems.length){
-        tc.appendChild(el('h2','sec tbhead','✱ Still to book · soonest first'));
-        var lst=el('div','tblist');
-        tbItems.slice(0,3).forEach(function(it){ lst.appendChild(itemRow(it)); });
-        var sa=el('button','seeall','See all '+tbItems.length+' to book →'); sa.type='button'; sa.onclick=function(){setTab('book');}; lst.appendChild(sa);
-        tc.appendChild(lst);
-      }
-    } else if(d){
-      // Ticket layout: phase-colour edge, the place large, then icon rows.
-      var card=el('div','today'), strip=el('div','strip'), inner=el('div','in');
-      var pc=phases.filter(function(p){return p.name===d.phase;})[0];
-      strip.style.background=(pc&&pc.colour)||'#8F8982'; card.appendChild(strip);
-      var dd0=parseDay(d.date);
-      var meta=[after?'Trip complete':'', 'Day '+d.day, dd0?wmd(dd0):'', d.phase, before?'in '+(1-dayNo)+(1-dayNo===1?' day':' days'):'']
-        .filter(Boolean).join('  ·  ');
-      inner.appendChild(el('div','meta caps',meta));
-      inner.appendChild(el('div','where',d.location||'—'));
-      inner.appendChild(rich(el('div','what'),d.plan||'No plans yet'));
-      [['bed',d.stay],['bus',travelLines(d)],['clock',d.keyTimes],['note',d.notes]].forEach(function(r){
-        if(!r[1]) return; var row=el('div','r'); row.appendChild(icon(r[0]));
-        row.appendChild(r[0]==='bed'?stayNode(el('div'),d):rich(el('div'),r[1])); inner.appendChild(row);
-      });
-      card.appendChild(inner);
-      card.onclick=function(){openDay(d);};
-      tc.appendChild(card);
+      if(start&&t>=start&&t<=end){ var mk=h('div','mk'); mk.style.left='calc('+(daysBetween(start,t)+.5)/total*100+'% - 2px)'; bar.appendChild(mk); }
+      vp.appendChild(bar);
+      vp.appendChild(h('div','phasedates t-small',[h('span',null,start?md(start):''),h('span',null,end?md(end):'')]));
     }
-
-    // next 7 days
-    var nx=$('next'); nx.textContent='';
-    var from=before?0:dayNo, list=after?[]:days.slice(from,from+7);
-    if(list.length){
-      nx.appendChild(el('h2','sec',before?'First week':'Next 7 days'));
-      list.forEach(function(x){
-        var r=el('div','row'), dd=parseDay(x.date);
-        r.appendChild(el('div','d',dd?wmd(dd):''));
-        var c=el('div','t');
-        if(x.location) c.appendChild(el('div','where',x.location));
-        rich(c,x.plan||'');
-        var extra=[travelLines(x),x.keyTimes].filter(Boolean).join('\n');
-        if(extra) c.appendChild(rich(el('div','x'),extra));
-        r.appendChild(c); r.onclick=function(){openDay(x);}; nx.appendChild(r);
-      });
-    }
-
-    // phases
-    var ph=$('phases'); ph.textContent='';
-    if(phases.length) ph.appendChild(el('h2','sec','Phases'));
-    var cur=-1; phases.forEach(function(p,i){ if(days[idx]&&days[idx].phase===p.name) cur=i; });
     phases.forEach(function(p,i){
-      var box=el('section','phase'); box.id='phase-'+i;
-      var h=el('div','ph-head'); h.style.background=p.colour||'#8F8982';
-      h.appendChild(el('div','ph-name',roman(i+1)+'  ·  '+String(p.name).toUpperCase()));
+      var sec=h('section'); sec.id='phase-'+i; sec.style.marginTop='30px'; sec.style.scrollMarginTop='16px';
+      var open=p.summary&&p.summary.trim().charAt(0)!=='✓';
+      var top=h('div',null,[pill(p.name,'phase',darken(p.colour)),p.summary?pill(p.summary.replace(/\s+/g,' ').trim(),open?'tb':''):null]);
+      top.style.cssText='display: flex; gap: 8px; flex-wrap: wrap';
       var ps=parseDay(p.start), pe=parseDay(p.end);
-      h.appendChild(el('div','ph-dates',(ps&&pe?md(ps)+' – '+md(pe):'No days yet')+(p.days?'  ·  '+p.days+' days':'')));
-      box.appendChild(h);
-      if(p.summary){ var open=p.summary.trim().charAt(0)!=='✓'; box.appendChild(el('div','pill'+(open?' open':''),p.summary)); }
-      var body=el('div','ph-body'); body.appendChild(el('div','label','PLAN'));
-      days.filter(function(x){return x.phase===p.name;}).forEach(function(x){
-        var r=el('div','prow'+(x.date===(days[idx]&&days[idx].date)&&!before&&!after?' is-today':''));
-        var dd=parseDay(x.date);
-        r.appendChild(el('div','n',String(x.day))); r.appendChild(el('div','dt',dd?md(dd):''));
-        r.appendChild(rich(el('div'),x.plan||x.location||''));
-        var tb=['stay','flights','car','transfers'].some(function(k){return /✱|\bto book\b/i.test(String(x[k]||''));});
-        var bk=el('div','bk',tb?'✱':''); if(tb) bk.title='Something to book'; r.appendChild(bk);
-        r.onclick=function(){openDay(x);}; body.appendChild(r);
+      var dl=h('div','t-small',(ps&&pe?md(ps)+' – '+md(pe):'No days yet')+(p.days?' · '+plural(p.days,'day'):'')); dl.style.cssText='margin: 8px 0 12px; font-weight: 600';
+      var rows=days.filter(function(x){return x.phase===p.name;}).map(function(x){
+        var isT=x.date===todayDate, dd=parseDay(x.date);
+        var tb=['stay','flights','car','transfers'].some(function(k){return /✱/.test(String(x[k]||''));});
+        return row(dtile(isT?'Today':(dd?WD[dd.getDay()]:''),dd?dd.getDate():x.day,isT),x.plan||x.location||'—',x.plan?x.location:'',
+          [tb?el('span','star','✱'):null,CHEV()],null,'date'+(isT?' hi':''),function(){openDay(x);});
       });
-      box.appendChild(body); ph.appendChild(box);
+      sec.appendChild(top); sec.appendChild(dl); if(rows.length) sec.appendChild(card(rows));
+      vp.appendChild(sec);
     });
 
-    // to-book view
+    // ---------- To book tab ----------
     var vb=$('viewBook'); vb.textContent='';
-    vb.appendChild(el('div','vtitle','To book'));
     var stays=tbItems.filter(function(x){return x.type==='stay';}), trans=tbItems.filter(function(x){return x.type!=='stay';});
     var shown=state.bookFilter==='stay'?stays:state.bookFilter==='transport'?trans:tbItems;
-    vb.appendChild(el('div','vsub',tbItems.length?tbItems.length+(tbItems.length===1?' item':' items')+' · soonest first':'Everything is booked'));
     if(tbItems.length){
-      var chips=el('div','chips');
+      var chips=h('div','chips');
       [['all','All',tbItems.length],['stay','Stays',stays.length],['transport','Transport',trans.length]].forEach(function(c){
-        var cb=el('button',null,c[1]+' '+c[2]); cb.type='button'; cb.setAttribute('aria-pressed',String(state.bookFilter===c[0]));
-        cb.onclick=function(){state.bookFilter=c[0]; render();}; chips.appendChild(cb);
+        var cb2=h('button','chip',c[1]+' '+c[2]); cb2.type='button'; cb2.setAttribute('aria-pressed',String(state.bookFilter===c[0]));
+        cb2.onclick=function(){state.bookFilter=c[0]; render();}; chips.appendChild(cb2);
       });
       vb.appendChild(chips);
       var groups=[], byName={};
@@ -619,17 +736,16 @@
         g.items.push(it);
       });
       groups.sort(function(a,b){return a.order-b.order;}).forEach(function(g){
-        var sec=el('section','tbgroup'), gh=el('div','gh'), dot=el('i'); dot.style.background=g.phase.colour||'#8F8982';
-        gh.appendChild(dot); gh.appendChild(el('span','caps',String(g.phase.name||'Other')));
-        var ps=parseDay(g.phase.start), pe=parseDay(g.phase.end); gh.appendChild(el('span',null,ps&&pe?md(ps)+' – '+md(pe):''));
-        sec.appendChild(gh);
-        var l=el('div','tblist'); g.items.forEach(function(it){ l.appendChild(itemRow(it)); }); sec.appendChild(l);
-        vb.appendChild(sec);
+        var dot=h('i'); dot.style.cssText='width: 12px; height: 12px; border-radius: 6px; flex: none; background: '+darken(g.phase.colour);
+        var ps=parseDay(g.phase.start), pe=parseDay(g.phase.end);
+        var gh=h('div',null,[dot,h('span','t-h3',String(g.phase.name||'Other')),h('span','t-small',ps&&pe?md(ps)+' – '+md(pe):'')]);
+        gh.style.cssText='display: flex; align-items: center; gap: 10px; margin: 26px 0 10px'; gh.children[1].style.flex='1';
+        vb.appendChild(gh); vb.appendChild(card(g.items.map(itemRow)));
       });
-      if(!shown.length) vb.appendChild(el('div','tbempty','Nothing in this filter'));
-      vb.appendChild(el('p','tbnote','Tap an item to open its day. Mark it booked in your sheet; it drops off this list on the next sync.'));
+      if(!shown.length) vb.appendChild(card(h('div','empty',h('div','t-h3','Nothing in this filter'))));
+      var nt=h('p','help','Tap an item to open its day. Mark it booked in your sheet; it drops off this list on the next sync.'); nt.style.marginTop='16px'; vb.appendChild(nt);
     } else {
-      vb.appendChild(el('div','tbempty','✓ Nothing left to book'));
+      vb.appendChild(card(h('div','empty',[h('span','okc',I('tick')),h('div','t-h3','Nothing left to book'),h('p','t-small','New ✱ To Book rows in your sheet show up here after the next sync.')])));
     }
 
     // views + nav
@@ -641,13 +757,13 @@
 
     // status
     var st=$('status'); st.className='status'; st.textContent='';
-    var syncedAt=+store.get(KEY_SYNC)||0, msg;
+    var msg;
     if(state.demo){ st.classList.add('demo'); msg='Demo trip'; }
     else if(state.syncing){ msg='Syncing…'; }
-    else if(!navigator.onLine){ st.classList.add('offline'); msg='Offline  ·  last synced '+(syncedAt?ago(syncedAt):'—'); }
+    else if(!navigator.onLine){ st.classList.add('off'); msg='Offline · last synced '+(syncedAt?ago(syncedAt):'—'); }
     else { msg='Synced '+(syncedAt?ago(syncedAt):'—'); }
-    st.appendChild(el('span','dot')); st.appendChild(document.createTextNode(msg));
-    if(data.updated&&!state.demo){ st.appendChild(el('div',null,'Sheet data from '+ago(Date.parse(data.updated)))); }
+    st.appendChild(h('i')); st.appendChild(document.createTextNode(msg));
+    if(data.updated&&!state.demo){ st.appendChild(h('div','sub','Sheet data from '+ago(Date.parse(data.updated)))); }
   }
 
   function goPhase(i){
@@ -683,20 +799,6 @@
 
   // ---------- day sheet ----------
   var dayIdx=-1;
-  var SVG={left:'<path d="M15 18l-6-6 6-6"/>', right:'<path d="M9 18l6-6-6-6"/>', close:'<path d="M6 6l12 12M18 6L6 18"/>',
-    nav:'<path d="M3 11l18-8-8 18-2-8z"/>', card:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 9h10M7 13h6"/>'};
-  function svg(name){var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('aria-hidden','true'); s.innerHTML=SVG[name]; return s;}
-  function rbtn(name,label,cls){var b=el('button','rbtn'+(cls?' '+cls:'')); b.type='button'; b.setAttribute('aria-label',label); b.title=label; b.appendChild(svg(name)); return b;}
-  function isToBookLine(l){return /^\s*✱/.test(l);}
-  function cleanToBook(l){return l.replace(/^\s*✱\s*/,'').replace(/^to book\s*[·:-]?\s*/i,'').trim();}
-  // The stay for a day: name and address from the feed, or matched from the Stays address list.
-  function stayInfo(d){
-    var stay=String(d.stay||'').trim(), map=addrMap(), name=String(d.stayName||'').trim(), address=String(d.stayAddress||'').trim();
-    if(!stay || isToBookLine(stay)) return null;
-    if(!name){ Object.keys(map).sort(function(a,b){return b.length-a.length;}).some(function(n){ if(stay.indexOf(n)>=0){name=n; return true;} }); }
-    if(!address && name) address=map[name]||'';
-    return {name:name||stay.split('\n')[0], address:address, place:String(d.stayPlace||'').trim()||String(d.location||'').split('→').pop().trim()};
-  }
   function openDay(d){
     var days=(state.data&&state.data.days)||[], i=days.indexOf(d);
     if(i<0) days.some(function(x,k){ if(x.date===d.date){i=k; return true;} });
@@ -713,68 +815,24 @@
     var sheetEl=$('daySheet'), fromH=dir&&sheetEl.classList.contains('open')?sheetEl.getBoundingClientRect().height:0;
     var b=$('dayBody'); b.textContent='';
     var dd=parseDay(d.date);
-
-    // header: ‹  Sat, Jan 14 · Day 14  ›  ✕
-    var head=el('div','dhead');
-    var prev=rbtn('left','Previous day'); prev.disabled=i===0; prev.onclick=function(){stepDay(-1);};
-    var next=rbtn('right','Next day'); next.disabled=i===days.length-1; next.onclick=function(){stepDay(1);};
-    var close=rbtn('close','Close','dark'); close.onclick=hideAll;
-    var title=el('div','dtitle'); title.appendChild(el('b',null,dd?WD[dd.getDay()]+', '+MON[dd.getMonth()]+' '+dd.getDate():'')); title.appendChild(el('span',null,'Day '+d.day));
-    head.appendChild(prev); head.appendChild(title); head.appendChild(next); head.appendChild(close); b.appendChild(head);
-
-    var p=(state.data.phases||[]).filter(function(x){return x.name===d.phase;})[0];
-    if(d.phase){ var c=el('div','chip',String(d.phase).toUpperCase()); c.style.background=(p&&p.colour)||'#8F8982'; b.appendChild(c); }
-    b.appendChild(el('div','dwhere',d.location||'—'));
-
-    // pull every "✱ to book" line out of the booking fields and show them first
-    var kinds=[['stay','Stay'],['flights','Flight'],['car','Car'],['transfers','Transfer']], todo=[], rest={};
-    kinds.forEach(function(k){
-      var keep=[];
-      String(d[k[0]]||'').split('\n').forEach(function(l){ if(!l.trim()) return; if(isToBookLine(l)) todo.push([k[1],cleanToBook(l)]); else keep.push(l); });
-      rest[k[0]]=keep.join('\n');
-    });
-    if(todo.length){
-      var box=el('div','tbbox'); box.appendChild(el('div','caps','✱ Still to book'));
-      todo.forEach(function(t){ var ln=el('div','ln'); if(String(t[1]).toLowerCase().indexOf(t[0].toLowerCase())!==0) ln.appendChild(el('span',null,t[0])); ln.appendChild(document.createTextNode(t[1]||'To book')); box.appendChild(ln); });
-      b.appendChild(box);
-    }
-
-    // sections, only the ones with something in them
-    var first=true;
-    function sec(label,fill){ var s=el('div','dsec'+(first?' first':'')); first=false; s.appendChild(el('span','caps',label)); fill(s); b.appendChild(s); }
-    if(d.plan) sec('Plan',function(s){ s.appendChild(rich(el('div','v'),d.plan)); });
-    var si=stayInfo(d);
-    if(rest.stay){
-      sec('Stay tonight',function(s){
-        s.appendChild(rich(el('div','v'),rest.stay));
-        var sub=[si&&si.address, d.nights?d.nights+(+d.nights===1?' night':' nights'):''].filter(Boolean).join('  ·  ');
-        if(sub) s.appendChild(el('span','addr',sub));
-        if(si){
-          var acts=el('div','dacts');
-          if(si.address){ var a=el('a','abtn'); a.href=mapsUrl(si.address); a.target='_blank'; a.rel='noopener'; a.appendChild(svg('nav')); a.appendChild(document.createTextNode('Directions')); acts.appendChild(a); }
-          var drv=el('button','abtn dark'); drv.type='button'; drv.appendChild(svg('card')); drv.appendChild(document.createTextNode('Show to driver'));
-          drv.onclick=function(){openDriver(d,si);}; acts.appendChild(drv);
-          s.appendChild(acts);
-        }
-      });
-    }
-    [['Flights',rest.flights],['Car rental',rest.car],['Buses & transfers',rest.transfers],['Key times',d.keyTimes],['Notes',d.notes]]
-      .forEach(function(r){ if(r[1]) sec(r[0],function(s){ s.appendChild(rich(el('div','v'),r[1])); }); });
-
-    // one quiet line for what isn't happening, instead of empty rows
-    var none=[['flights','flights'],['car','car rental'],['transfers','transfers']]
-      .filter(function(k){return !String(d[k[0]]||'').trim();}).map(function(k){return k[1];});
+    var prev=iconbtn('left','Previous day',null,function(){stepDay(-1);}); prev.disabled=i===0;
+    var next=iconbtn('right','Next day',null,function(){stepDay(1);}); next.disabled=i===days.length-1;
+    b.appendChild(h('div','sheethead',[prev,h('div','mid',[h('b',null,dd?wmd(dd):''),h('span',null,'Day '+d.day)]),next,iconbtn('close','Close','dark',hideAll)]));
+    if(d.phase) b.appendChild(pill(d.phase,'phase',phaseColour(d.phase)));
+    b.appendChild(h('div','place',d.location||'—'));
+    var blocks=dayBlocks(d,{});
+    b.appendChild(h('div','stack daystack',blocks.nodes));
+    var p=blocks.parts, none=[];
+    if(!p.hasFlight) none.push('flights'); if(!p.hasCar) none.push('car rental'); if(!p.hasTransfer) none.push('transfers');
     if(none.length===3) none=['travel bookings'];
     var foot=none.length?'No '+(none.length>1?none.slice(0,-1).join(', ')+' or '+none[none.length-1]:none[0])+' today':'';
-    if(i<days.length-1){ var nd=parseDay(days[i+1].date); if(nd) foot+=(foot?'  ·  ':'')+'swipe for '+WD[nd.getDay()]+', '+MON[nd.getMonth()]+' '+nd.getDate(); }
-    if(foot) b.appendChild(el('div','dfoot',foot.charAt(0).toUpperCase()+foot.slice(1)));
-
-    // slide in from the side we're moving towards
-    $('daySheet').scrollTop=0;
+    if(i<days.length-1){ var nd=parseDay(days[i+1].date); if(nd) foot+=(foot?' · ':'')+'swipe for '+wmd(nd); }
+    else foot+=(foot?' · ':'')+'last day of the trip';
+    if(foot) b.appendChild(h('div','foot',foot.charAt(0).toUpperCase()+foot.slice(1)));
+    sheetEl.scrollTop=0;
     if(fromH) animateSheetHeight(sheetEl,fromH);
     if(dir){ b.style.transition='none'; b.style.transform='translateX('+(dir*36)+'px)'; b.style.opacity='0'; void b.offsetWidth; b.style.transition=''; b.style.transform=''; b.style.opacity=''; }
   }
-  // Grow or shrink the sheet smoothly from its old height to the new day's height.
   var heightTimer=null;
   function animateSheetHeight(sh,from){
     clearTimeout(heightTimer);
@@ -785,7 +843,6 @@
     sh.style.height=to+'px';
     heightTimer=setTimeout(function(){ sh.style.height=''; },320);
   }
-  // swipe left / right on the day sheet
   (function(){
     var sx=0, sy=0, on=false, sheet=$('daySheet');
     sheet.addEventListener('touchstart',function(e){ if(e.touches.length!==1){on=false;return;} on=true; sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
@@ -798,21 +855,20 @@
 
   // ---------- show to driver ----------
   var PHRASES=[['es','Por favor, lléveme a:'],['pt','Por favor, leve-me para:'],['en','Please take me to:']], KEY_LANG='driverLang', wake=null;
-  function mapsUrl(a){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a);}
-  function phrase(){ var l=store.get(KEY_LANG)||'es', p=PHRASES.filter(function(x){return x[0]===l;})[0]||PHRASES[0]; $('drvPhrase').textContent=p[1]; $('drvPhrase').lang=p[0]; }
-  $('drvPhrase').onclick=function(){ var l=store.get(KEY_LANG)||'es', i=0; PHRASES.forEach(function(x,k){if(x[0]===l)i=k;}); store.set(KEY_LANG,PHRASES[(i+1)%PHRASES.length][0]); phrase(); };
-  function openDriver(d,si){
+  function phrase(){ var l=store.get(KEY_LANG)||'es', p=PHRASES.filter(function(x){return x[0]===l;})[0]||PHRASES[0];
+    $('drvPhrase').textContent=p[1]; $('drvPhrase').lang=p[0]; $('drvLangCode').textContent=p[0].toUpperCase();
+    $('drvLang').setAttribute('aria-label','Phrase language: '+({es:'Spanish',pt:'Portuguese',en:'English'})[p[0]]+'. Tap to change'); }
+  $('drvLang').onclick=function(){ var l=store.get(KEY_LANG)||'es', i=0; PHRASES.forEach(function(x,k){if(x[0]===l)i=k;}); store.set(KEY_LANG,PHRASES[(i+1)%PHRASES.length][0]); phrase(); };
+  function openDriver(si){
     phrase();
     $('drvName').textContent=si.name;
     $('drvAddr').textContent=si.address||'';
     $('drvPlace').textContent=si.place && (si.address||'').toLowerCase().indexOf(si.place.toLowerCase())<0 ? si.place : '';
-    var times=String(d.keyTimes||'').split('\n').filter(function(l){return /check-?in/i.test(l);}).map(function(l){return l.replace(/\s*·\s*.*$/,'');});
-    $('drvMeta').textContent='Tonight'+(times.length?'  ·  '+times.join('  ·  '):'');
-    $('drvCopy').style.display=si.address?'':'none';
-    $('drvMaps').style.display=si.address?'':'none';
-    if(si.address) $('drvMaps').href=mapsUrl(si.address);
-    $('drvCopy').querySelector('span').textContent='Copy address';
-    $('drvCopy').onclick=function(){ copyText(si.address,$('drvCopy').querySelector('span')); };
+    var copy=$('drvCopy'), maps=$('drvMaps');
+    copy.style.display=si.address?'':'none'; maps.style.display=si.address?'':'none';
+    if(si.address) maps.href=mapsUrl(si.address);
+    copy.querySelector('span').textContent='Copy address';
+    copy.onclick=function(){ copyText(si.address,copy.querySelector('span')); };
     $('driver').classList.add('open');
     try{ if(navigator.wakeLock) navigator.wakeLock.request('screen').then(function(w){wake=w;}).catch(function(){}); }catch(e){}
     $('drvClose').focus();
@@ -824,16 +880,19 @@
   $('drvClose').onclick=closeDriver;
   function copyText(text,label){
     function done(ok){ label.textContent=ok?'Copied ✓':'Couldn’t copy'; setTimeout(function(){label.textContent='Copy address';},1800); }
+    function fallback(){ var t=el('textarea'); t.value=text; t.setAttribute('readonly',''); t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.select(); var ok=false; try{ok=document.execCommand('copy');}catch(e){} t.remove(); return ok; }
     if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(function(){done(true);},function(){done(fallback());}); }
     else done(fallback());
-    function fallback(){ var t=el('textarea'); t.value=text; t.setAttribute('readonly',''); t.style.position='fixed'; t.style.opacity='0'; document.body.appendChild(t); t.select(); var ok=false; try{ok=document.execCommand('copy');}catch(e){} t.remove(); return ok; }
   }
+
+  // ---------- settings ----------
   function openSettings(){
     $('urlIn').value=store.get(KEY_CODE)||store.get(KEY_URL)||''; $('urlErr').textContent=''; $('previewIn').value=state.preview||'';
     show($('setSheet'));
   }
-  $('setBtn').onclick=openSettings;
-  $('syncBtn').onclick=function(){ if(!store.get(KEY_URL)){openSettings();return;} sync(); };
+  Array.prototype.forEach.call(document.querySelectorAll('.js-set'),function(b){ b.onclick=openSettings; });
+  Array.prototype.forEach.call(document.querySelectorAll('.js-sync'),function(b){ b.onclick=function(){ if(!store.get(KEY_URL)){openSettings();return;} sync(); }; });
+  $('setClose').onclick=hideAll;
   $('saveUrl').onclick=function(){
     var u=$('urlIn').value.trim(), p=parseCode(u);
     if(p){ store.set(KEY_URL,p.url); store.set(KEY_CODE,showCode(p)); hideAll(); sync(); return; }
@@ -852,8 +911,8 @@
 
   // trips.boringcase.com/#K7P-4QX sets up this device, then the code is taken out of the address bar.
   (function(){
-    var h=decodeURIComponent(location.hash.slice(1)), p=h&&parseCode(h);
-    if(!h) return;
+    var hs=decodeURIComponent(location.hash.slice(1)), p=hs&&parseCode(hs);
+    if(!hs) return;
     try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){}
     if(p && store.get(KEY_URL)!==p.url){ store.set(KEY_URL,p.url); store.set(KEY_CODE,showCode(p)); store.del(KEY_DATA); store.del(KEY_SYNC); }
   })();
