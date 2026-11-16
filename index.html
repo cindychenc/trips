@@ -720,6 +720,15 @@
     all.forEach(function(s,i){ if(s.phase===name){ if(!mine.length&&i>0) before=all[i-1]; mine.push(s); } });
     return {stops:mine, start:before&&before.ll&&mine.length&&before.name!==mine[0].name?before:null};
   }
+  // What the phase maps show: no "from" point, and no fly-in / fly-out stop at either end of the phase
+  // (e.g. Santiago, where you land and then fly on), so the map stays zoomed in on the phase itself.
+  // A place reached by road is always kept, and a phase never loses its only place.
+  function mapStops(name){
+    var st=phaseStops(name).stops.slice();
+    if(st.length>1 && legKind(st[1])==='flight') st.shift();   // landed here, then flew on (Santiago)
+    if(st.length>1 && legKind(st[st.length-1])==='flight') st.pop();   // flew here to end the phase (Punta Arenas)
+    return uniqStops(st).length?st:phaseStops(name).stops;
+  }
   // Leg into a stop: dashed when that stop's first day has a flight.
   function legKind(s){
     var d0=s.days[0]; if(!d0) return 'drive';
@@ -735,20 +744,19 @@
     });
     return out;
   }
-  function hasMap(name){ return navigator.onLine && window.L && phaseStops(name).stops.some(function(s){return s.ll;}); }
+  function hasMap(name){ return navigator.onLine && window.L && mapStops(name).some(function(s){return s.ll;}); }
   function pinIcon(n,on){ return L.divIcon({className:'mpin'+(on?' on':''),html:'<span>'+n+'</span>',iconSize:on?[34,34]:[28,28],iconAnchor:on?[17,17]:[14,14]}); }
   function drawMap(el,phaseName,opts){
     opts=opts||{};
-    var ps=phaseStops(phaseName), pins=uniqStops(ps.stops);
+    var ms=mapStops(phaseName), pins=uniqStops(ms);
     if(!pins.length||!window.L) return null;
     var live=!!opts.interactive;
     var m=L.map(el,{zoomControl:false,attributionControl:true,dragging:live,touchZoom:live,doubleClickZoom:live,scrollWheelZoom:live,boxZoom:false,keyboard:false,tap:false,zoomSnap:0.25});
     m.attributionControl.setPrefix(false);
     L.tileLayer(TILE_URL,{subdomains:'abcd',maxZoom:18,attribution:TILE_ATTR,crossOrigin:true,referrerPolicy:'strict-origin-when-cross-origin'}).addTo(m);
-    var pts=[], prev=ps.start, markers=[];
-    if(ps.start){ L.circleMarker(ps.start.ll,{radius:5,color:'#111',weight:2.5,fillColor:'#fff',fillOpacity:1,interactive:false}).addTo(m); pts.push(ps.start.ll); }
+    var pts=[], prev=null, markers=[];
     // route follows every visit (there and back again); one pin per place
-    ps.stops.filter(function(s){return s.ll;}).forEach(function(s){
+    ms.filter(function(s){return s.ll;}).forEach(function(s){
       if(prev&&prev.ll&&prev.name!==s.name) L.polyline([prev.ll,s.ll],{color:'#111',weight:live?3.5:3,opacity:.9,dashArray:legKind(s)==='flight'?'7 7':null,interactive:false}).addTo(m);
       prev=s;
     });
@@ -777,7 +785,7 @@
     return f;
   }
   function phaseMapCard(p,i){
-    var n=uniqStops(phaseStops(p.name).stops).length;
+    var n=uniqStops(mapStops(p.name)).length;
     var c=h('div','mapcard');
     if(hasMap(p.name)){
       var box=h('div','mapbox'); c.appendChild(box); lazyMap(box,p.name);
