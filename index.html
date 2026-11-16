@@ -754,12 +754,10 @@
     all.forEach(function(s,i){ if(s.phase===name){ if(!mine.length&&i>0) before=all[i-1]; mine.push(s); } });
     return {stops:mine, start:before&&before.ll&&mine.length&&before.name!==mine[0].name?before:null};
   }
-  // What the phase maps show: no "from" point, and no fly-in / fly-out stop at either end of the phase
-  // (e.g. Santiago, where you land and then fly on), so the map stays zoomed in on the phase itself.
-  // A place reached by road is always kept, and a phase never loses its only place.
+  // What the phase maps show: every place in the phase, without the "from" point, and without a last stop
+  // you only fly to at the end of the phase (e.g. Punta Arenas), so the map stays zoomed in on the phase.
   function mapStops(name){
     var st=phaseStops(name).stops.slice();
-    if(st.length>1 && legKind(st[1])==='flight') st.shift();   // landed here, then flew on (Santiago)
     if(st.length>1 && legKind(st[st.length-1])==='flight') st.pop();   // flew here to end the phase (Punta Arenas)
     return uniqStops(st).length?st:phaseStops(name).stops;
   }
