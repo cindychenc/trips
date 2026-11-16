@@ -173,6 +173,59 @@
     .drv-btn{min-height:44px}
   }
 
+  /* bottom navigation */
+  .wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:5;background:#FBFAF8;border-top:1px solid var(--line);padding:4px 8px env(safe-area-inset-bottom)}
+  .nav .in{display:flex;max-width:760px;margin:0 auto}
+  .nav button{flex:1;min-height:56px;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    font-size:11px;font-weight:600;color:var(--label);cursor:pointer;position:relative}
+  .nav button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .nav button[aria-current="page"]{color:var(--ink)}
+  .nav button.bk[aria-current="page"]{color:var(--tobookInk)}
+  .nav .badge{position:absolute;top:5px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--tobookInk);color:#fff;font-size:11px;font-weight:700;line-height:18px;text-align:center}
+  .view[hidden]{display:none}
+
+  /* before the trip: countdown */
+  .count{background:#FBFAF8;border-radius:12px;box-shadow:0 0 0 1px var(--line);padding:18px 18px 16px;margin-bottom:20px}
+  .count .caps{color:var(--label)}
+  .count .big{display:flex;align-items:baseline;gap:10px;margin:8px 0 14px}
+  .count .big b{font-size:60px;line-height:.9;letter-spacing:-.03em}
+  .count .big span{font-size:18px;font-weight:600}
+  .count .prog{display:flex;font-size:13px;font-weight:600}
+  .count .prog span:first-child{flex:1}
+  .count .prog .left{color:var(--tobookInk);font-weight:700}
+  .count .bar{height:8px;border-radius:4px;background:var(--sand);overflow:hidden;margin-top:7px}
+  .count .bar div{height:100%;background:#55735F}
+
+  /* to-book lists */
+  h2.sec.tbhead{color:var(--tobookInk);border-bottom-color:var(--tobook);margin-top:0}
+  .tblist{background:#FBFAF8;border-radius:12px;box-shadow:0 0 0 1px var(--line);overflow:hidden}
+  .tbi{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;width:100%;min-height:56px;padding:10px 14px;border:0;border-top:1px solid var(--line);background:none;text-align:left;cursor:pointer}
+  .tbi:first-child{border-top:0}
+  .tbi:active{background:var(--card)}
+  .tbi .ic{width:36px;height:36px;border-radius:10px;background:var(--sand);display:grid;place-items:center;color:var(--tobookInk)}
+  .tbi .ic svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .tbi .tt{min-width:0}
+  .tbi .tt b{display:block;font-size:14px;font-weight:600;overflow-wrap:anywhere}
+  .tbi .tt span{display:block;font-size:12px;color:var(--label);margin-top:1px}
+  .tbi .rel{font-size:12px;font-weight:700;color:var(--label);white-space:nowrap}
+  .tbi .rel.soon{color:var(--tobookInk)}
+  .seeall{display:block;width:100%;min-height:48px;border:0;border-top:1px solid var(--line);background:none;color:var(--tobookInk);font-weight:600;font-size:14px;cursor:pointer}
+
+  /* to-book view */
+  .vtitle{font-size:26px;font-weight:700;margin:6px 0 2px}
+  .vsub{font-size:13px;color:var(--label);margin-bottom:14px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .chips button{min-height:36px;padding:0 14px;border-radius:18px;border:1px solid var(--line);background:#FBFAF8;font-weight:600;font-size:13px;cursor:pointer}
+  .chips button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .tbgroup{margin-top:18px}
+  .tbgroup .gh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .tbgroup .gh i{width:10px;height:10px;border-radius:5px;flex:none}
+  .tbgroup .gh .caps{flex:1;color:var(--label)}
+  .tbgroup .gh span:last-child{font-size:12px;color:var(--label)}
+  .tbnote{font-size:12px;color:var(--label);line-height:1.5;margin-top:18px}
+  .tbempty{background:#FBFAF8;border-radius:12px;box-shadow:0 0 0 1px var(--line);padding:28px 18px;text-align:center;font-weight:600;margin-top:12px}
+
   .help{font-size:12px;color:var(--calc);margin-top:8px}
   .err{color:#9B3328;font-size:12.5px;margin-top:8px}
 </style>
@@ -192,12 +245,23 @@
     </button>
   </div>
   <div id="notice"></div>
-  <div id="timeline"></div>
-  <div id="today"></div>
-  <div id="next"></div>
-  <div id="phases"></div>
+  <div class="view" id="viewToday">
+    <div id="timeline"></div>
+    <div id="today"></div>
+    <div id="next"></div>
+  </div>
+  <div class="view" id="viewTrip" hidden>
+    <div id="timeline2"></div>
+    <div id="phases"></div>
+  </div>
+  <div class="view" id="viewBook" hidden></div>
   <div class="status" id="status"></div>
 </div>
+<nav class="nav" aria-label="Sections"><div class="in">
+  <button type="button" data-tab="today"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Today</button>
+  <button type="button" data-tab="trip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>Trip</button>
+  <button type="button" data-tab="book" class="bk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>To book<span class="badge" id="bookBadge" hidden></span></button>
+</div></nav>
 
 <div class="scrim" id="scrim"></div>
 <div class="sheet" id="daySheet" role="dialog" aria-modal="true" aria-label="Day details"><div class="grab"></div><div id="dayBody"></div></div>
@@ -237,7 +301,7 @@
   <div class="help">The app keeps the last synced copy of your trip on this device, so it opens without a connection. It syncs when it opens online, when you tap ↻, and when your connection comes back.</div>
 </div>
 
-<script id="demoData" type="application/json">{"trip":{"name":"Sample Trip","subtitle":"Lisbon · Alentejo · Algarve","start":"2027-06-01","end":"2027-06-12"},"phases":[{"name":"Lisbon","start":"2027-06-01","end":"2027-06-04","days":4,"colour":"#5f7895","summary":"✓  All booked"},{"name":"Alentejo","start":"2027-06-05","end":"2027-06-08","days":4,"colour":"#c08949","summary":"✓  All booked"},{"name":"Algarve","start":"2027-06-09","end":"2027-06-12","days":4,"colour":"#b55f4f","summary":"1 stay  ·  1 open to-do"}],"days":[{"day":1,"date":"2027-06-01","phase":"Lisbon","location":"Lisbon","plan":"Arrive in Lisbon","nights":"4","stay":"Sample Apartment, Alfama","flights":"✈ DM101 · Arrive LIS 09:30","car":"","transfers":"","keyTimes":"Check-in 15:00 · Sample Apartment, Alfama","notes":"This is a demo trip. Connect your sheet in Settings to see your own."},{"day":2,"date":"2027-06-02","phase":"Lisbon","location":"Lisbon","plan":"🥾 Alfama to Castelo walk (2 hrs)","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"","keyTimes":"","notes":""},{"day":3,"date":"2027-06-03","phase":"Lisbon","location":"Sintra","plan":"Day trip to Sintra palaces","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"Train · Lisbon Rossio → Sintra","keyTimes":"","notes":"Go early to beat the crowds"},{"day":4,"date":"2027-06-04","phase":"Lisbon","location":"Lisbon","plan":"Belém & the riverfront","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"","keyTimes":"","notes":"Pastry stop"},{"day":5,"date":"2027-06-05","phase":"Alentejo","location":"Évora","plan":"Pick up car · drive to Évora","nights":"2","stay":"Quinta Exemplo (farm stay)","flights":"","car":"🚗 Demo Rentals · Pick-up 10:00 Lisbon","transfers":"","keyTimes":"Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)","notes":"incl. breakfast"},{"day":6,"date":"2027-06-06","phase":"Alentejo","location":"Évora","plan":"Old town & Roman temple","nights":"","stay":"Quinta Exemplo (farm stay)","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":""},{"day":7,"date":"2027-06-07","phase":"Alentejo","location":"Monsaraz","plan":"Drive to Monsaraz · lake swim","nights":"2","stay":"Casa do Lago Demo","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo","notes":""},{"day":8,"date":"2027-06-08","phase":"Alentejo","location":"Monsaraz","plan":"🥾 Hilltop loop (8 km · 3 hrs · 250m)","nights":"","stay":"Casa do Lago Demo","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":"Stargazing night"},{"day":9,"date":"2027-06-09","phase":"Algarve","location":"Lagos","plan":"Drive to Lagos","nights":"3","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"Check-out 10:00 · Casa do Lago Demo","notes":""},{"day":10,"date":"2027-06-10","phase":"Algarve","location":"Lagos","plan":"🥾 Ponta da Piedade cliffs (2 hrs)","nights":"","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"✱ To Book · Kayak tour · Lagos marina","keyTimes":"","notes":""},{"day":11,"date":"2027-06-11","phase":"Algarve","location":"Lagos","plan":"Beach day","nights":"","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":""},{"day":12,"date":"2027-06-12","phase":"Algarve","location":"Faro","plan":"Return car · fly home","nights":"","stay":"","flights":"✈ DM202 · FAO 14:10 → LIS 15:05","car":"🚗 Demo Rentals · Return 12:00 Faro Airport","transfers":"","keyTimes":"Check-out 10:00","notes":""}],"updated":"2026-11-15T11:30:00-08:00","addresses":{"Sample Apartment, Alfama":"Rua do Exemplo 12, Lisbon","Quinta Exemplo (farm stay)":"Estrada Demo km 4, Évora","Casa do Lago Demo":"Rua da Amostra 3, Monsaraz"}}</script>
+<script id="demoData" type="application/json">{"trip":{"name":"Sample Trip","subtitle":"Lisbon · Alentejo · Algarve","start":"2027-06-01","end":"2027-06-12"},"phases":[{"name":"Lisbon","start":"2027-06-01","end":"2027-06-04","days":4,"colour":"#5f7895","summary":"✓  All booked"},{"name":"Alentejo","start":"2027-06-05","end":"2027-06-08","days":4,"colour":"#c08949","summary":"✓  All booked"},{"name":"Algarve","start":"2027-06-09","end":"2027-06-12","days":4,"colour":"#b55f4f","summary":"1 stay  ·  1 open to-do"}],"days":[{"day":1,"date":"2027-06-01","phase":"Lisbon","location":"Lisbon","plan":"Arrive in Lisbon","nights":"4","stay":"Sample Apartment, Alfama","flights":"✈ DM101 · Arrive LIS 09:30","car":"","transfers":"","keyTimes":"Check-in 15:00 · Sample Apartment, Alfama","notes":"This is a demo trip. Connect your sheet in Settings to see your own."},{"day":2,"date":"2027-06-02","phase":"Lisbon","location":"Lisbon","plan":"🥾 Alfama to Castelo walk (2 hrs)","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"","keyTimes":"","notes":""},{"day":3,"date":"2027-06-03","phase":"Lisbon","location":"Sintra","plan":"Day trip to Sintra palaces","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"Train · Lisbon Rossio → Sintra","keyTimes":"","notes":"Go early to beat the crowds"},{"day":4,"date":"2027-06-04","phase":"Lisbon","location":"Lisbon","plan":"Belém & the riverfront","nights":"","stay":"Sample Apartment, Alfama","flights":"","car":"","transfers":"","keyTimes":"","notes":"Pastry stop"},{"day":5,"date":"2027-06-05","phase":"Alentejo","location":"Évora","plan":"Pick up car · drive to Évora","nights":"2","stay":"Quinta Exemplo (farm stay)","flights":"","car":"🚗 Demo Rentals · Pick-up 10:00 Lisbon","transfers":"","keyTimes":"Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)","notes":"incl. breakfast"},{"day":6,"date":"2027-06-06","phase":"Alentejo","location":"Évora","plan":"Old town & Roman temple","nights":"","stay":"Quinta Exemplo (farm stay)","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":""},{"day":7,"date":"2027-06-07","phase":"Alentejo","location":"Monsaraz","plan":"Drive to Monsaraz · lake swim","nights":"2","stay":"Casa do Lago Demo","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo","notes":""},{"day":8,"date":"2027-06-08","phase":"Alentejo","location":"Monsaraz","plan":"🥾 Hilltop loop (8 km · 3 hrs · 250m)","nights":"","stay":"Casa do Lago Demo","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":"Stargazing night"},{"day":9,"date":"2027-06-09","phase":"Algarve","location":"Lagos","plan":"Drive to Lagos","nights":"3","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"Check-out 10:00 · Casa do Lago Demo","notes":""},{"day":10,"date":"2027-06-10","phase":"Algarve","location":"Lagos","plan":"🥾 Ponta da Piedade cliffs (2 hrs)","nights":"","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"✱ To Book · Kayak tour · Lagos marina","keyTimes":"","notes":""},{"day":11,"date":"2027-06-11","phase":"Algarve","location":"Lagos","plan":"Beach day","nights":"","stay":"✱ To Book · Stay in Lagos","flights":"","car":"🚗 Demo Rentals","transfers":"","keyTimes":"","notes":""},{"day":12,"date":"2027-06-12","phase":"Algarve","location":"Faro","plan":"Return car · fly home","nights":"","stay":"","flights":"✈ DM202 · FAO 14:10 → LIS 15:05","car":"🚗 Demo Rentals · Return 12:00 Faro Airport","transfers":"","keyTimes":"Check-out 10:00","notes":""}],"updated":"2026-11-15T11:30:00-08:00","addresses":{"Sample Apartment, Alfama":"Rua do Exemplo 12, Lisbon","Quinta Exemplo (farm stay)":"Estrada Demo km 4, Évora","Casa do Lago Demo":"Rua da Amostra 3, Monsaraz"},"bookings":[{"type":"stay","status":"booked","date":"2027-06-01","end":"2027-06-05","nights":4,"time":"","title":"Stay · Sample Apartment, Alfama","phase":"Lisbon"},{"type":"flight","status":"booked","date":"2027-06-01","end":"","nights":"","time":"09:30","title":"Flight · DM101 → Lisbon","phase":"Lisbon"},{"type":"stay","status":"booked","date":"2027-06-05","end":"2027-06-07","nights":2,"time":"","title":"Stay · Quinta Exemplo (farm stay)","phase":"Alentejo"},{"type":"car","status":"booked","date":"2027-06-05","end":"2027-06-12","nights":"","time":"10:00","title":"Car · Demo Rentals · Lisbon","phase":"Alentejo"},{"type":"stay","status":"booked","date":"2027-06-07","end":"2027-06-09","nights":2,"time":"","title":"Stay · Casa do Lago Demo","phase":"Alentejo"},{"type":"stay","status":"to book","date":"2027-06-09","end":"2027-06-12","nights":3,"time":"","title":"Stay · Lagos","phase":"Algarve"},{"type":"bus","status":"to book","date":"2027-06-10","end":"","nights":"","time":"","title":"Kayak tour · Lagos marina","phase":"Algarve"},{"type":"flight","status":"booked","date":"2027-06-12","end":"","nights":"","time":"14:10","title":"Flight · FAO → LIS","phase":"Algarve"}]}</script>
 <script>
 (function(){
   'use strict';
@@ -261,7 +325,7 @@
     del:function(k){try{localStorage.removeItem(k);}catch(e){}}
   };
   var DEMO=JSON.parse(document.getElementById('demoData').textContent);
-  var state={data:null, demo:false, syncing:false, error:'', preview:null};
+  var state={data:null, demo:false, syncing:false, error:'', preview:null, tab:'today', bookFilter:'all'};
 
   // ---------- helpers ----------
   function $(id){return document.getElementById(id);}
@@ -317,7 +381,9 @@
   var ICONS={bed:'<path d="M3 18v-7m0 4h18v3m0-3v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
     bus:'<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 20v-3m8 3v-3"/>',
     clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
-    note:'<path d="M5 4h14v16H5zM9 9h6M9 13h6"/>'};
+    note:'<path d="M5 4h14v16H5zM9 9h6M9 13h6"/>',
+    plane:'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+    car:'<path d="M5 17h14v-5l-2-5H7l-2 5z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/>'};
   function icon(n){var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('aria-hidden','true'); s.innerHTML=ICONS[n]; return s;}
   // Stay text, plus the address as a Maps link when the Stays tab has one.
   function stayNode(parent,d){
@@ -329,6 +395,58 @@
     return parent;
   }
   function travelLines(d){return [d.flights,d.car,d.transfers].filter(Boolean).join('\n');}
+  function isoAdd(s,n){var d=parseDay(s); if(!d) return ''; d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+  // ---------- to-book items ----------
+  // From the feed's bookings list (newer script) or, failing that, from the ✱ lines on each day.
+  var KIND_TYPE={stay:'stay',flights:'flight',car:'car',transfers:'bus'}, TYPE_WORD={stay:'Stay',flight:'Flight',car:'Car',bus:'Transfer'};
+  function toBookItems(data){
+    var items=[];
+    if(Array.isArray(data.bookings)){
+      data.bookings.forEach(function(b){ if(b&&b.status==='to book'&&b.date) items.push({type:b.type||'bus',title:b.title||TYPE_WORD[b.type]||'Booking',date:b.date,end:b.end||'',nights:b.nights||'',time:b.time||'',phase:b.phase||''}); });
+    } else {
+      var open={};
+      (data.days||[]).forEach(function(d){
+        Object.keys(KIND_TYPE).forEach(function(k){
+          String(d[k]||'').split('\n').forEach(function(l){
+            if(!/^\s*✱/.test(l)) return;
+            var text=l.replace(/^\s*✱\s*/,'').replace(/^to book\s*[·:-]?\s*/i,'').trim(), type=KIND_TYPE[k], key=k+'|'+text, it=open[key];
+            if(it && it.last===isoAdd(d.date,-1)){ it.last=d.date; if(type==='stay'){ it.nights++; it.end=isoAdd(d.date,1); } return; }
+            var word=TYPE_WORD[type];
+            it={type:type, title:text.toLowerCase().indexOf(word.toLowerCase())===0?text:word+' · '+(text||'to book'), date:d.date, last:d.date, phase:d.phase||'',
+                nights:type==='stay'?1:'', end:type==='stay'?isoAdd(d.date,1):'', time:''};
+            open[key]=it; items.push(it);
+          });
+        });
+      });
+    }
+    return items.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:0;});
+  }
+  // "9 of 14 bookings done": only when the feed carries the full bookings list.
+  function bookingProgress(data){
+    if(!Array.isArray(data.bookings)||!data.bookings.length) return null;
+    var done=data.bookings.filter(function(b){return b.status!=='to book';}).length;
+    return {done:done,total:data.bookings.length};
+  }
+  function itemWhen(it){
+    var a=parseDay(it.date), e=parseDay(it.end), s=a?WD[a.getDay()]+', '+MON[a.getMonth()]+' '+a.getDate():'';
+    if(it.type==='stay'&&e) return s+' → '+WD[e.getDay()]+', '+MON[e.getMonth()]+' '+e.getDate()+(it.nights?' · '+it.nights+(+it.nights===1?' night':' nights'):'');
+    return s+(it.time?' · '+it.time:'');
+  }
+  function itemRel(it){
+    var a=parseDay(it.date); if(!a) return {t:'',soon:false};
+    var n=daysBetween(today(),a);
+    return {t:n<0?(-n===1?'yesterday':-n+' days ago'):n===0?'today':n===1?'tomorrow':'in '+n+' days', soon:n<=7};
+  }
+  function itemRow(it){
+    var b=el('button','tbi'); b.type='button';
+    var ic=el('span','ic'); ic.appendChild(icon(it.type==='stay'?'bed':it.type==='flight'?'plane':it.type==='car'?'car':'bus')); b.appendChild(ic);
+    var tt=el('span','tt'); tt.appendChild(el('b',null,it.title)); tt.appendChild(el('span',null,itemWhen(it))); b.appendChild(tt);
+    var r=itemRel(it); b.appendChild(el('span','rel'+(r.soon?' soon':''),r.t));
+    b.onclick=function(){ var d=(state.data.days||[]).filter(function(x){return x.date===it.date;})[0]; if(d) openDay(d); };
+    return b;
+  }
+  function setTab(t){ state.tab=t; render(); window.scrollTo(0,0); }
 
   // ---------- data ----------
   function loadCached(){
@@ -374,8 +492,9 @@
     if(state.preview){ nb.appendChild(el('div','notice','Previewing '+wmd(t)+'. Open Settings to go back to today.')); }
 
     // timeline
-    var tl=$('timeline'); tl.textContent='';
-    if(phases.length&&total){
+    ['timeline','timeline2'].forEach(function(id){
+      var tl=$(id); tl.textContent='';
+      if(!(phases.length&&total)) return;
       var bar=el('div','timeline');
       phases.forEach(function(p,i){
         var ps=parseDay(p.start), pe=i+1<phases.length?parseDay(phases[i+1].start):end;
@@ -386,13 +505,39 @@
       if(start&&t>=start&&t<=end){ var m=el('div','marker'); m.style.left='calc('+(daysBetween(start,t)+.5)/total*100+'% - 1.5px)'; bar.appendChild(m); }
       tl.appendChild(bar);
       var dl=el('div','tl-dates'); dl.appendChild(el('span',null,start?md(start):'')); dl.appendChild(el('span',null,end?md(end):'')); tl.appendChild(dl);
-    }
+    });
+    var tbItems=toBookItems(data);
 
     // today card
     var dayNo=start?daysBetween(start,t)+1:1, before=dayNo<1, after=dayNo>total;
     var idx=before?0:after?days.length-1:dayNo-1, d=days[idx];
     var tc=$('today'); tc.textContent='';
-    if(d){
+    if(before && start){
+      // Before the trip: countdown, bookings progress, then the soonest things to book.
+      var cd=el('div','count'), left=Math.max(0,daysBetween(t,start));
+      cd.appendChild(el('div','caps','Trip starts '+WDL[start.getDay()]+', '+MON[start.getMonth()]+' '+start.getDate()));
+      var big=el('div','big'); big.appendChild(el('b',null,String(left))); big.appendChild(el('span',null,left===1?'day to go':'days to go')); cd.appendChild(big);
+      var pr=bookingProgress(data), line=el('div','prog');
+      if(pr){
+        line.appendChild(el('span',null,pr.done+' of '+pr.total+' bookings done'));
+        line.appendChild(el('span','left',tbItems.length?tbItems.length+' left':'✓ All booked'));
+        cd.appendChild(line);
+        var bw=el('div','bar'), bf=el('div'); bf.style.width=(pr.total?Math.round(pr.done/pr.total*100):100)+'%'; bw.appendChild(bf); cd.appendChild(bw);
+        bw.setAttribute('role','img'); bw.setAttribute('aria-label',pr.done+' of '+pr.total+' bookings done');
+      } else {
+        line.appendChild(el('span',null,'Bookings'));
+        line.appendChild(el('span','left',tbItems.length?tbItems.length+' still to book':'✓ All booked'));
+        cd.appendChild(line);
+      }
+      tc.appendChild(cd);
+      if(tbItems.length){
+        tc.appendChild(el('h2','sec tbhead','✱ Still to book · soonest first'));
+        var lst=el('div','tblist');
+        tbItems.slice(0,3).forEach(function(it){ lst.appendChild(itemRow(it)); });
+        var sa=el('button','seeall','See all '+tbItems.length+' to book →'); sa.type='button'; sa.onclick=function(){setTab('book');}; lst.appendChild(sa);
+        tc.appendChild(lst);
+      }
+    } else if(d){
       // Ticket layout: phase-colour edge, the place large, then icon rows.
       var card=el('div','today'), strip=el('div','strip'), inner=el('div','in');
       var pc=phases.filter(function(p){return p.name===d.phase;})[0];
@@ -454,6 +599,46 @@
       box.appendChild(body); ph.appendChild(box);
     });
 
+    // to-book view
+    var vb=$('viewBook'); vb.textContent='';
+    vb.appendChild(el('div','vtitle','To book'));
+    var stays=tbItems.filter(function(x){return x.type==='stay';}), trans=tbItems.filter(function(x){return x.type!=='stay';});
+    var shown=state.bookFilter==='stay'?stays:state.bookFilter==='transport'?trans:tbItems;
+    vb.appendChild(el('div','vsub',tbItems.length?tbItems.length+(tbItems.length===1?' item':' items')+' · soonest first':'Everything is booked'));
+    if(tbItems.length){
+      var chips=el('div','chips');
+      [['all','All',tbItems.length],['stay','Stays',stays.length],['transport','Transport',trans.length]].forEach(function(c){
+        var cb=el('button',null,c[1]+' '+c[2]); cb.type='button'; cb.setAttribute('aria-pressed',String(state.bookFilter===c[0]));
+        cb.onclick=function(){state.bookFilter=c[0]; render();}; chips.appendChild(cb);
+      });
+      vb.appendChild(chips);
+      var groups=[], byName={};
+      shown.forEach(function(it){
+        var g=byName[it.phase];
+        if(!g){ var pi=-1; phases.forEach(function(p,k){if(p.name===it.phase)pi=k;}); g=byName[it.phase]={phase:phases[pi]||{name:it.phase||'Other'},order:pi<0?99:pi,items:[]}; groups.push(g); }
+        g.items.push(it);
+      });
+      groups.sort(function(a,b){return a.order-b.order;}).forEach(function(g){
+        var sec=el('section','tbgroup'), gh=el('div','gh'), dot=el('i'); dot.style.background=g.phase.colour||'#8F8982';
+        gh.appendChild(dot); gh.appendChild(el('span','caps',String(g.phase.name||'Other')));
+        var ps=parseDay(g.phase.start), pe=parseDay(g.phase.end); gh.appendChild(el('span',null,ps&&pe?md(ps)+' – '+md(pe):''));
+        sec.appendChild(gh);
+        var l=el('div','tblist'); g.items.forEach(function(it){ l.appendChild(itemRow(it)); }); sec.appendChild(l);
+        vb.appendChild(sec);
+      });
+      if(!shown.length) vb.appendChild(el('div','tbempty','Nothing in this filter'));
+      vb.appendChild(el('p','tbnote','Tap an item to open its day. Mark it booked in your sheet; it drops off this list on the next sync.'));
+    } else {
+      vb.appendChild(el('div','tbempty','✓ Nothing left to book'));
+    }
+
+    // views + nav
+    $('viewToday').hidden=state.tab!=='today'; $('viewTrip').hidden=state.tab!=='trip'; $('viewBook').hidden=state.tab!=='book';
+    Array.prototype.forEach.call(document.querySelectorAll('.nav button'),function(b){
+      if(b.dataset.tab===state.tab) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');
+    });
+    var bb=$('bookBadge'); bb.hidden=!tbItems.length; bb.textContent=String(tbItems.length);
+
     // status
     var st=$('status'); st.className='status'; st.textContent='';
     var syncedAt=+store.get(KEY_SYNC)||0, msg;
@@ -465,7 +650,11 @@
     if(data.updated&&!state.demo){ st.appendChild(el('div',null,'Sheet data from '+ago(Date.parse(data.updated)))); }
   }
 
-  function goPhase(i){ var n=$('phase-'+i); if(n) n.scrollIntoView({behavior:'smooth',block:'start'}); }
+  function goPhase(i){
+    var go=function(){ var n=$('phase-'+i); if(n) n.scrollIntoView({behavior:'smooth',block:'start'}); };
+    if(state.tab!=='trip'){ state.tab='trip'; render(); window.scrollTo(0,0); requestAnimationFrame(go); } else go();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.nav button'),function(b){ b.onclick=function(){ setTab(b.dataset.tab); }; });
 
   // ---------- sheets ----------
   var scrim=$('scrim');
