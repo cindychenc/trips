@@ -1,5 +1,5 @@
 // Keeps the app itself on the device so it opens offline. Trip data is stored separately by the page.
-const CACHE = 'trip-app-v15';
+const CACHE = 'trip-app-v16';
 const PHOTOS = 'trip-photos-v1';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './fonts/inter-latin.woff2'];
 
