@@ -1,5 +1,5 @@
 // Keeps the app itself on the device so it opens offline. Trip data is stored separately by the page.
-const CACHE = 'trip-app-v11';
+const CACHE = 'trip-app-v12';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
