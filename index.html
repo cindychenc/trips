@@ -321,9 +321,9 @@
   .gtlist .gtday:first-child{margin-top:0}
   .gtlist .tcard + .tcard{margin-top:10px}
   /* search links on things still to book */
-  .lnks{grid-column:2;display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin-top:2px}
-  .lnks a{display:flex;align-items:center;justify-content:center;gap:5px;min-height:40px;padding:0 4px;border-radius:12px;background:#fff;color:var(--ink);font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap}
-  .lnks a .lkic{width:12px;height:12px;margin:0;fill:none;stroke:var(--text3);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .lnks{grid-column:2;display:flex;flex-direction:column;gap:6px;margin-top:2px}
+  .lnks a{display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 8px;border-radius:12px;background:#fff;color:var(--ink);font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap}
+  .lnks a .lkic{width:13px;height:13px;margin:0;flex:none;fill:none;stroke:var(--text3);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
 <body>
@@ -669,7 +669,7 @@
   }
   function linkChips(links){
     if(!links||!links.length) return null;
-    return h('div','lnks',links.map(function(l){ var a=h('a',null,l[0]); a.setAttribute('aria-label',l[0]+' (opens a new page)'); a.href=l[1]; a.target='_blank'; a.rel='noopener'; a.onclick=function(e){e.stopPropagation();}; return a; }));
+    return h('div','lnks',links.map(function(l){ var a=h('a',null,[l[0],I('ext','lkic')]); a.setAttribute('aria-label',l[0]+' (opens a new page)'); a.href=l[1]; a.target='_blank'; a.rel='noopener'; a.onclick=function(e){e.stopPropagation();}; return a; }));
   }
   function tbCard(t){return h('div','tbcard',[tile(t.icon||'bed','tbw'),h('span',null,[h('span','t-label','✱ Still to book'),h('span','t-h3',t.title),h('span','s',(t.sub?t.sub+' · mark it booked in your sheet':'Mark it booked in your sheet'))]),linkChips(t.links)]);}
   function planCard(text,label){return card([h('span','t-label cardlabel',label||'Plan'),rich(h('p','plantext'),text)],true);}
@@ -1319,8 +1319,9 @@
   $('drvLang').onclick=function(){ var l=store.get(KEY_LANG)||'es', i=0; PHRASES.forEach(function(x,k){if(x[0]===l)i=k;}); store.set(KEY_LANG,PHRASES[(i+1)%PHRASES.length][0]); phrase(); };
   function openDriver(si){
     phrase();
-    $('drvName').textContent=si.name;
-    $('drvAddr').textContent=si.address||'';
+    // Address first (big), stay name under it.
+    $('drvName').textContent=si.address||si.name;
+    $('drvAddr').textContent=si.address?si.name:'';
     $('drvPlace').textContent=si.place && (si.address||'').toLowerCase().indexOf(si.place.toLowerCase())<0 ? si.place : '';
     var copy=$('drvCopy'), maps=$('drvMaps');
     copy.style.display=si.address?'':'none'; maps.style.display=si.address?'':'none';
