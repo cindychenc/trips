@@ -572,7 +572,7 @@
   function notice(kind,icon,kids){return h('div','notice '+kind,[I(icon),h('span',null,kids)]);}
 
   // ---------- segments (stays, flights, cars, buses with times) ----------
-  function segs(){var s=state.data&&state.data.segments; return Array.isArray(s)?s:null;}
+  function segs(){var s=state.data&&state.data.segments; return Array.isArray(s)&&s.length?s:null;}   // empty list → use the day's text instead
   function booked(s){return s.status!=='to book';}
   // Everything that happens on one day, from segments when the feed has them, else from the day's text.
   function dayParts(d){
