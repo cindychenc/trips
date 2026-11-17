@@ -321,9 +321,8 @@
   .gtlist .gtday:first-child{margin-top:0}
   .gtlist .tcard + .tcard{margin-top:10px}
   /* search links on things still to book */
-  .lnks{grid-column:1/-1;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;margin-top:2px}
-  .lnks a{display:flex;align-items:center;justify-content:center;gap:5px;min-height:40px;padding:0 8px;border-radius:12px;background:#fff;color:var(--ink);font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap}
-  .todaycard .lnks a{font-size:13px;padding:0 4px}
+  .lnks{grid-column:2;display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin-top:2px}
+  .lnks a{display:flex;align-items:center;justify-content:center;gap:5px;min-height:40px;padding:0 4px;border-radius:12px;background:#fff;color:var(--ink);font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap}
   .lnks a .lkic{width:12px;height:12px;margin:0;fill:none;stroke:var(--text3);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
