@@ -152,7 +152,11 @@
   .hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,20,.5) 0,rgba(10,14,20,.38) 70px,rgba(10,14,20,.1) 150px,rgba(10,14,20,0) 220px)}
   .hero.nophoto .shade{background:linear-gradient(180deg,rgba(0,0,0,.12) 0,rgba(0,0,0,0) 180px)}
   .hero .in{position:relative}
-  .hero .tripline{font-weight:700;font-size:13px;opacity:.95;padding-top:12px}
+  .hero .tripline{font-weight:700;font-size:13px;opacity:.95;margin-top:12px}
+  .hero .tripline:empty{display:none}
+  .hero .tripline:empty+.kick{margin-top:12px}
+  .hero .tripline+.kick{margin-top:6px}
+  .hero .sub.sub2{margin-top:2px}.hero .sub:empty{display:none}
   .hero .kick{font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-top:24px}
   .hero .t-display{margin-top:6px;overflow-wrap:anywhere}
   .hero .sub{font-size:16px;margin-top:8px}
@@ -335,13 +339,15 @@
   <header class="hero nophoto" id="hero" hidden>
     <img class="bg" id="heroImg" alt="" hidden><img class="bg blur" id="heroBlur" alt="" aria-hidden="true" hidden><div class="slides" id="heroSlides" hidden></div><div class="shade"></div>
     <div class="in">
-      <div class="bar"><div class="grow tripline" id="heroTrip"></div>
+      <div class="bar"><div class="grow"></div>
         <button class="iconbtn glass js-sync" aria-label="Sync now" title="Sync now"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
         <button class="iconbtn glass js-set" aria-label="Settings" title="Settings"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
       </div>
+      <div class="tripline" id="heroTrip"></div>
       <div class="kick" id="heroKick"></div>
       <h1 class="t-display" id="heroBig" style="margin-bottom: 0"></h1>
       <div class="sub" id="heroSub"></div>
+      <div class="sub sub2" id="heroSub2"></div>
       <div id="todayCard"></div>
     </div>
     <div class="credit" id="heroCredit"></div>
@@ -1029,16 +1035,17 @@
       else { img.hidden=true; blur.hidden=true; img.removeAttribute('src'); blur.removeAttribute('src'); hero.classList.add('nophoto'); }
       img.onerror=function(){ img.hidden=true; blur.hidden=true; hero.classList.add('nophoto'); };
       $('heroCredit').textContent=photo&&ph.photoCredit?'Photo: '+ph.photoCredit:'';
-      $('heroTrip').textContent=tripLine;
+      $('heroTrip').textContent=(before||after)?'':tripLine; $('heroSub2').textContent='';
       var tc=$('todayCard'); tc.textContent='';
       if(!after && !(before && start)) stopCarousel();
       if(before && start){
         startCarousel(phases);
         $('heroCredit').textContent='';
         var left=Math.max(0,daysBetween(t,start));
-        $('heroKick').textContent='Trip starts '+WDL[start.getDay()]+', '+md(start);
+        $('heroKick').textContent=tripLine;
         $('heroBig').textContent=plural(left,'day')+' to go';
-        $('heroSub').textContent=days[0]&&days[0].location?'First stop: '+days[0].location:'';
+        $('heroSub').textContent='Starts '+WDL[start.getDay()]+', '+md(start);
+        $('heroSub2').textContent=days[0]&&days[0].location?'First stop: '+days[0].location:'';
       } else if(after){
         startCarousel(phases);
         $('heroCredit').textContent='';
