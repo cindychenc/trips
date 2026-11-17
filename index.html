@@ -95,7 +95,7 @@
   .row .end{display:flex;align-items:center;gap:6px;white-space:nowrap}
   .row .end .ic{width:16px;height:16px;color:#8A8A8A;stroke-width:2.2}
   .rel{font-weight:700;font-size:13px;color:var(--text3)}.rel.soon{color:var(--tb)}
-  .star{font-weight:800;font-size:16px;color:var(--tb)}
+  .star{display:inline-flex;color:var(--tb)}.star .stic{width:14px;height:14px}
   .tobook{color:var(--tb);font-weight:700}
   .lk{color:inherit;text-decoration:underline;text-decoration-color:#BDBDBD;text-decoration-thickness:1.5px;text-underline-offset:3px}
   .lk .lkic{display:inline-block;width:.78em;height:.78em;margin-left:4px;vertical-align:-.04em;fill:none;stroke:var(--text3);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
@@ -328,6 +328,8 @@
   .lnks{grid-column:2;display:flex;flex-direction:column;gap:6px;margin-top:2px}
   .lnks a{display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 8px;border-radius:12px;background:#fff;color:var(--ink);font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap}
   .lnks a .lkic{width:13px;height:13px;margin:0;flex:none;fill:none;stroke:var(--text3);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .stic{display:inline-block;width:.86em;height:.86em;margin-right:.32em;vertical-align:-.06em;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;flex:none}
+  .star .stic{margin-right:0}
 </style>
 </head>
 <body>
@@ -476,7 +478,7 @@
     door:'<path d="M14 3H6v18h8"/><path d="M10 12h11M18 9l3 3-3 3"/>', key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/>',
     note:'<path d="M5 4h14v16H5zM9 9h6M9 13h6"/>', clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
     chev:'<path d="M9 6l6 6-6 6"/>', left:'<path d="M15 18l-6-6 6-6"/>', right:'<path d="M9 18l6-6-6-6"/>', close:'<path d="M6 6l12 12M18 6L6 18"/>',
-    nav:'<path d="M3 11l18-8-8 18-2-8z"/>', ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    nav:'<path d="M3 11l18-8-8 18-2-8z"/>', star:'<path d="M12 3.5v17M4.6 7.75l14.8 8.5M4.6 16.25l14.8-8.5"/>', ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
     tick:'<path d="M20 6L9 17l-5-5"/>', wifi:'<path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><path d="M3 3l18 18"/>',
     alert:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5h.01"/>', info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
     expand:'<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>', mount:'<path d="M3 20l6-11 4 6 3-4 5 9z"/>', up:'<path d="M12 19V5M6 11l6-6 6 6"/>', down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
@@ -484,6 +486,9 @@
   };
   function I(n,cls){var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('class',cls||'ic'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('aria-hidden','true'); s.innerHTML=ICONS[n]; return s;}
   var CHEV=function(){return I('chev');};
+  // The "to book" asterisk as an icon, so it looks the same on every device (no font glyph).
+  var STAR=function(){return I('star','stic');};
+  function starText(s){ var out=[]; String(s).split('✱').forEach(function(p,i){ if(i) out.push(STAR()); if(i&&p.charAt(0)===' ') p=p.slice(1); if(p) out.push(p); }); return out; }
 
   // Phase colours from the sheet, darkened so white text on them stays readable (UI kit).
   var DARK={'#6e8f78':'#55735F','#5f7895':'#4E6684','#c08949':'#8A5F2C','#85698f':'#6E5577','#b55f4f':'#9E5243','#4f898a':'#3F7071','#89894e':'#6B6B3C','#9b5e6d':'#84505D'};
@@ -525,7 +530,7 @@
     var map=addrMap(), names=Object.keys(map).filter(function(n){return n.length>2;}).sort(function(a,b){return b.length-a.length;});
     String(text||'').split('\n').forEach(function(line,i){
       if(i) parent.appendChild(document.createElement('br'));
-      if(/^\s*✱/.test(line)) parent.appendChild(el('span','tobook',line)); else linkLine(parent,line,names,map);
+      if(/^\s*✱/.test(line)) parent.appendChild(h('span','tobook',starText(line.trim()))); else linkLine(parent,line,names,map);
     });
     return parent;
   }
@@ -677,14 +682,14 @@
     if(!links||!links.length) return null;
     return h('div','lnks',links.map(function(l){ var a=h('a',null,[l[0],I('ext','lkic')]); a.setAttribute('aria-label',l[0]+' (opens a new page)'); a.href=l[1]; a.target='_blank'; a.rel='noopener'; a.onclick=function(e){e.stopPropagation();}; return a; }));
   }
-  function tbCard(t){return h('div','tbcard',[tile(t.icon||'bed','tbw'),h('span',null,[h('span','t-label','✱ Still to book'),h('span','t-h3',t.title),h('span','s',(t.sub?t.sub+' · mark it booked in your sheet':'Mark it booked in your sheet'))]),linkChips(t.links)]);}
+  function tbCard(t){return h('div','tbcard',[tile(t.icon||'bed','tbw'),h('span',null,[h('span','t-label',[STAR(),'Still to book']),h('span','t-h3',t.title),h('span','s',(t.sub?t.sub+' · mark it booked in your sheet':'Mark it booked in your sheet'))]),linkChips(t.links)]);}
   function planCard(text,label){return card([h('span','t-label cardlabel',label||'Plan'),rich(h('p','plantext'),text)],true);}
   // The pieces of a day, in order: to book, plan, stay, times, flights/buses, notes.
   function dayBlocks(d,opts){
     var p=dayParts(d), out=[];
     if(p.tobook.length===1){ var c=tbCard(p.tobook[0]); c.querySelector('.t-h3').style.display='block'; out.push(c); }
     else if(p.tobook.length>1){
-      out.push(h('div','tbgroup',[h('div','tbhead',[h('span','t-label','✱ Still to book'),h('span','tbn',String(p.tobook.length))])]
+      out.push(h('div','tbgroup',[h('div','tbhead',[h('span','t-label',[STAR(),'Still to book']),h('span','tbn',String(p.tobook.length))])]
         .concat(p.tobook.map(function(t){ return h('div','tbrow',[tile(t.icon||'bed','tbw'),h('span',null,[h('b',null,t.title),t.sub?h('span','s',t.sub):null]),linkChips(t.links)]); }))
         .concat([h('div','tbfoot','Mark them booked in your sheet')])));
     }
@@ -699,7 +704,7 @@
     var dd=parseDay(x.date), extra=travelLines(x);
     var tb=['stay','flights','car','transfers'].some(function(k){return /✱/.test(String(x[k]||''));});
     return row(dtile(isToday?'Today':(dd?WD[dd.getDay()]:''),dd?dd.getDate():x.day,isToday),x.location||x.plan||'—',x.location?rich(h('span'),x.plan||''):'',
-      [tb?el('span','star','✱'):null,CHEV()],extra?rich(h('span','x'),extra):null,'top date'+(isToday?' hi':''),function(){openDay(x);});
+      [tb?h('span','star',STAR()):null,CHEV()],extra?rich(h('span','x'),extra):null,'top date'+(isToday?' hi':''),function(){openDay(x);});
   }
 
   // ---------- to-book items ----------
@@ -1128,7 +1133,7 @@
     if(before){
       if(tbItems.length || bookingProgress(data)){
         var pr=bookingProgress(data);
-        vt.appendChild(sh(tbItems.length?'✱ Still to book':'Bookings',(tbItems.length?'tb ':'')+'first'));
+        vt.appendChild(sh(tbItems.length?[STAR(),'Still to book']:'Bookings',(tbItems.length?'tb ':'')+'first'));
         if(pr){
           var bars=h('div','segbar'); for(var k=0;k<pr.total;k++) bars.appendChild(h('i',k<pr.done?'on':null));
           if(pr.total>24){ bars=h('div','bar8',h('div')); bars.firstChild.style.width=Math.round(pr.done/pr.total*100)+'%'; }
@@ -1172,7 +1177,7 @@
         var isT=x.date===todayDate, dd=parseDay(x.date);
         var tb=['stay','flights','car','transfers'].some(function(k){return /✱/.test(String(x[k]||''));});
         return row(dtile(isT?'Today':(dd?WD[dd.getDay()]:''),dd?dd.getDate():x.day,isT),x.plan||x.location||'—',x.plan?x.location:'',
-          [tb?el('span','star','✱'):null,CHEV()],null,'date'+(isT?' hi':''),function(){openDay(x);});
+          [tb?h('span','star',STAR()):null,CHEV()],null,'date'+(isT?' hi':''),function(){openDay(x);});
       });
       sec.appendChild(top); sec.appendChild(dl); if(rows.length) sec.appendChild(phaseMapCard(p,i)); if(rows.length) sec.appendChild(card(rows));
       vp.appendChild(sec);
@@ -1205,7 +1210,7 @@
       if(!shown.length) vb.appendChild(card(h('div','empty',h('div','t-h3','Nothing in this filter'))));
       var nt=h('p','help','Tap an item to open its day. Mark it booked in your sheet; it drops off this list on the next sync.'); nt.style.marginTop='16px'; vb.appendChild(nt);
     } else {
-      vb.appendChild(card(h('div','empty',[h('span','okc',I('tick')),h('div','t-h3','Nothing left to book'),h('p','t-small','New ✱ To Book rows in your sheet show up here after the next sync.')])));
+      vb.appendChild(card(h('div','empty',[h('span','okc',I('tick')),h('div','t-h3','Nothing left to book'),h('p','t-small',['New ',STAR(),'To Book rows in your sheet show up here after the next sync.'])])));
     }
 
     // views + nav
