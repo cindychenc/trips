@@ -39,6 +39,7 @@
   .t-label{font-weight:800;font-size:12px;line-height:1.2;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
   .t-time{font-weight:800;font-size:17px;line-height:1;letter-spacing:-.01em;white-space:nowrap}
   .plantext{font-weight:600;font-size:18px;line-height:1.45;margin:0;white-space:pre-line;overflow-wrap:anywhere}
+  .plantext.none{font-weight:500;color:var(--text3)}
 
   /* icons */
   .ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
@@ -152,9 +153,11 @@
   .hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,20,.5) 0,rgba(10,14,20,.38) 70px,rgba(10,14,20,.1) 150px,rgba(10,14,20,0) 220px)}
   .hero.nophoto .shade{background:linear-gradient(180deg,rgba(0,0,0,.12) 0,rgba(0,0,0,0) 180px)}
   .hero .in{position:relative}
-  .hero .tripline{font-weight:700;font-size:13px;opacity:.95;margin-top:12px}
+  .hero .tripline{font-weight:700;font-size:13px;opacity:.95;margin-top:24px}
   .hero .tripline:empty{display:none}
-  .hero .tripline:empty+.kick{margin-top:12px}
+  .hero .tripline:empty+.kick{margin-top:24px}
+  .hero .kick.below{margin-top:6px}
+  .hero #todayCard .todaycard{margin-top:28px}
   .hero .tripline+.kick{margin-top:6px}
   .hero .sub.sub2{margin-top:2px}.hero .sub:empty{display:none}
   .hero .kick{font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-top:24px}
@@ -693,7 +696,7 @@
         .concat(p.tobook.map(function(t){ return h('div','tbrow',[tile(t.icon||'bed','tbw'),h('span',null,[h('b',null,t.title),t.sub?h('span','s',t.sub):null]),linkChips(t.links)]); }))
         .concat([h('div','tbfoot','Mark them booked in your sheet')])));
     }
-    if(d.plan && !opts.planInline) out.push(planCard(d.plan));
+    if(!opts.planInline) out.push(d.plan?planCard(d.plan):card([h('span','t-label cardlabel','Plan'),h('p','plantext none','Nothing planned for this day')],true));
     if(p.tonight && p.tonight.name) out.push(stayCard(p.tonight,d));
     if(p.rows.length) out.push(card(p.rows.map(timeRow)));
     p.moves.forEach(function(s){ out.push(moveCard(s)); });
@@ -1042,6 +1045,9 @@
       $('heroCredit').textContent=photo&&ph.photoCredit?'Photo: '+ph.photoCredit:'';
       $('heroTrip').textContent=(before||after)?'':tripLine; $('heroSub2').textContent='';
       var tc=$('todayCard'); tc.textContent='';
+      var kickEl=$('heroKick'), bigEl=$('heroBig'), during=!(before||after);
+      if(during) bigEl.after(kickEl); else bigEl.before(kickEl);
+      kickEl.classList.toggle('below',during);
       if(!after && !(before && start)) stopCarousel();
       if(before && start){
         startCarousel(phases);
@@ -1056,14 +1062,14 @@
         $('heroCredit').textContent='';
         $('heroKick').textContent='Trip complete';
         $('heroBig').textContent=trip.name||'Trip complete';
-        $('heroSub').textContent=plural(total,'day');
+        $('heroSub').textContent=[start&&end?md(start)+' → '+md(end):'', plural(total,'day')].filter(Boolean).join(' · ');
       } else if(d){
         var dd0=parseDay(d.date);
         $('heroKick').textContent=['Day '+d.day, dd0?wmd(dd0):'', d.phase].filter(Boolean).join(' · ');
         $('heroBig').textContent=d.location||'—';
         $('heroSub').textContent='';
         var blocks=dayBlocks(d,{planInline:true}), kids=[];
-        if(d.plan) kids.push(h('div',null,[h('span','t-label cardlabel','Today’s plan'),rich(h('p','plantext'),d.plan)]));
+        kids.push(h('div',null,[h('span','t-label cardlabel','Today’s plan'),d.plan?rich(h('p','plantext'),d.plan):h('p','plantext none','Nothing planned for today')]));
         kids=kids.concat(blocks.nodes);
         if(!kids.length) kids.push(h('p','plantext','No plans yet'));
         var todayCard=h('div','todaycard',kids); tc.appendChild(todayCard);
