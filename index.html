@@ -664,9 +664,15 @@
   function starText(s){ var out=[]; String(s).split('✱').forEach(function(p,i){ if(i) out.push(STAR()); if(i&&p.charAt(0)===' ') p=p.slice(1); if(p) out.push(p); }); return out; }
 
   // Phase colours from the sheet, darkened so white text on them stays readable (UI kit).
-  var DARK={'#6e8f78':'#55735F','#5f7895':'#4E6684','#c08949':'#8A5F2C','#85698f':'#6E5577','#b55f4f':'#9E5243','#4f898a':'#3F7071','#89894e':'#6B6B3C','#9b5e6d':'#84505D'};
+  var DARK={'#6e8f78':'#55735F','#5f7895':'#4E6684','#c08949':'#8A5F2C','#85698f':'#6E5577','#b55f4f':'#9E5243','#4f898a':'#3F7071','#89894e':'#6B6B3C','#9b5e6d':'#84505D',
+    // trip palette (Nov 18, 2026): already dark enough, used as is
+    '#4a7a0e':'#4A7A0E','#5a45d6':'#5A45D6','#c24a00':'#C24A00','#758400':'#758400','#c2002f':'#C2002F','#2e3b14':'#2E3B14'};
   function darken(hex){
     var k=String(hex||'').toLowerCase(); if(DARK[k]) return DARK[k];
+    // the sheet can store a colour one step off (#49790e for #4a7a0e), so match known colours within 3
+    var q=k.match(/^#([0-9a-f]{6})$/);
+    if(q){ var v=parseInt(q[1],16); for(var key in DARK){ var w=parseInt(key.slice(1),16);
+      if(Math.abs((v>>16&255)-(w>>16&255))<=3 && Math.abs((v>>8&255)-(w>>8&255))<=3 && Math.abs((v&255)-(w&255))<=3) return DARK[key]; } }
     var m=k.match(/^#([0-9a-f]{6})$/); if(!m) return '#5E5E5E';
     var n=parseInt(m[1],16), f=.78, r=Math.round((n>>16&255)*f), g=Math.round((n>>8&255)*f), b=Math.round((n&255)*f);
     return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
