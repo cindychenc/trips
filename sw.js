@@ -1,9 +1,9 @@
 // Keeps the app itself on the device so it opens offline. Trip data is stored separately by the page.
-const CACHE = 'trip-app-v58';
+const CACHE = 'trip-app-v59';
 const PHOTOS = 'trip-photos-v1';
 const TILES = 'trip-tiles-v1';
 const MAX_TILES = 2500;
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './fonts/inter-latin.woff2', './lib/leaflet.js', './lib/leaflet.css'];
+const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon-32.png', './fonts/inter-latin.woff2', './lib/leaflet.js', './lib/leaflet.css'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
