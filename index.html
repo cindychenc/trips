@@ -236,6 +236,7 @@
   .per .rm{width:36px;height:36px;border:0;background:none;color:#BDBDBD;font-size:15px;cursor:pointer;flex:none;border-radius:18px}
   .per.add{background:#FAFAFA}
   .per.add .plus{width:26px;height:26px;margin:0 5px;border-radius:13px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex:none}
+  .per.add .plus .ic{width:16px;height:16px;stroke-width:2.4}
   .per.add input::placeholder{color:#A3A3A3;font-weight:500}
   .per .addbtn{height:32px;padding:0 12px;border-radius:16px;border:0;background:var(--ink);color:#fff;font-weight:700;font-size:13px;cursor:pointer;flex:none}
   .pesun{margin-top:10px;font-weight:500;font-size:13px;color:var(--text3);display:flex;align-items:center;gap:5px}
@@ -641,7 +642,7 @@
   function mapsUrl(a){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a);}
 
   var ICONS={
-    pencil:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>', padlock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>', pencil:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>', padlock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
     sunrise:'<path d="M4 18h16M7 18a5 5 0 0 1 10 0M12 4v4M9.5 10.5 8 9M14.5 10.5 16 9"/>', sunset:'<path d="M4 18h16M7 18a5 5 0 0 1 10 0M12 8V4M10 6l2 2 2-2"/>',
     speaker:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
     del:'<path d="M21 5H9l-6 7 6 7h12zM17 9l-6 6M11 9l6 6"/>',
@@ -1571,7 +1572,7 @@
     ai.oninput=function(){ ab.hidden=!ai.value.trim(); };
     ai.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); addFree(ai.value); } };
     ab.onclick=function(){ addFree(ai.value); };
-    list.appendChild(h('div','per add',[h('span','plus','+'),ai,ab]));
+    list.appendChild(h('div','per add',[h('span','plus',I('plus')),ai,ab]));
   }
   // Drag a free stop by its ⋮⋮ handle; locked (booked) rows stay put and stops move around them.
   function dragRow(handle,el){
