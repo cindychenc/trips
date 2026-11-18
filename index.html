@@ -1489,11 +1489,13 @@
     box.appendChild(h('div','phl','Asking about price · '+L[0]));
     var g=h('div','phg'); L[1].forEach(function(x){ g.appendChild(h('div','phc',[h('b',null,x[0]),h('span',null,x[1])])); }); box.appendChild(g);
   }
+  // a round local amount worth about 20 in the home currency (CLP 20,000, PEN 50 …)
+  function fxDefault(){ return String(niceNum(20*rateOf(fx.home,fx.cur))); }
   function fxNav(){
     var cn=$('curNav'); cn.innerHTML='';
     tripCurrencies().forEach(function(c){ var b=h('button',null,[h('b',null,c),CURNAME[c]||'']); b.type='button';
       b.setAttribute('aria-pressed',String(c===fx.cur));
-      b.onclick=function(){ if(fx.swapped){ var v=(parseFloat(fx.amt)||0)*rateOf(fx.cur,fx.home); fx.swapped=false; fx.amt=v?String(+v.toFixed(2)):'0'; } fx.cur=c; fxNav(); fxDraw(); }; cn.appendChild(b); });
+      b.onclick=function(){ fx.cur=c; if(fx.swapped) fx.amt=fxDefault(); fxNav(); fxDraw(); }; cn.appendChild(b); });
   }
   (function(){
     var k=$('fxKeys');
@@ -1516,7 +1518,7 @@
   }
   function openFx(){
     if(!fxRates()) return;
-    hideAll(); fx.open=true; fx.swapped=false;
+    hideAll(); fx.open=true; fx.swapped=true; fx.amt=fxDefault();
     document.body.classList.add('fxopen');
     $('tabNav').hidden=true; $('curNav').hidden=false; $('fxBtn').setAttribute('aria-label','Close converter');
     fxNav(); fxDraw(); fxOrigin(); show($('fxSheet'));
