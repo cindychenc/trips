@@ -235,12 +235,19 @@
   .fx .keys button.k2{background:#fff;border:1.5px solid var(--line)}
   .fx .keys .ic{width:22px;height:22px}
   .fx .rate.old{color:var(--tb)}
-  .fx .phl{font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin:14px 0 6px}
-  .fx .phg{display:flex;gap:6px;overflow-x:auto;margin:0 -20px;padding:0 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-  .fx .phg::-webkit-scrollbar{display:none}
-  .fx .phc{flex:none;border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;white-space:nowrap}
-  .fx .phc b{display:block;font-weight:700;font-size:14px;line-height:1.2}
-  .fx .phc span{display:block;font-weight:500;font-size:11px;line-height:1.2;color:var(--text3);margin-top:1px}
+  .fx .sayrow{display:flex;gap:8px;margin:10px -20px 0;padding:0 20px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .fx .sayrow::-webkit-scrollbar{display:none}
+  .fx .sayrow:empty{display:none}
+  .fx .saybar{flex:none;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:var(--fill);border:0;text-align:left;color:var(--ink);font:inherit;cursor:pointer;max-width:calc(100vw - 72px)}
+  .fx .saybar.num{white-space:normal}
+  .fx .saybar.ph{background:#fff;border:1.5px solid var(--line);padding:8.5px 14px;white-space:nowrap}
+  .fx .saybar:active{background:#E9E9E9}
+  .fx .sayic{width:36px;height:36px;border-radius:18px;background:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+  .fx .sayic .ic{width:18px;height:18px}
+  .fx .saytx{min-width:0}
+  .fx .saytx b{display:block;font-weight:700;font-size:16px;line-height:1.25}
+  .fx .saytx span{display:block;font-weight:500;font-size:12px;line-height:1.3;color:var(--text3);margin-top:1px}
+  .fx .saybar.ph .saytx b{font-size:15px}
   .fx .offl{display:flex;align-items:center;gap:6px;margin-top:12px;font-weight:600;font-size:12px;color:var(--text3);justify-content:center;text-align:center}
   .fx .offl i{width:7px;height:7px;border-radius:4px;background:#2E7D4F;flex:none}
   .fx .offl.old i{background:var(--tb)}
@@ -493,9 +500,9 @@
     <div class="pr2" id="fxBot"></div>
     <button type="button" class="swapb" id="fxSwap" aria-label="Swap currencies"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M4 8l4-4 4 4M16 20V4M12 16l4 4 4-4"/></svg></button>
   </div>
+  <div class="sayrow" id="fxSay"></div>
   <div class="qa" id="fxQuick"></div>
   <div class="keys" id="fxKeys"></div>
-  <div id="fxPhr"></div>
 </div>
 <div class="sheet" id="setSheet" role="dialog" aria-modal="true" aria-label="Settings">
   <div class="grab"></div>
@@ -564,6 +571,7 @@
   function mapsUrl(a){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a);}
 
   var ICONS={
+    speaker:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
     del:'<path d="M21 5H9l-6 7 6 7h12zM17 9l-6 6M11 9l6 6"/>',
     bed:'<path d="M3 18v-7m0 4h18v3m0-3v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
     bus:'<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 20v-3m8 3v-3"/>',
@@ -1483,11 +1491,74 @@
     for(var i=0;i<days.length;i++){ var p=placeInfo(days[i].place); if(p&&CUR[p.country]===fx.cur) return p.country; }
     return here;
   }
+  // ----- saying the amount: number in words + a sound-it-out guide (Spanish / Portuguese) -----
+  var ES_U=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'];
+  var ES_T=['','','','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
+  var ES_H=['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
+  function esWords(n){
+    if(n<30) return ES_U[n];
+    if(n<100) return ES_T[Math.floor(n/10)]+(n%10?' y '+ES_U[n%10]:'');
+    if(n<1000) return n===100?'cien':ES_H[Math.floor(n/100)]+(n%100?' '+esWords(n%100):'');
+    if(n<1e6){ var k=Math.floor(n/1000); return (k===1?'mil':apoES(esWords(k))+' mil')+(n%1000?' '+esWords(n%1000):''); }
+    var m=Math.floor(n/1e6); return (m===1?'un millón':apoES(esWords(m))+' millones')+(n%1e6?' '+esWords(n%1e6):'');
+  }
+  function apoES(w){ return w.replace(/veintiuno$/,'veintiún').replace(/(^|\s)uno$/,'$1un'); }
+  var PT_U=['zero','um','dois','três','quatro','cinco','seis','sete','oito','nove','dez','onze','doze','treze','catorze','quinze','dezasseis','dezassete','dezoito','dezanove'];
+  var PT_T=['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'];
+  var PT_H=['','cento','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
+  function ptWords(n,br){
+    var U=PT_U.slice(); if(br){ U[14]='quatorze'; U[16]='dezesseis'; U[17]='dezessete'; U[19]='dezenove'; }
+    function w(n){
+      if(n<20) return U[n];
+      if(n<100) return PT_T[Math.floor(n/10)]+(n%10?' e '+U[n%10]:'');
+      if(n<1000) return n===100?'cem':PT_H[Math.floor(n/100)]+(n%100?' e '+w(n%100):'');
+      var big=n<1e6?1000:1e6, q=Math.floor(n/big), r=n%big;
+      var head=big===1000?(q===1?'mil':w(q)+' mil'):(q===1?'um milhão':w(q)+' milhões');
+      return head+(r?((r<100||r%100===0)?' e ':' ')+w(r):'');
+    }
+    return w(n);
+  }
+  var CUR_WORDS={es:{CLP:['peso','pesos'],ARS:['peso','pesos'],COP:['peso','pesos'],MXN:['peso','pesos'],UYU:['peso','pesos'],BOB:['boliviano','bolivianos'],PEN:['sol','soles'],PYG:['guaraní','guaraníes'],EUR:['euro','euros'],USD:['dólar','dólares']},
+                 pt:{EUR:['euro','euros'],BRL:['real','reais'],USD:['dólar','dólares']}};
+  var SAY={ // stressed syllable in capitals
+    cero:'SEH-roh',uno:'OO-noh',un:'oon',dos:'dohs',tres:'trehs',cuatro:'KWAH-troh',cinco:'SEEN-koh',seis:'says',siete:'SYEH-teh',ocho:'OH-choh',nueve:'NWEH-beh',diez:'dyehs',once:'OHN-seh',doce:'DOH-seh',trece:'TREH-seh',catorce:'kah-TOHR-seh',quince:'KEEN-seh',
+    'dieciséis':'dyeh-see-SAYS',diecisiete:'dyeh-see-SYEH-teh',dieciocho:'dyeh-see-OH-choh',diecinueve:'dyeh-see-NWEH-beh',veinte:'BAYN-teh','veintiún':'bayn-tee-OON',veintiuno:'bayn-tee-OO-noh','veintidós':'bayn-tee-DOHS','veintitrés':'bayn-tee-TREHS',veinticuatro:'bayn-tee-KWAH-troh',veinticinco:'bayn-tee-SEEN-koh','veintiséis':'bayn-tee-SAYS',veintisiete:'bayn-tee-SYEH-teh',veintiocho:'bayn-tee-OH-choh',veintinueve:'bayn-tee-NWEH-beh',
+    treinta:'TRAYN-tah',cuarenta:'kwah-REHN-tah',cincuenta:'seen-KWEHN-tah',sesenta:'seh-SEHN-tah',setenta:'seh-TEHN-tah',ochenta:'oh-CHEHN-tah',noventa:'noh-BEHN-tah',y:'ee',cien:'syehn',ciento:'SYEHN-toh',doscientos:'dohs-SYEHN-tohs',trescientos:'trehs-SYEHN-tohs',cuatrocientos:'kwah-troh-SYEHN-tohs',quinientos:'kee-NYEHN-tohs',seiscientos:'says-SYEHN-tohs',setecientos:'seh-teh-SYEHN-tohs',ochocientos:'oh-choh-SYEHN-tohs',novecientos:'noh-beh-SYEHN-tohs',
+    mil:'meel','millón':'mee-YOHN',millones:'mee-YOH-nehs',de:'deh',con:'kohn',peso:'PEH-soh',pesos:'PEH-sohs',boliviano:'boh-lee-BYAH-noh',bolivianos:'boh-lee-BYAH-nohs',sol:'sohl',soles:'SOH-lehs','guaraní':'gwah-rah-NEE','guaraníes':'gwah-rah-NEE-ehs','dólar':'DOH-lahr','dólares':'DOH-lah-rehs'};
+  var SAY_PT={zero:'ZEH-roo',um:'oong',dois:'doysh','três':'traysh',quatro:'KWAH-troo',cinco:'SEEN-koo',seis:'saysh',sete:'SEH-tuh',oito:'OY-too',nove:'NOH-vuh',dez:'desh',onze:'OHN-zuh',doze:'DOH-zuh',treze:'TREH-zuh',catorze:'kah-TOR-zuh',quatorze:'kwah-TOR-zee',quinze:'KEEN-zuh',dezasseis:'deh-zah-SAYSH',dezassete:'deh-zah-SEH-tuh',dezoito:'deh-ZOY-too',dezanove:'deh-zah-NOH-vuh',dezesseis:'deh-zeh-SAYS',dezessete:'deh-zeh-SEH-chee',dezenove:'deh-zeh-NOH-vee',
+    vinte:'VEEN-tuh',trinta:'TREEN-tah',quarenta:'kwah-REN-tah',cinquenta:'seen-KWEN-tah',sessenta:'seh-SEN-tah',setenta:'seh-TEN-tah',oitenta:'oy-TEN-tah',noventa:'noo-VEN-tah',e:'ee',cem:'sayng',cento:'SEN-too',duzentos:'doo-ZEN-toosh',trezentos:'treh-ZEN-toosh',quatrocentos:'kwah-troo-SEN-toosh',quinhentos:'kee-NYEN-toosh',seiscentos:'saysh-SEN-toosh',setecentos:'seh-tuh-SEN-toosh',oitocentos:'oy-too-SEN-toosh',novecentos:'noh-vuh-SEN-toosh',
+    mil:'meel','milhão':'mee-LYOWNG','milhões':'mee-LYOYNSH',de:'duh',euro:'EH-oo-roo',euros:'EH-oo-roosh',real:'hay-AHL',reais:'hay-AYSH','cêntimos':'SEN-tee-moosh','centavos':'sen-TAH-voosh','dólar':'DOH-lar','dólares':'DOH-lah-resh'};
+  function sayAmount(v,cur,lang,br){
+    var cw=(CUR_WORDS[lang]||{})[cur]; if(!cw||!isFinite(v)||v<0||v>=1e9) return null;
+    var dec=!NODEC[cur]&&v<1000, whole=Math.floor(dec?v+1e-9:Math.round(v)), cents=dec?Math.round((v-whole)*100):0;
+    if(cents===100){ whole++; cents=0; }
+    var W=lang==='es'?function(n){return esWords(n);}:function(n){return ptWords(n,br);};
+    var words=W(whole);
+    if(lang==='es') words=apoES(words);
+    if(whole>=1e6&&whole%1e6===0) words+=' de';
+    words+=' '+(whole===1?cw[0]:cw[1]);
+    if(cents) words+=lang==='es'?' con '+esWords(cents):' e '+W(cents)+' '+(cur==='BRL'?'centavos':'cêntimos');
+    var dict=lang==='es'?SAY:SAY_PT;
+    return {text:words, guide:words.split(' ').map(function(t){ return dict[t]||t; }).join(' ')};
+  }
+  var SPEECH_LANG={es:'es-419',pt:'pt-PT'};
+  function speak(text,lang,br){
+    try{ if(!('speechSynthesis' in window)) return; var u=new SpeechSynthesisUtterance(text); u.lang=lang==='pt'?(br?'pt-BR':'pt-PT'):SPEECH_LANG[lang]||'es-419'; u.rate=.85;
+      window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); }catch(e){}
+  }
   function fxPhrases(){
-    var box=$('fxPhr'); box.innerHTML='';
-    var L=PRICE_PHRASES[LANG_OF[fxCountry()]]; if(!L) return;
-    box.appendChild(h('div','phl','Asking about price · '+L[0]));
-    var g=h('div','phg'); L[1].forEach(function(x){ g.appendChild(h('div','phc',[h('b',null,x[0]),h('span',null,x[1])])); }); box.appendChild(g);
+    var box=$('fxSay'); box.innerHTML='';
+    var cc=fxCountry(), lang=LANG_OF[cc], L=PRICE_PHRASES[lang]; if(!L) return;
+    var br=cc==='BR';
+    var n=parseFloat(fx.amt)||0, local=fx.swapped?n:n*rateOf(fx.home,fx.cur);
+    var s=sayAmount(local,fx.cur,lang,br);
+    if(s){
+      var nb=h('button','saybar num',[('speechSynthesis' in window)?h('span','sayic',I('speaker')):null,h('span','saytx',[h('b',null,s.text),h('span',null,s.guide)])]);
+      nb.type='button'; nb.setAttribute('aria-label','Say '+s.text); nb.onclick=function(){ speak(s.text,lang,br); };
+      box.appendChild(nb);
+    }
+    L[1].forEach(function(x){ var b=h('button','saybar ph',h('span','saytx',[h('b',null,x[0]),h('span',null,x[1])])); b.type='button';
+      b.onclick=function(){ speak(x[0],lang,br); }; box.appendChild(b); });
   }
   // a round local amount worth about 20 in the home currency (CLP 20,000, PEN 50 …)
   function fxDefault(){ return String(niceNum(20*rateOf(fx.home,fx.cur))); }
