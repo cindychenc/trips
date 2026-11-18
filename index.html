@@ -183,10 +183,49 @@
   .status .sub{flex-basis:100%;font-weight:500;font-size:12px}
 
   /* tab bar */
-  .nav{position:fixed;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 40px));bottom:calc(16px + env(safe-area-inset-bottom));height:74px;border-radius:37px;background:#fff;box-shadow:0 8px 28px rgba(0,0,0,.14);display:flex;align-items:center;padding:0 8px;z-index:5}
-  .nav button{flex:1;height:58px;border:0;border-radius:29px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:600;font-size:12px;color:var(--text3);position:relative;cursor:pointer}
-  .nav button[aria-current="page"]{background:#F1F1F1;color:var(--ink);font-weight:800}
+  .navwrap{position:fixed;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 32px));bottom:calc(16px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:10px;z-index:5}
+  body.fxopen .navwrap{z-index:12}
+  .glassy{background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 30px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.9)}
+  .nav{flex:1;min-width:0;height:68px;border-radius:34px;display:flex;align-items:center;padding:0 6px}
+  .nav[hidden],.curnav[hidden],.toolbtn[hidden]{display:none}
+  .nav button{flex:1;height:56px;border:0;border-radius:28px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:600;font-size:12px;color:var(--text3);position:relative;cursor:pointer}
+  .nav button[aria-current="page"]{background:rgba(17,17,17,.07);color:var(--ink);font-weight:800}
   .nav .ic{width:24px;height:24px}
+  .toolbtn{width:68px;height:68px;border-radius:34px;display:flex;align-items:center;justify-content:center;color:var(--text3);flex:none;padding:0;cursor:pointer}
+  .toolbtn .fxic{width:30px;height:30px;stroke-width:1.7;overflow:visible}
+  .toolbtn .xic{width:26px;height:26px;stroke-width:2.2;display:none}
+  body.fxopen .toolbtn{background:#fff;color:var(--ink)}
+  body.fxopen .toolbtn .fxic{display:none} body.fxopen .toolbtn .xic{display:block}
+  .curnav{flex:1;min-width:0;height:68px;border-radius:34px;padding:0 6px;display:flex;align-items:center;gap:2px}
+  .curnav button{flex:1;min-width:0;height:56px;border:0;border-radius:28px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--text3);font-weight:600;font-size:11px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .curnav button b{font-weight:800;font-size:15px;letter-spacing:.02em}
+  .curnav button[aria-pressed="true"]{background:rgba(17,17,17,.07);color:var(--ink)}
+  /* currency converter sheet */
+  .sheet.fx{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+  .fx .rate{font-weight:500;font-size:13px;line-height:1.4;color:var(--text3);margin-top:3px}
+  .fx .pair{position:relative;border:1.5px solid var(--line);border-radius:18px;margin-top:16px}
+  .fx .pr2{display:flex;align-items:center;gap:12px;padding:14px 16px;min-height:76px}
+  .fx .pr2 + .pr2{border-top:1px solid var(--line)}
+  .fx .cur{display:inline-flex;align-items:center;height:40px;padding:0 14px;border-radius:20px;background:var(--fill);font-weight:800;font-size:15px;flex:none}
+  .fx .seg{display:inline-flex;height:40px;padding:3px;border-radius:20px;background:var(--fill);flex:none}
+  .fx .seg button{display:flex;align-items:center;padding:0 12px;border:0;border-radius:17px;background:none;font-weight:800;font-size:15px;color:var(--text3);cursor:pointer}
+  .fx .seg button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .fx .amtx{flex:1;min-width:0;text-align:right;font-weight:800;font-size:36px;line-height:1;letter-spacing:-.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fx .amtx.res{color:var(--text2)}
+  .fx .caret{display:inline-block;width:2px;height:32px;background:var(--ink);vertical-align:-4px;margin-left:2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .fx .swapb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:19px;background:#fff;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink);padding:0;cursor:pointer}
+  .fx .swapb .ic{width:18px;height:18px}
+  .fx .qa{display:flex;gap:8px;margin-top:12px}
+  .fx .qa button{flex:1;height:40px;border:0;border-radius:20px;background:var(--fill);font-weight:700;font-size:14px;color:var(--ink);cursor:pointer}
+  .fx .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .fx .keys button{height:52px;border:0;border-radius:14px;background:var(--fill);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:var(--ink);cursor:pointer;-webkit-user-select:none;user-select:none}
+  .fx .keys button:active,.fx .qa button:active{background:#E4E4E4}
+  .fx .keys button.k2{background:#fff;border:1.5px solid var(--line)}
+  .fx .keys .ic{width:22px;height:22px}
+  .fx .offl{display:flex;align-items:center;gap:6px;margin-top:12px;font-weight:600;font-size:12px;color:var(--text3);justify-content:center;text-align:center}
+  .fx .offl i{width:7px;height:7px;border-radius:4px;background:#2E7D4F;flex:none}
+  .fx .offl.old i{background:var(--tb)}
   .badge{position:absolute;top:6px;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--tb);color:#fff;font-weight:800;font-size:11px;line-height:18px;text-align:center}
 
   /* sheets */
@@ -392,11 +431,11 @@
     <div class="status" id="status"></div>
   </main>
 </div>
-<nav class="nav" aria-label="Sections">
+<div class="navwrap" id="navWrap"><nav class="nav glassy" id="tabNav" aria-label="Sections">
   <button type="button" data-tab="today"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Today</button>
   <button type="button" data-tab="trip"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>Trip</button>
   <button type="button" data-tab="book"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>To do<span class="badge" id="bookBadge" hidden></span></button>
-</nav>
+</nav><div class="curnav glassy" id="curNav" role="group" aria-label="Currency" hidden></div><button type="button" class="toolbtn glassy" id="fxBtn" aria-label="Currency converter" hidden><svg class="ic fxic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 8.6A9.5 9.5 0 0 0 4.4 6.3"/><path d="M21.3 4.3l-.4 4.3-4.3-.5"/><path d="M3.1 15.4a9.5 9.5 0 0 0 16.5 2.3"/><path d="M2.7 19.7l.4-4.3 4.3.5"/><g transform="translate(12 12) scale(.92) translate(-12 -12)"><path d="M14 10a2.3 2.3 0 0 0-2-.9c-1.1 0-1.9.6-1.9 1.3 0 2 4 1.1 4 3.1 0 .8-.9 1.4-2 1.4a2.5 2.5 0 0 1-2.1-1M12 8v1.1M12 14.9V16"/></g></svg><svg class="ic xic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
 
 <div class="mapfull" id="mapFull" role="dialog" aria-modal="true" aria-label="Map">
   <div class="mfmap" id="mfMap"></div>
@@ -427,6 +466,19 @@
     <p class="help hint" style="text-align: center; margin-top: 10px">Turn the phone sideways for bigger text · Maps needs signal</p>
   </div>
 </div>
+<div class="sheet fx" id="fxSheet" role="dialog" aria-modal="true" aria-label="Currency converter">
+  <div class="grab"></div>
+  <h2 class="t-h2" style="margin:0">Currency</h2>
+  <div class="rate" id="fxRate"></div>
+  <div class="pair">
+    <div class="pr2" id="fxTop"></div>
+    <div class="pr2" id="fxBot"></div>
+    <button type="button" class="swapb" id="fxSwap" aria-label="Swap currencies"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M4 8l4-4 4 4M16 20V4M12 16l4 4 4-4"/></svg></button>
+  </div>
+  <div class="qa" id="fxQuick"></div>
+  <div class="keys" id="fxKeys"></div>
+  <div class="offl"><i></i><span id="fxNote">Works offline · rate updates when you sync</span></div>
+</div>
 <div class="sheet" id="setSheet" role="dialog" aria-modal="true" aria-label="Settings">
   <div class="grab"></div>
   <div class="bar" style="align-items: center"><h2 class="t-title grow" style="font-size: 28px">Settings</h2>
@@ -443,7 +495,7 @@
   <p class="help">The app keeps the last synced copy of your trip on this phone, so it opens without signal. It syncs when it opens online, when you tap ↻, and when your connection comes back.</p>
 </div>
 <script src="lib/leaflet.js"></script>
-<script id="demoData" type="application/json">{"trip": {"name": "Sample Trip", "subtitle": "Lisbon · Alentejo · Algarve", "start": "2027-06-01", "end": "2027-06-12"}, "phases": [{"name": "Lisbon", "start": "2027-06-01", "end": "2027-06-04", "days": 4, "colour": "#5f7895", "summary": "✓  All booked"}, {"name": "Alentejo", "start": "2027-06-05", "end": "2027-06-08", "days": 4, "colour": "#c08949", "summary": "✓  All booked"}, {"name": "Algarve", "start": "2027-06-09", "end": "2027-06-12", "days": 4, "colour": "#b55f4f", "summary": "1 stay  ·  1 open to-do"}], "days": [{"day": 1, "date": "2027-06-01", "phase": "Lisbon", "location": "Lisbon", "plan": "Arrive in Lisbon", "nights": "4", "stay": "Sample Apartment, Alfama", "flights": "✈ DM101 · Arrive LIS 09:30", "car": "", "transfers": "", "keyTimes": "Check-in 15:00 · Sample Apartment, Alfama", "notes": "This is a demo trip. Connect your sheet in Settings to see your own.", "place": "Lisbon"}, {"day": 2, "date": "2027-06-02", "phase": "Lisbon", "location": "Lisbon", "plan": "🥾 Alfama to Castelo walk (2 hrs)", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": "", "place": "Lisbon"}, {"day": 3, "date": "2027-06-03", "phase": "Lisbon", "location": "Sintra", "plan": "Day trip to Sintra palaces", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "Train · Lisbon Rossio → Sintra", "keyTimes": "", "notes": "Go early to beat the crowds", "place": "Sintra"}, {"day": 4, "date": "2027-06-04", "phase": "Lisbon", "location": "Lisbon", "plan": "Belém & the riverfront", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": "Pastry stop", "place": "Lisbon"}, {"day": 5, "date": "2027-06-05", "phase": "Alentejo", "location": "Évora", "plan": "Pick up car · drive to Évora", "nights": "2", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals · Pick-up 10:00 Lisbon", "transfers": "", "keyTimes": "Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)", "notes": "incl. breakfast", "place": "Évora"}, {"day": 6, "date": "2027-06-06", "phase": "Alentejo", "location": "Évora", "plan": "Old town & Roman temple", "nights": "", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "", "place": "Évora"}, {"day": 7, "date": "2027-06-07", "phase": "Alentejo", "location": "Monsaraz", "plan": "Drive to Monsaraz · lake swim", "nights": "2", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo", "notes": "", "place": "Monsaraz"}, {"day": 8, "date": "2027-06-08", "phase": "Alentejo", "location": "Monsaraz", "plan": "🥾 Hilltop loop (8 km · 3 hrs · 250m)", "nights": "", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "Stargazing night", "place": "Monsaraz"}, {"day": 9, "date": "2027-06-09", "phase": "Algarve", "location": "Lagos", "plan": "Drive to Lagos", "nights": "3", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 10:00 · Casa do Lago Demo", "notes": "", "place": "Lagos"}, {"day": 10, "date": "2027-06-10", "phase": "Algarve", "location": "Lagos", "plan": "🥾 Ponta da Piedade cliffs (2 hrs)", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "✱ To Book · Bus Lagos → Sagres · Lagos marina", "keyTimes": "", "notes": "", "place": "Lagos"}, {"day": 11, "date": "2027-06-11", "phase": "Algarve", "location": "Lagos", "plan": "Beach day", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "", "place": "Lagos"}, {"day": 12, "date": "2027-06-12", "phase": "Algarve", "location": "Faro", "plan": "Return car · fly home", "nights": "", "stay": "", "flights": "✈ DM202 · FAO 14:10 → LIS 15:05", "car": "🚗 Demo Rentals · Return 12:00 Faro Airport", "transfers": "", "keyTimes": "Check-out 10:00", "notes": "", "place": "Faro"}], "updated": "2026-11-15T11:30:00-08:00", "addresses": {"Sample Apartment, Alfama": "Rua do Exemplo 12, Lisbon", "Quinta Exemplo (farm stay)": "Estrada Demo km 4, Évora", "Casa do Lago Demo": "Rua da Amostra 3, Monsaraz"}, "bookings": [{"type": "flight", "status": "booked", "date": "2027-05-31", "end": "", "nights": "", "time": "15:00", "title": "Flight · DM100 · YVR → MAD", "phase": "Lisbon"}, {"type": "stay", "status": "booked", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "time": "", "title": "Stay · Sample Apartment, Alfama", "phase": "Lisbon"}, {"type": "flight", "status": "booked", "date": "2027-06-01", "end": "", "nights": "", "time": "09:30", "title": "Flight · DM101 → Lisbon", "phase": "Lisbon"}, {"type": "stay", "status": "booked", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "time": "", "title": "Stay · Quinta Exemplo (farm stay)", "phase": "Alentejo"}, {"type": "car", "status": "booked", "date": "2027-06-05", "end": "2027-06-12", "nights": "", "time": "10:00", "title": "Car · Demo Rentals · Lisbon", "phase": "Alentejo"}, {"type": "stay", "status": "booked", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "time": "", "title": "Stay · Casa do Lago Demo", "phase": "Alentejo"}, {"type": "stay", "status": "to book", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "time": "", "title": "Stay · Lagos", "phase": "Algarve"}, {"type": "bus", "status": "to book", "date": "2027-06-10", "end": "", "nights": "", "time": "", "title": "Bus · Lagos → Sagres", "phase": "Algarve"}, {"type": "flight", "status": "booked", "date": "2027-06-12", "end": "", "nights": "", "time": "14:10", "title": "Flight · FAO → LIS", "phase": "Algarve"}], "segments": [{"id": "f0", "type": "flight", "status": "booked", "phase": "Lisbon", "date": "2027-05-31", "arrivalDate": "2027-06-01", "number": "DM100", "from": "YVR", "to": "MAD", "departs": "15:00", "arrives": "07:10", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM100"}, {"id": "s1", "type": "stay", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "name": "Sample Apartment, Alfama", "place": "Lisbon", "address": "Rua do Exemplo 12, Lisbon", "via": "Airbnb", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "f1", "type": "flight", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "arrivalDate": "2027-06-01", "number": "DM101", "to": "LIS", "departs": "08:45", "arrives": "09:30", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM101", "from": "MAD"}, {"id": "b1", "type": "bus", "status": "", "phase": "Lisbon", "date": "2027-06-03", "kind": "Train", "from": "Rossio", "to": "Sintra", "company": "CP", "departs": "09:11", "arrives": "09:51"}, {"id": "s2", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "name": "Quinta Exemplo (farm stay)", "place": "Évora", "address": "Estrada Demo km 4, Évora", "via": "Booking.com", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "c1", "type": "car", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-12", "company": "Demo Rentals", "car": "Compact", "pickupTime": "10:00", "pickupPlace": "Lisbon", "returnTime": "12:00", "returnPlace": "Faro Airport"}, {"id": "s3", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "name": "Casa do Lago Demo", "place": "Monsaraz", "address": "Rua da Amostra 3, Monsaraz", "via": "Direct with host", "checkIn": "16:00", "checkOut": "10:00"}, {"id": "s4", "type": "stay", "status": "to book", "phase": "Algarve", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "name": "", "place": "Lagos", "address": "", "via": "", "checkIn": "", "checkOut": ""}, {"id": "b2", "type": "bus", "status": "to book", "phase": "Algarve", "date": "2027-06-10", "kind": "Bus", "from": "Lagos", "to": "Sagres", "company": "", "departs": "", "arrives": "", "link": "https://www.busbud.com/"}, {"id": "f2", "type": "flight", "status": "booked", "phase": "Algarve", "date": "2027-06-12", "arrivalDate": "2027-06-12", "number": "DM202", "to": "LIS", "departs": "14:10", "arrives": "15:05", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM202", "from": "FAO"}], "places": {"Lisbon": {"lat": 38.7223, "lng": -9.1393, "country": "PT", "alt": 45}, "Sintra": {"lat": 38.8029, "lng": -9.3817, "country": "PT", "alt": 207}, "Évora": {"lat": 38.5714, "lng": -7.9135, "country": "PT", "alt": 301}, "Monsaraz": {"lat": 38.4431, "lng": -7.3807, "country": "PT", "alt": 342}, "Lagos": {"lat": 37.1028, "lng": -8.673, "country": "PT", "alt": 14}, "Faro": {"lat": 37.0194, "lng": -7.9322, "country": "PT", "alt": 8}}, "checklist": [{"done": false, "item": "Travel insurance", "note": "Compare two quotes, check card cover first", "date": "2027-05-20", "type": "Other"}, {"done": false, "item": "Download offline maps", "note": "Portugal south + Lisbon area", "date": "", "type": "Other"}, {"done": false, "item": "Buy a local SIM", "note": "", "date": "", "type": "Other"}, {"done": true, "item": "Pena Palace timed entry", "note": "", "date": "2027-06-03", "type": "Tickets"}, {"done": false, "item": "Évora Cathedral rooftop", "note": "", "date": "2027-06-05", "type": "Tickets"}, {"done": false, "item": "Ponta da Piedade boat trip", "note": "Morning tide is calmer, ask at the marina", "date": "2027-06-10", "type": "Activity"}, {"done": false, "item": "Dinner at Casa Exemplo", "note": "Book online, tables open 30 days ahead", "date": "2027-06-11", "type": "Restaurants"}, {"done": true, "item": "Pack hiking poles", "note": "", "date": "", "type": "Other"}]}</script>
+<script id="demoData" type="application/json">{"trip": {"name": "Sample Trip", "subtitle": "Lisbon · Alentejo · Algarve", "start": "2027-06-01", "end": "2027-06-12"}, "phases": [{"name": "Lisbon", "start": "2027-06-01", "end": "2027-06-04", "days": 4, "colour": "#5f7895", "summary": "✓  All booked"}, {"name": "Alentejo", "start": "2027-06-05", "end": "2027-06-08", "days": 4, "colour": "#c08949", "summary": "✓  All booked"}, {"name": "Algarve", "start": "2027-06-09", "end": "2027-06-12", "days": 4, "colour": "#b55f4f", "summary": "1 stay  ·  1 open to-do"}], "days": [{"day": 1, "date": "2027-06-01", "phase": "Lisbon", "location": "Lisbon", "plan": "Arrive in Lisbon", "nights": "4", "stay": "Sample Apartment, Alfama", "flights": "✈ DM101 · Arrive LIS 09:30", "car": "", "transfers": "", "keyTimes": "Check-in 15:00 · Sample Apartment, Alfama", "notes": "This is a demo trip. Connect your sheet in Settings to see your own.", "place": "Lisbon"}, {"day": 2, "date": "2027-06-02", "phase": "Lisbon", "location": "Lisbon", "plan": "🥾 Alfama to Castelo walk (2 hrs)", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": "", "place": "Lisbon"}, {"day": 3, "date": "2027-06-03", "phase": "Lisbon", "location": "Sintra", "plan": "Day trip to Sintra palaces", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "Train · Lisbon Rossio → Sintra", "keyTimes": "", "notes": "Go early to beat the crowds", "place": "Sintra"}, {"day": 4, "date": "2027-06-04", "phase": "Lisbon", "location": "Lisbon", "plan": "Belém & the riverfront", "nights": "", "stay": "Sample Apartment, Alfama", "flights": "", "car": "", "transfers": "", "keyTimes": "", "notes": "Pastry stop", "place": "Lisbon"}, {"day": 5, "date": "2027-06-05", "phase": "Alentejo", "location": "Évora", "plan": "Pick up car · drive to Évora", "nights": "2", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals · Pick-up 10:00 Lisbon", "transfers": "", "keyTimes": "Check-out 11:00 · Sample Apartment, Alfama\nCheck-in 15:00 · Quinta Exemplo (farm stay)", "notes": "incl. breakfast", "place": "Évora"}, {"day": 6, "date": "2027-06-06", "phase": "Alentejo", "location": "Évora", "plan": "Old town & Roman temple", "nights": "", "stay": "Quinta Exemplo (farm stay)", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "", "place": "Évora"}, {"day": 7, "date": "2027-06-07", "phase": "Alentejo", "location": "Monsaraz", "plan": "Drive to Monsaraz · lake swim", "nights": "2", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 11:00 · Quinta Exemplo (farm stay)\nCheck-in 16:00 · Casa do Lago Demo", "notes": "", "place": "Monsaraz"}, {"day": 8, "date": "2027-06-08", "phase": "Alentejo", "location": "Monsaraz", "plan": "🥾 Hilltop loop (8 km · 3 hrs · 250m)", "nights": "", "stay": "Casa do Lago Demo", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "Stargazing night", "place": "Monsaraz"}, {"day": 9, "date": "2027-06-09", "phase": "Algarve", "location": "Lagos", "plan": "Drive to Lagos", "nights": "3", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "Check-out 10:00 · Casa do Lago Demo", "notes": "", "place": "Lagos"}, {"day": 10, "date": "2027-06-10", "phase": "Algarve", "location": "Lagos", "plan": "🥾 Ponta da Piedade cliffs (2 hrs)", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "✱ To Book · Bus Lagos → Sagres · Lagos marina", "keyTimes": "", "notes": "", "place": "Lagos"}, {"day": 11, "date": "2027-06-11", "phase": "Algarve", "location": "Lagos", "plan": "Beach day", "nights": "", "stay": "✱ To Book · Stay in Lagos", "flights": "", "car": "🚗 Demo Rentals", "transfers": "", "keyTimes": "", "notes": "", "place": "Lagos"}, {"day": 12, "date": "2027-06-12", "phase": "Algarve", "location": "Faro", "plan": "Return car · fly home", "nights": "", "stay": "", "flights": "✈ DM202 · FAO 14:10 → LIS 15:05", "car": "🚗 Demo Rentals · Return 12:00 Faro Airport", "transfers": "", "keyTimes": "Check-out 10:00", "notes": "", "place": "Faro"}], "updated": "2026-11-15T11:30:00-08:00", "addresses": {"Sample Apartment, Alfama": "Rua do Exemplo 12, Lisbon", "Quinta Exemplo (farm stay)": "Estrada Demo km 4, Évora", "Casa do Lago Demo": "Rua da Amostra 3, Monsaraz"}, "bookings": [{"type": "flight", "status": "booked", "date": "2027-05-31", "end": "", "nights": "", "time": "15:00", "title": "Flight · DM100 · YVR → MAD", "phase": "Lisbon"}, {"type": "stay", "status": "booked", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "time": "", "title": "Stay · Sample Apartment, Alfama", "phase": "Lisbon"}, {"type": "flight", "status": "booked", "date": "2027-06-01", "end": "", "nights": "", "time": "09:30", "title": "Flight · DM101 → Lisbon", "phase": "Lisbon"}, {"type": "stay", "status": "booked", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "time": "", "title": "Stay · Quinta Exemplo (farm stay)", "phase": "Alentejo"}, {"type": "car", "status": "booked", "date": "2027-06-05", "end": "2027-06-12", "nights": "", "time": "10:00", "title": "Car · Demo Rentals · Lisbon", "phase": "Alentejo"}, {"type": "stay", "status": "booked", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "time": "", "title": "Stay · Casa do Lago Demo", "phase": "Alentejo"}, {"type": "stay", "status": "to book", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "time": "", "title": "Stay · Lagos", "phase": "Algarve"}, {"type": "bus", "status": "to book", "date": "2027-06-10", "end": "", "nights": "", "time": "", "title": "Bus · Lagos → Sagres", "phase": "Algarve"}, {"type": "flight", "status": "booked", "date": "2027-06-12", "end": "", "nights": "", "time": "14:10", "title": "Flight · FAO → LIS", "phase": "Algarve"}], "segments": [{"id": "f0", "type": "flight", "status": "booked", "phase": "Lisbon", "date": "2027-05-31", "arrivalDate": "2027-06-01", "number": "DM100", "from": "YVR", "to": "MAD", "departs": "15:00", "arrives": "07:10", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM100"}, {"id": "s1", "type": "stay", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "end": "2027-06-05", "nights": 4, "name": "Sample Apartment, Alfama", "place": "Lisbon", "address": "Rua do Exemplo 12, Lisbon", "via": "Airbnb", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "f1", "type": "flight", "status": "booked", "phase": "Lisbon", "date": "2027-06-01", "arrivalDate": "2027-06-01", "number": "DM101", "to": "LIS", "departs": "08:45", "arrives": "09:30", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM101", "from": "MAD"}, {"id": "b1", "type": "bus", "status": "", "phase": "Lisbon", "date": "2027-06-03", "kind": "Train", "from": "Rossio", "to": "Sintra", "company": "CP", "departs": "09:11", "arrives": "09:51"}, {"id": "s2", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-07", "nights": 2, "name": "Quinta Exemplo (farm stay)", "place": "Évora", "address": "Estrada Demo km 4, Évora", "via": "Booking.com", "checkIn": "15:00", "checkOut": "11:00"}, {"id": "c1", "type": "car", "status": "booked", "phase": "Alentejo", "date": "2027-06-05", "end": "2027-06-12", "company": "Demo Rentals", "car": "Compact", "pickupTime": "10:00", "pickupPlace": "Lisbon", "returnTime": "12:00", "returnPlace": "Faro Airport"}, {"id": "s3", "type": "stay", "status": "booked", "phase": "Alentejo", "date": "2027-06-07", "end": "2027-06-09", "nights": 2, "name": "Casa do Lago Demo", "place": "Monsaraz", "address": "Rua da Amostra 3, Monsaraz", "via": "Direct with host", "checkIn": "16:00", "checkOut": "10:00"}, {"id": "s4", "type": "stay", "status": "to book", "phase": "Algarve", "date": "2027-06-09", "end": "2027-06-12", "nights": 3, "name": "", "place": "Lagos", "address": "", "via": "", "checkIn": "", "checkOut": ""}, {"id": "b2", "type": "bus", "status": "to book", "phase": "Algarve", "date": "2027-06-10", "kind": "Bus", "from": "Lagos", "to": "Sagres", "company": "", "departs": "", "arrives": "", "link": "https://www.busbud.com/"}, {"id": "f2", "type": "flight", "status": "booked", "phase": "Algarve", "date": "2027-06-12", "arrivalDate": "2027-06-12", "number": "DM202", "to": "LIS", "departs": "14:10", "arrives": "15:05", "via": "Demo Air", "statusLink": "https://www.flightaware.com/live/flight/DM202", "from": "FAO"}], "places": {"Lisbon": {"lat": 38.7223, "lng": -9.1393, "country": "PT", "alt": 45}, "Sintra": {"lat": 38.8029, "lng": -9.3817, "country": "PT", "alt": 207}, "Évora": {"lat": 38.5714, "lng": -7.9135, "country": "PT", "alt": 301}, "Monsaraz": {"lat": 38.4431, "lng": -7.3807, "country": "PT", "alt": 342}, "Lagos": {"lat": 37.1028, "lng": -8.673, "country": "PT", "alt": 14}, "Faro": {"lat": 37.0194, "lng": -7.9322, "country": "PT", "alt": 8}}, "checklist": [{"done": false, "item": "Travel insurance", "note": "Compare two quotes, check card cover first", "date": "2027-05-20", "type": "Other"}, {"done": false, "item": "Download offline maps", "note": "Portugal south + Lisbon area", "date": "", "type": "Other"}, {"done": false, "item": "Buy a local SIM", "note": "", "date": "", "type": "Other"}, {"done": true, "item": "Pena Palace timed entry", "note": "", "date": "2027-06-03", "type": "Tickets"}, {"done": false, "item": "Évora Cathedral rooftop", "note": "", "date": "2027-06-05", "type": "Tickets"}, {"done": false, "item": "Ponta da Piedade boat trip", "note": "Morning tide is calmer, ask at the marina", "date": "2027-06-10", "type": "Activity"}, {"done": false, "item": "Dinner at Casa Exemplo", "note": "Book online, tables open 30 days ahead", "date": "2027-06-11", "type": "Restaurants"}, {"done": true, "item": "Pack hiking poles", "note": "", "date": "", "type": "Other"}], "fx": {"base": "USD", "asOf": "2026-11-18", "rates": {"USD": 1, "CAD": 1.4, "EUR": 0.92}}}</script>
 <script>
 (function(){
   'use strict';
@@ -494,6 +546,7 @@
   function mapsUrl(a){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a);}
 
   var ICONS={
+    del:'<path d="M21 5H9l-6 7 6 7h12zM17 9l-6 6M11 9l6 6"/>',
     bed:'<path d="M3 18v-7m0 4h18v3m0-3v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
     bus:'<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 20v-3m8 3v-3"/>',
     plane:'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
@@ -1294,6 +1347,7 @@
       if(b.dataset.tab===state.tab) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current');
     });
     var bb=$('bookBadge'); bb.hidden=!tbItems.length; bb.textContent=String(tbItems.length);
+    fxRefresh(!before&&!after?d:null);
 
     // status
     var st=$('status'); st.className='status'; st.textContent='';
@@ -1328,8 +1382,114 @@
     window.scrollTo(0,y);
   }
   function show(s){lockScroll(); scrim.classList.add('open'); s.classList.add('open');}
-  function hideAll(){closeDriver(); scrim.classList.remove('open'); var ds=$('daySheet'); ds.classList.remove('open'); ds.style.height=''; $('setSheet').classList.remove('open'); dayIdx=-1; unlockScroll();}
+  function hideAll(){closeDriver(); closeFx(true); scrim.classList.remove('open'); var ds=$('daySheet'); ds.classList.remove('open'); ds.style.height=''; $('setSheet').classList.remove('open'); dayIdx=-1; unlockScroll();}
   scrim.onclick=hideAll;
+
+  // ---------- currency converter (during the trip) ----------
+  // Rates come from the feed (fx.rates, per 1 USD). The local currency follows the country of the place
+  // you end the day in; the bottom pill lists every currency on the trip. Home side toggles CAD / USD.
+  var CUR={AR:'ARS',BO:'BOB',BR:'BRL',CL:'CLP',CO:'COP',EC:'USD',PE:'PEN',PY:'PYG',UY:'UYU',VE:'VES',MX:'MXN',CR:'CRC',GT:'GTQ',PA:'USD',
+    US:'USD',CA:'CAD',GB:'GBP',IE:'EUR',PT:'EUR',ES:'EUR',FR:'EUR',DE:'EUR',IT:'EUR',NL:'EUR',BE:'EUR',AT:'EUR',GR:'EUR',FI:'EUR',HR:'EUR',SI:'EUR',SK:'EUR',EE:'EUR',LV:'EUR',LT:'EUR',LU:'EUR',MT:'EUR',CY:'EUR',
+    CH:'CHF',NO:'NOK',SE:'SEK',DK:'DKK',IS:'ISK',PL:'PLN',CZ:'CZK',HU:'HUF',RO:'RON',BG:'BGN',TR:'TRY',MA:'MAD',EG:'EGP',ZA:'ZAR',KE:'KES',TZ:'TZS',
+    JP:'JPY',KR:'KRW',CN:'CNY',HK:'HKD',TW:'TWD',TH:'THB',VN:'VND',KH:'KHR',LA:'LAK',MY:'MYR',SG:'SGD',ID:'IDR',PH:'PHP',IN:'INR',NP:'NPR',LK:'LKR',AE:'AED',AU:'AUD',NZ:'NZD'};
+  var CURNAME={ARS:'Argentina',BOB:'Bolivia',BRL:'Brazil',CLP:'Chile',COP:'Colombia',PEN:'Peru',PYG:'Paraguay',UYU:'Uruguay',EUR:'Euro',GBP:'UK',USD:'US',CAD:'Canada',MXN:'Mexico',JPY:'Japan',CHF:'Swiss'};
+  var NODEC={CLP:1,PYG:1,JPY:1,KRW:1,VND:1,IDR:1,COP:1,ISK:1,HUF:1,KHR:1,LAK:1};
+  var KEY_FXHOME='tripFxHome';
+  var fx={home:store.get(KEY_FXHOME)||'CAD', cur:'', auto:'', autoDate:'', swapped:false, amt:'50', open:false};
+  function fxRates(){ var f=state.data&&state.data.fx; return f&&f.rates?f:null; }
+  function dayCountry(d){
+    var days=(state.data&&state.data.days)||[], i=days.indexOf(d);
+    for(var k=i;k>=0;k--){ var p=placeInfo(days[k].place); if(p&&p.country) return p.country; }
+    return '';
+  }
+  function tripCurrencies(){
+    var R=fxRates(), out=[], seen={};
+    ((state.data&&state.data.days)||[]).forEach(function(x){ var p=placeInfo(x.place), c=p&&CUR[p.country];
+      if(c&&!seen[c]&&R&&R.rates[c]&&c!==fx.home){ seen[c]=1; out.push(c); } });
+    return out;
+  }
+  function fxRefresh(d){
+    var R=fxRates(), list=R&&d?tripCurrencies():[];
+    var show=!!(d&&list.length);
+    $('fxBtn').hidden=!show;
+    if(!show){ if(fx.open) closeFx(); return; }
+    var auto=CUR[dayCountry(d)];
+    if(list.indexOf(auto)<0) auto=list[0];
+    if(fx.autoDate!==d.date){ fx.autoDate=d.date; fx.auto=auto; fx.cur=auto; }   // re-pick each new day
+    if(list.indexOf(fx.cur)<0) fx.cur=auto;
+    if(fx.open) fxDraw();
+  }
+  function rateOf(from,to){ var r=fxRates().rates; return r[to]/r[from]; }
+  function fmtAmt(v,c){
+    if(!isFinite(v)) return '—';
+    var dec=NODEC[c]||Math.abs(v)>=1000?0:2;
+    return v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+  }
+  function fmtRate(v){ return v>=100?Math.round(v).toLocaleString('en-US'):v>=1?v.toFixed(2).replace(/\.?0+$/,''):v.toPrecision(3); }
+  function niceNum(v){ var e=Math.pow(10,Math.floor(Math.log10(v))), m=v/e; m=m<1.5?1:m<3.5?2:m<7.5?5:10; return m*e; }
+  function fxDraw(){
+    var R=fxRates(); if(!R) return;
+    var from=fx.swapped?fx.cur:fx.home, to=fx.swapped?fx.home:fx.cur, rt=rateOf(from,to);
+    var homeRate=rateOf(fx.home,fx.cur);
+    var asOf=parseDay(R.asOf);
+    $('fxRate').textContent='1 '+fx.home+' = '+fmtRate(homeRate)+' '+fx.cur+(asOf?' · rate from '+md(asOf):'');
+    var age=asOf&&!state.demo?daysBetween(asOf,midnight(new Date())):0;
+    $('fxNote').textContent=age>3?'Rate is '+plural(age,'day')+' old · it updates when you sync':'Works offline · rate updates when you sync';
+    $('fxNote').parentNode.classList.toggle('old',age>3);
+    function seg(){ var g=h('span','seg'); g.setAttribute('role','group'); g.setAttribute('aria-label','Home currency');
+      ['CAD','USD'].forEach(function(c){ var b=h('button',null,c); b.type='button'; b.setAttribute('aria-pressed',String(fx.home===c));
+        b.onclick=function(){ fx.home=c; store.set(KEY_FXHOME,c); var l=tripCurrencies(); if(l.indexOf(fx.cur)<0) fx.cur=l[0]||fx.cur; fxNav(); fxDraw(); }; g.appendChild(b); });
+      return g; }
+    var n=parseFloat(fx.amt)||0;
+    var ap=(fx.amt||'0').split('.'), shown=(+ap[0]||0).toLocaleString('en-US')+(ap.length>1?'.'+ap[1]:'');
+    var inp=h('span','amtx',[shown,h('i','caret')]), res=h('span','amtx res',fmtAmt(n*rt,to));
+    var top=$('fxTop'), bot=$('fxBot'); top.innerHTML=''; bot.innerHTML='';
+    if(fx.swapped){ top.appendChild(h('span','cur',fx.cur)); top.appendChild(inp); bot.appendChild(seg()); bot.appendChild(res); }
+    else { top.appendChild(seg()); top.appendChild(inp); bot.appendChild(h('span','cur',fx.cur)); bot.appendChild(res); }
+    var q=$('fxQuick'); q.innerHTML='';
+    var n0=fx.swapped?niceNum(10*rateOf(fx.home,fx.cur)):10, base=[1,2,5,10].map(function(m){ return n0*m; });
+    base.forEach(function(v){ var b=h('button',null,v>=1000&&v%1000===0?(v/1000).toLocaleString('en-US')+'k':v.toLocaleString('en-US')); b.type='button';
+      b.onclick=function(){ fx.amt=String(v); fxDraw(); }; q.appendChild(b); });
+  }
+  function fxNav(){
+    var cn=$('curNav'); cn.innerHTML='';
+    tripCurrencies().forEach(function(c){ var b=h('button',null,[h('b',null,c),CURNAME[c]||'']); b.type='button';
+      b.setAttribute('aria-pressed',String(c===fx.cur));
+      b.onclick=function(){ if(fx.swapped){ var v=(parseFloat(fx.amt)||0)*rateOf(fx.cur,fx.home); fx.swapped=false; fx.amt=v?String(+v.toFixed(2)):'0'; } fx.cur=c; fxNav(); fxDraw(); }; cn.appendChild(b); });
+  }
+  (function(){
+    var k=$('fxKeys');
+    ['1','2','3','4','5','6','7','8','9','.','0','del'].forEach(function(v){
+      var b=h('button',v==='del'?'k2':null, v==='del'?I('del'):v); b.type='button';
+      if(v==='del') b.setAttribute('aria-label','Delete');
+      b.onclick=function(){
+        var a=fx.amt;
+        if(v==='del') a=a.slice(0,-1);
+        else if(v==='.'){ if(a.indexOf('.')<0) a=(a||'0')+'.'; }
+        else { if(a==='0') a=''; if(a.replace('.','').length<10 && !(/\.\d\d$/.test(a))) a+=v; }
+        fx.amt=a; fxDraw();
+      };
+      k.appendChild(b);
+    });
+  })();
+  function openFx(){
+    if(!fxRates()) return;
+    hideAll(); fx.open=true; fx.swapped=false;
+    document.body.classList.add('fxopen');
+    $('tabNav').hidden=true; $('curNav').hidden=false; $('fxBtn').setAttribute('aria-label','Close converter');
+    fxNav(); fxDraw(); show($('fxSheet'));
+  }
+  function closeFx(quiet){
+    if(!fx.open) return; fx.open=false;
+    document.body.classList.remove('fxopen');
+    $('fxSheet').classList.remove('open'); $('tabNav').hidden=false; $('curNav').hidden=true; $('fxBtn').setAttribute('aria-label','Currency converter');
+    if(!quiet){ scrim.classList.remove('open'); unlockScroll(); }
+  }
+  $('fxBtn').onclick=function(){ if(fx.open){ closeFx(); } else openFx(); };
+  $('fxSwap').onclick=function(){ var n=parseFloat(fx.amt)||0, from=fx.swapped?fx.cur:fx.home, to=fx.swapped?fx.home:fx.cur;
+    var v=n*rateOf(from,to); fx.swapped=!fx.swapped; fx.amt=v?String(+v.toFixed(NODEC[to]||v>=1000?0:2)):'0'; fxDraw(); };
+  document.addEventListener('keydown',function(e){ if(!fx.open) return;
+    if(/^[0-9.]$/.test(e.key)||e.key==='Backspace'){ var bs=$('fxKeys').querySelectorAll('button'); var idx='123456789.0'.indexOf(e.key); var b=e.key==='Backspace'?bs[11]:bs[idx]; if(b){ b.click(); e.preventDefault(); } } });
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'){ if($('mapFull').classList.contains('open')) closeMapFull(); else if($('driver').classList.contains('open')) closeDriver(); else hideAll(); return; }
     if(dayIdx>=0 && !$('driver').classList.contains('open') && !/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){
