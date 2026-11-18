@@ -203,6 +203,16 @@
   .curnav button[aria-pressed="true"]{background:rgba(17,17,17,.07);color:var(--ink)}
   /* currency converter sheet */
   .sheet.fx{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+  /* grows out of / shrinks back into the round converter button */
+  .sheet.fx{transform:translate(-50%,0);clip-path:circle(30px at var(--fx-x,92%) var(--fx-y,94%));opacity:0;
+    transition:clip-path .3s cubic-bezier(.4,0,.6,1),opacity .18s ease .12s,visibility 0s linear .3s}
+  .sheet.fx.open{transform:translate(-50%,0);clip-path:circle(160% at var(--fx-x,92%) var(--fx-y,94%));opacity:1;
+    transition:clip-path .42s cubic-bezier(.2,.8,.2,1),opacity .1s ease,visibility 0s}
+  .sheet.fx > *{transition:opacity .2s ease .1s}
+  .sheet.fx:not(.open) > *{opacity:0;transition:opacity .1s ease}
+  .curnav:not([hidden]),.nav:not([hidden]){animation:navin .24s ease}
+  @keyframes navin{from{opacity:0;transform:scale(.97)}}
+  @media (prefers-reduced-motion:reduce){.sheet.fx,.sheet.fx.open,.sheet.fx > *{transition:none}.curnav,.nav{animation:none}}
   .fx .rate{font-weight:500;font-size:13px;line-height:1.4;color:var(--text3);margin-top:3px}
   .fx .pair{position:relative;border:1.5px solid var(--line);border-radius:18px;margin-top:16px}
   .fx .pr2{display:flex;align-items:center;gap:12px;padding:14px 16px;min-height:76px}
@@ -1473,15 +1483,19 @@
       k.appendChild(b);
     });
   })();
+  function fxOrigin(){   // the round button's centre, in the sheet's own coordinates
+    var b=$('fxBtn').getBoundingClientRect(), sh=$('fxSheet'), r=sh.getBoundingClientRect();
+    sh.style.setProperty('--fx-x',(b.left+b.width/2-r.left)+'px'); sh.style.setProperty('--fx-y',(b.top+b.height/2-r.top)+'px');
+  }
   function openFx(){
     if(!fxRates()) return;
     hideAll(); fx.open=true; fx.swapped=false;
     document.body.classList.add('fxopen');
     $('tabNav').hidden=true; $('curNav').hidden=false; $('fxBtn').setAttribute('aria-label','Close converter');
-    fxNav(); fxDraw(); show($('fxSheet'));
+    fxNav(); fxDraw(); fxOrigin(); show($('fxSheet'));
   }
   function closeFx(quiet){
-    if(!fx.open) return; fx.open=false;
+    if(!fx.open) return; fx.open=false; fxOrigin();
     document.body.classList.remove('fxopen');
     $('fxSheet').classList.remove('open'); $('tabNav').hidden=false; $('curNav').hidden=true; $('fxBtn').setAttribute('aria-label','Currency converter');
     if(!quiet){ scrim.classList.remove('open'); unlockScroll(); }
