@@ -204,10 +204,10 @@
   /* currency converter sheet */
   .sheet.fx{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
   /* grows out of / shrinks back into the round converter button */
-  .sheet.fx{transform:translate(-50%,0);clip-path:circle(30px at var(--fx-x,92%) var(--fx-y,94%));opacity:0;
-    transition:clip-path .3s cubic-bezier(.4,0,.6,1),opacity .18s ease .12s,visibility 0s linear .3s}
-  .sheet.fx.open{transform:translate(-50%,0);clip-path:circle(160% at var(--fx-x,92%) var(--fx-y,94%));opacity:1;
-    transition:clip-path .42s cubic-bezier(.2,.8,.2,1),opacity .1s ease,visibility 0s}
+  .sheet.fx{transform:translate(-50%,0) scale(.92);transform-origin:var(--fx-x,92%) var(--fx-y,94%);clip-path:circle(30px at var(--fx-x,92%) var(--fx-y,94%));opacity:0;
+    transition:clip-path .22s cubic-bezier(.5,0,.75,0),transform .22s cubic-bezier(.5,0,.75,0),opacity .12s ease .1s,visibility 0s linear .22s}
+  .sheet.fx.open{transform:translate(-50%,0) scale(1);clip-path:circle(160% at var(--fx-x,92%) var(--fx-y,94%));opacity:1;
+    transition:clip-path .3s cubic-bezier(.2,.8,.2,1),transform .36s cubic-bezier(.34,1.45,.64,1),opacity .08s ease,visibility 0s}
   .sheet.fx > *{transition:opacity .2s ease .1s}
   .sheet.fx:not(.open) > *{opacity:0;transition:opacity .1s ease}
   .curnav:not([hidden]),.nav:not([hidden]){animation:navin .24s ease}
@@ -234,6 +234,13 @@
   .fx .keys button:active,.fx .qa button:active{background:#E4E4E4}
   .fx .keys button.k2{background:#fff;border:1.5px solid var(--line)}
   .fx .keys .ic{width:22px;height:22px}
+  .fx .rate.old{color:var(--tb)}
+  .fx .phl{font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin:14px 0 6px}
+  .fx .phg{display:flex;gap:6px;overflow-x:auto;margin:0 -20px;padding:0 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .fx .phg::-webkit-scrollbar{display:none}
+  .fx .phc{flex:none;border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;white-space:nowrap}
+  .fx .phc b{display:block;font-weight:700;font-size:14px;line-height:1.2}
+  .fx .phc span{display:block;font-weight:500;font-size:11px;line-height:1.2;color:var(--text3);margin-top:1px}
   .fx .offl{display:flex;align-items:center;gap:6px;margin-top:12px;font-weight:600;font-size:12px;color:var(--text3);justify-content:center;text-align:center}
   .fx .offl i{width:7px;height:7px;border-radius:4px;background:#2E7D4F;flex:none}
   .fx .offl.old i{background:var(--tb)}
@@ -488,7 +495,7 @@
   </div>
   <div class="qa" id="fxQuick"></div>
   <div class="keys" id="fxKeys"></div>
-  <div class="offl"><i></i><span id="fxNote">Works offline · rate updates when you sync</span></div>
+  <div id="fxPhr"></div>
 </div>
 <div class="sheet" id="setSheet" role="dialog" aria-modal="true" aria-label="Settings">
   <div class="grab"></div>
@@ -1445,8 +1452,9 @@
     var asOf=parseDay(R.asOf);
     $('fxRate').textContent='1 '+fx.home+' = '+fmtRate(homeRate)+' '+fx.cur+(asOf?' · rate from '+md(asOf):'');
     var age=asOf&&!state.demo?daysBetween(asOf,midnight(new Date())):0;
-    $('fxNote').textContent=age>3?'Rate is '+plural(age,'day')+' old · it updates when you sync':'Works offline · rate updates when you sync';
-    $('fxNote').parentNode.classList.toggle('old',age>3);
+    if(age>3) $('fxRate').textContent='1 '+fx.home+' = '+fmtRate(homeRate)+' '+fx.cur+' · rate is '+plural(age,'day')+' old, sync to update';
+    $('fxRate').classList.toggle('old',age>3);
+    fxPhrases();
     function seg(){ var g=h('span','seg'); g.setAttribute('role','group'); g.setAttribute('aria-label','Home currency');
       ['CAD','USD'].forEach(function(c){ var b=h('button',null,c); b.type='button'; b.setAttribute('aria-pressed',String(fx.home===c));
         b.onclick=function(){ fx.home=c; store.set(KEY_FXHOME,c); var l=tripCurrencies(); if(l.indexOf(fx.cur)<0) fx.cur=l[0]||fx.cur; fxNav(); fxDraw(); }; g.appendChild(b); });
@@ -1461,6 +1469,25 @@
     var n0=fx.swapped?niceNum(10*rateOf(fx.home,fx.cur)):10, base=[1,2,5,10].map(function(m){ return n0*m; });
     base.forEach(function(v){ var b=h('button',null,v>=1000&&v%1000===0?(v/1000).toLocaleString('en-US')+'k':v.toLocaleString('en-US')); b.type='button';
       b.onclick=function(){ fx.amt=String(v); fxDraw(); }; q.appendChild(b); });
+  }
+  // Phrases for asking about prices, in the language of the selected currency's country
+  // (for the euro, the country you're in that day). English-speaking countries get none.
+  var PRICE_PHRASES={
+    es:['Spanish',[['¿Cuánto cuesta?','How much is it?'],['¿Aceptan tarjeta?','Do you take card?'],['¿Tiene algo más barato?','Anything cheaper?'],['La cuenta, por favor','The bill, please'],['¿Me lo puede escribir?','Can you write it down?']]],
+    pt:['Portuguese',[['Quanto custa?','How much is it?'],['Aceitam cartão?','Do you take card?'],['Tem algo mais barato?','Anything cheaper?'],['A conta, por favor','The bill, please'],['Pode escrever?','Can you write it down?']]]};
+  var LANG_OF={AR:'es',BO:'es',CL:'es',PE:'es',CO:'es',EC:'es',PY:'es',UY:'es',VE:'es',MX:'es',CR:'es',GT:'es',PA:'es',ES:'es',PT:'pt',BR:'pt'};
+  function fxCountry(){
+    var days=(state.data&&state.data.days)||[], dd=days.filter(function(x){return x.date===fx.autoDate;})[0];
+    var here=dd?dayCountry(dd):'';
+    if(CUR[here]===fx.cur) return here;
+    for(var i=0;i<days.length;i++){ var p=placeInfo(days[i].place); if(p&&CUR[p.country]===fx.cur) return p.country; }
+    return here;
+  }
+  function fxPhrases(){
+    var box=$('fxPhr'); box.innerHTML='';
+    var L=PRICE_PHRASES[LANG_OF[fxCountry()]]; if(!L) return;
+    box.appendChild(h('div','phl','Asking about price · '+L[0]));
+    var g=h('div','phg'); L[1].forEach(function(x){ g.appendChild(h('div','phc',[h('b',null,x[0]),h('span',null,x[1])])); }); box.appendChild(g);
   }
   function fxNav(){
     var cn=$('curNav'); cn.innerHTML='';
