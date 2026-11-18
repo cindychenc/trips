@@ -1229,7 +1229,7 @@
       var top=h('div',null,[pill(p.name,'phase',darken(p.colour)),p.summary?pill(p.summary.replace(/\s+/g,' ').trim(),open?'tb':''):null]);
       top.style.cssText='display: flex; gap: 8px; flex-wrap: wrap';
       var ps=parseDay(p.start), pe=parseDay(p.end);
-      var dl=h('div','t-small',(ps&&pe?md(ps)+' – '+md(pe):'No days yet')+(p.days?' · '+plural(p.days,'day'):'')); dl.style.cssText='margin: 8px 0 12px; font-weight: 600';
+      var dl=h('div','t-small',(ps&&pe?md(ps)+' – '+md(pe):'No days yet')+(p.days?' · '+plural(p.days,'day'):'')); dl.style.cssText='margin: 8px 0 12px; font-weight: 800; font-size: 19px; color: var(--ink)';
       var rows=days.filter(function(x){return x.phase===p.name;}).map(function(x){
         var isT=x.date===todayDate, dd=parseDay(x.date);
         var tb=['stay','flights','car','transfers'].some(function(k){return /✱/.test(String(x[k]||''));})||checkItems(state.data).some(function(c){return c.date===x.date;});
