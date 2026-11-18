@@ -1548,6 +1548,22 @@
     try{ if(!('speechSynthesis' in window)) return; var u=new SpeechSynthesisUtterance(text); u.lang=lang==='pt'?(br?'pt-BR':'pt-PT'):SPEECH_LANG[lang]||'es-419'; u.rate=.85;
       window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); }catch(e){}
   }
+  // Open the Google Translate app when it's installed; otherwise the website.
+  // iPhone: the app's googletranslate:// link, then the website if nothing opened. Android: an intent
+  // link for the app with the website as its fallback.
+  function openTranslate(tl,web,e){
+    var ua=navigator.userAgent||'', ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1), android=/Android/.test(ua);
+    if(!ios&&!android) return;   // computer: the link opens the website
+    if(e) e.preventDefault();
+    if(android){
+      location.href='intent://translate.google.com/?sl=en&tl='+tl+'#Intent;scheme=https;package=com.google.android.apps.translate;S.browser_fallback_url='+encodeURIComponent(web)+';end';
+      return;
+    }
+    var left=false, onHide=function(){ if(document.visibilityState==='hidden') left=true; };
+    document.addEventListener('visibilitychange',onHide);
+    location.href='googletranslate://?sl=en&tl='+tl+'&text=';
+    setTimeout(function(){ document.removeEventListener('visibilitychange',onHide); if(!left&&document.visibilityState==='visible') window.open(web,'_blank','noopener'); },1500);
+  }
   function fxPhrases(){
     var box=$('fxSay'); box.innerHTML='';
     var cc=fxCountry(), lang=LANG_OF[cc], L=PRICE_PHRASES[lang]; if(!L) return;
@@ -1564,7 +1580,9 @@
       b.onclick=function(){ speak(x[0],lang,br); }; box.appendChild(b); });
     // last card: Google Translate (opens the app when it's installed), English -> the local language
     var gt=h('a','saybar ph gt',[h('span','saytx',[h('b',null,['Google Translate',I('ext','gtic')]),h('span',null,'English → '+L[0])])]);
-    gt.href='https://translate.google.com/?sl=en&tl='+(lang==='pt'?'pt':'es')+'&op=translate'; gt.target='_blank'; gt.rel='noopener';
+    var tl=lang==='pt'?'pt':'es', web='https://translate.google.com/?sl=en&tl='+tl+'&op=translate';
+    gt.href=web; gt.target='_blank'; gt.rel='noopener';
+    gt.onclick=function(e){ openTranslate(tl,web,e); };
     box.appendChild(gt);
   }
   // a round local amount worth about 20 in the home currency (CLP 20,000, PEN 50 …)
