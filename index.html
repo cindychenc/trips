@@ -201,6 +201,56 @@
   .curnav button{flex:1;min-width:0;height:56px;border:0;border-radius:28px;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--text3);font-weight:600;font-size:11px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .curnav button b{font-weight:800;font-size:15px;letter-spacing:.02em}
   .curnav button[aria-pressed="true"]{background:rgba(17,17,17,.07);color:var(--ink)}
+  /* plan editing */
+  .plhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .plhead .cardlabel{margin:0}
+  .pedit{width:32px;height:32px;margin:-6px -8px -6px 0;padding:0;border:0;border-radius:16px;background:none;display:flex;align-items:center;justify-content:center;color:#8A8A8A;cursor:pointer;flex:none}
+  .pedit .ic{width:17px;height:17px;stroke-width:2}
+  .todaycard .pedit{color:#5A5A5A}
+  .plantext.tap{cursor:pointer}
+  .petag{display:inline-flex;align-items:center;gap:6px;margin-top:10px;height:28px;padding:0 10px;border-radius:14px;font-weight:700;font-size:12px}
+  .petag.pend{background:var(--tbTint);color:#6B3A26}.petag.pend i{width:7px;height:7px;border-radius:4px;background:var(--tb)}
+  .petag.ok{background:var(--okTint);color:var(--ok)}.petag.ok .ic{width:14px;height:14px;stroke-width:2.6}
+  .planed{position:fixed;inset:0;z-index:30;background:#fff;display:flex;flex-direction:column;animation:peIn .22s cubic-bezier(.2,.8,.2,1)}
+  .planed[hidden]{display:none}
+  @keyframes peIn{from{opacity:0;transform:translateY(16px)}}
+  .pebar{display:flex;align-items:center;gap:8px;padding:calc(12px + env(safe-area-inset-top)) 16px 10px;max-width:560px;width:100%;margin:0 auto}
+  .pebar .mid{flex:1;text-align:center;line-height:1.2;min-width:0}
+  .pebar .mid b{display:block;font-weight:800;font-size:17px}
+  .pebar .mid span{font-weight:600;font-size:13px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+  .txtbtn{height:40px;padding:0 14px;border-radius:20px;border:0;background:var(--fill);font-weight:700;font-size:15px;color:var(--ink);cursor:pointer;flex:none}
+  .txtbtn.dark{background:var(--ink);color:#fff}
+  .pebody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 20px 40px;max-width:560px;width:100%;margin:0 auto}
+  .pelist{border:1.5px solid var(--line);border-radius:16px;overflow:hidden}
+  .per{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;border-bottom:1px solid var(--line);min-height:52px;background:#fff;position:relative}
+  .per:last-child{border-bottom:0}
+  .per.drag{z-index:2;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:12px}
+  .per .hd{width:36px;height:40px;border:0;background:none;padding:0;color:#BDBDBD;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab;flex:none}
+  .per .hd svg{width:16px;height:16px;fill:currentColor}
+  .per .lk{width:36px;display:flex;align-items:center;justify-content:center;flex:none;color:#BDBDBD}
+  .per .lk .ic{width:15px;height:15px;stroke-width:2.2}
+  .per input{flex:1;min-width:0;height:40px;border:0;outline:none;background:transparent;font-weight:600;font-size:16px;color:var(--ink);padding:0}
+  .per .lt{flex:1;min-width:0;font-weight:600;font-size:16px;color:var(--text2)}
+  .per .tm{font-weight:700;font-size:13px;color:var(--text3);white-space:nowrap;padding-right:4px}
+  .per .tm span{font-weight:500}
+  .per .rm{width:36px;height:36px;border:0;background:none;color:#BDBDBD;font-size:15px;cursor:pointer;flex:none;border-radius:18px}
+  .per.add{background:#FAFAFA}
+  .per.add .plus{width:26px;height:26px;margin:0 5px;border-radius:13px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex:none}
+  .per.add input::placeholder{color:#A3A3A3;font-weight:500}
+  .per .addbtn{height:32px;padding:0 12px;border-radius:16px;border:0;background:var(--ink);color:#fff;font-weight:700;font-size:13px;cursor:pointer;flex:none}
+  .pesun{margin-top:10px;font-weight:500;font-size:13px;color:var(--text3);display:flex;align-items:center;gap:5px}
+  .pesun .ic{width:15px;height:15px}
+  .pesun:empty{display:none}
+  .pehelp{font-weight:500;font-size:12px;line-height:1.45;color:var(--text3);margin:14px 0 0}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);top:calc(14px + env(safe-area-inset-top));width:min(520px,calc(100% - 40px));z-index:40;background:var(--ink);color:#fff;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);animation:tIn .25s ease}
+  .toast[hidden]{display:none}
+  .toast .ic{width:18px;height:18px;color:#7FD3A0;stroke-width:2.6;flex:none}
+  @keyframes tIn{from{opacity:0;transform:translate(-50%,-8px)}}
+  .cfsub{font-weight:500;font-size:14px;color:var(--text2);margin:6px 0 0}
+  .cfbox{margin-top:12px;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+  .cfbox.mine{border-color:var(--ink)}
+  .cfbox p{margin:4px 0 0;font-weight:600;font-size:16px;line-height:1.4}
+  #cfSheet{z-index:41}
   /* currency converter sheet */
   .sheet.fx{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
   /* grows out of / shrinks back into the round converter button */
@@ -506,6 +556,23 @@
   <div class="qa" id="fxQuick"></div>
   <div class="keys" id="fxKeys"></div>
 </div>
+<div class="planed" id="planEd" role="dialog" aria-modal="true" aria-label="Edit plan" hidden>
+  <div class="pebar"><button type="button" class="txtbtn" id="peCancel">Cancel</button><div class="mid"><b>Plan</b><span id="peSub"></span></div><button type="button" class="txtbtn dark" id="peSave">Save</button></div>
+  <div class="pebody">
+    <div class="pelist" id="peList"></div>
+    <div class="pesun" id="peSun"></div>
+    <p class="pehelp" id="peHelp">Drag ⋮⋮ to reorder. Booked times stay where they are. Saves to this day's PLAN cell in your sheet.</p>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="sheet" id="cfSheet" role="dialog" aria-modal="true" aria-label="Plan changed in your sheet">
+  <div class="grab"></div>
+  <h2 class="t-h2" style="margin:0">Your sheet has a different plan</h2>
+  <p class="cfsub" id="cfSub"></p>
+  <div class="cfbox"><span class="t-label">In your sheet</span><p id="cfSheetTxt"></p></div>
+  <div class="cfbox mine"><span class="t-label">Yours, from this phone</span><p id="cfMineTxt"></p></div>
+  <div class="btn-row" style="margin-top:16px"><button type="button" class="btn btn-secondary" id="cfUseSheet">Use the sheet's</button><button type="button" class="btn btn-primary" id="cfKeepMine">Keep mine</button></div>
+</div>
 <div class="sheet" id="setSheet" role="dialog" aria-modal="true" aria-label="Settings">
   <div class="grab"></div>
   <div class="bar" style="align-items: center"><h2 class="t-title grow" style="font-size: 28px">Settings</h2>
@@ -573,6 +640,8 @@
   function mapsUrl(a){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(a);}
 
   var ICONS={
+    pencil:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>', padlock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    sunrise:'<path d="M4 18h16M7 18a5 5 0 0 1 10 0M12 4v4M9.5 10.5 8 9M14.5 10.5 16 9"/>', sunset:'<path d="M4 18h16M7 18a5 5 0 0 1 10 0M12 8V4M10 6l2 2 2-2"/>',
     speaker:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
     del:'<path d="M21 5H9l-6 7 6 7h12zM17 9l-6 6M11 9l6 6"/>',
     bed:'<path d="M3 18v-7m0 4h18v3m0-3v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
@@ -790,7 +859,22 @@
   }
   function tbCard(t){var how=t.general?'tick it in your sheet':'mark it booked in your sheet';
     return h('div','tbcard',[tile(t.icon||'bed','tbw'),h('span',null,[h('span','t-label',[STAR(),t.general?'To do':'Still to book']),h('span','t-h3',t.title),h('span','s',(t.sub?t.sub+' · '+how:how.charAt(0).toUpperCase()+how.slice(1)))]),linkChips(t.links)]);}
-  function planCard(text,label){return card([h('span','t-label cardlabel',label||'Plan'),rich(h('p','plantext'),text)],true);}
+  function planCard(text,label,d){return card(planInner(d,text,label||'Plan','Nothing planned for this day'),true);}
+  // Plan label + pencil, the plan text (tap to edit), and a "saved" tag while it's on its way to the sheet.
+  function planInner(d,text,label,empty){
+    var head=h('div','plhead',[h('span','t-label cardlabel',label)]);
+    var p=text?rich(h('p','plantext'),text):h('p','plantext none',empty);
+    var out=[head,p];
+    if(d&&d.date){
+      var b=h('button','pedit',I('pencil')); b.type='button'; b.setAttribute('aria-label','Edit plan');
+      b.onclick=function(e){ e.stopPropagation(); openPlanEd(d); }; head.appendChild(b);
+      p.classList.add('tap'); p.onclick=function(e){ if(e.target.closest('a')) return; openPlanEd(d); };
+      var P=pendingPlans();
+      if(P[d.date]) out.push(h('span','petag pend',[h('i'),'Saved · sends when online']));
+      else if(state.justSaved&&state.justSaved[d.date]&&Date.now()-state.justSaved[d.date]<3000) out.push(h('span','petag ok',[I('tick'),'In your sheet']));
+    }
+    return out;
+  }
   // The pieces of a day, in order: to book, plan, stay, times, flights/buses, notes.
   function dayBlocks(d,opts){
     var p=dayParts(d), out=[];
@@ -801,7 +885,7 @@
         .concat(p.tobook.map(function(t){ return h('div','tbrow',[tile(t.icon||'bed','tbw'),h('span',null,[h('b',null,t.title),t.sub?h('span','s',t.sub):null]),linkChips(t.links)]); }))
         .concat([h('div','tbfoot',allGen?'Tick them in your sheet':anyGen?'Mark them booked or tick them in your sheet':'Mark them booked in your sheet')])));
     }
-    if(!opts.planInline) out.push(d.plan?planCard(d.plan):card([h('span','t-label cardlabel','Plan'),h('p','plantext none','Nothing planned for this day')],true));
+    if(!opts.planInline) out.push(planCard(d.plan,'Plan',d));
     if(p.tonight && p.tonight.name) out.push(stayCard(p.tonight,d));
     if(p.rows.length) out.push(card(p.rows.map(timeRow)));
     p.moves.forEach(function(s){ out.push(moveCard(s)); });
@@ -884,7 +968,7 @@
   // ---------- data ----------
   function loadCached(){
     var raw=store.get(KEY_DATA);
-    if(raw){try{state.data=JSON.parse(raw); state.demo=false; return;}catch(e){}}
+    if(raw){try{state.data=JSON.parse(raw); state.demo=false; applyPending(); return;}catch(e){}}
     state.data=DEMO; state.demo=true;
   }
   function sync(){
@@ -892,13 +976,14 @@
     if(!url||state.syncing) return Promise.resolve();
     if(!navigator.onLine){render(); return Promise.resolve();}
     state.syncing=true; state.error=''; render();
-    return fetch(url,{cache:'no-store',redirect:'follow'})
+    return flushPending().then(function(){ return fetch(url,{cache:'no-store',redirect:'follow'}); })
       .then(function(r){ if(!r.ok) throw new Error('The sheet answered '+r.status+'.'); return r.json(); })
       .then(function(j){
         if(j&&j.error) throw new Error(j.error);
         if(!j||!j.trip||!Array.isArray(j.days)) throw new Error('That link did not return trip data.');
         state.data=j; state.demo=false;
         store.set(KEY_DATA,JSON.stringify(j)); store.set(KEY_SYNC,String(Date.now()));
+        applyPending();
       })
       .catch(function(e){ state.error=(e&&e.message)||'Could not reach the sheet.'; })
       .then(function(){ state.syncing=false; render(); });
@@ -1192,7 +1277,7 @@
         $('heroBig').textContent=d.location||'—';
         $('heroSub').textContent=['Day '+d.day, dd0?wmd(dd0):'', d.phase].filter(Boolean).join(' · ');
         var blocks=dayBlocks(d,{planInline:true}), kids=[];
-        kids.push(h('div',null,[h('span','t-label cardlabel','Today’s plan'),d.plan?rich(h('p','plantext'),d.plan):h('p','plantext none','Nothing planned for today')]));
+        kids.push(h('div',null,planInner(d,d.plan,'Today’s plan','Nothing planned for today')));
         kids=kids.concat(blocks.nodes);
         if(!kids.length) kids.push(h('p','plantext','No plans yet'));
         var todayCard=h('div','todaycard',kids); tc.appendChild(todayCard);
@@ -1410,8 +1495,183 @@
     window.scrollTo(0,y);
   }
   function show(s){lockScroll(); scrim.classList.add('open'); s.classList.add('open');}
-  function hideAll(){closeDriver(); closeFx(true); scrim.classList.remove('open'); var ds=$('daySheet'); ds.classList.remove('open'); ds.style.height=''; $('setSheet').classList.remove('open'); dayIdx=-1; unlockScroll();}
+  function hideAll(){closeDriver(); closeFx(true); scrim.classList.remove('open'); var ds=$('daySheet'); ds.classList.remove('open'); ds.style.height=''; $('setSheet').classList.remove('open'); $('cfSheet').classList.remove('open'); dayIdx=-1; unlockScroll();}
   scrim.onclick=hideAll;
+
+  // ---------- editing a day's plan (writes the PLAN cell through the sheet's doPost) ----------
+  var KEY_PEND='tripPendingPlans', KEY_LAYOUT='tripPlanLayout';
+  function pendingPlans(){ try{ return JSON.parse(store.get(KEY_PEND)||'{}')||{}; }catch(e){ return {}; } }
+  function setPending(o){ if(Object.keys(o).length) store.set(KEY_PEND,JSON.stringify(o)); else store.del(KEY_PEND); }
+  function applyPending(){ var P=pendingPlans(); ((state.data&&state.data.days)||[]).forEach(function(d){ if(P[d.date]) d.plan=P[d.date].plan; }); }
+  function splitPlan(t){ return String(t||'').split(/\s*(?:·|\n)\s*/).map(function(x){return x.trim();}).filter(Boolean); }
+  function layouts(){ try{ return JSON.parse(store.get(KEY_LAYOUT)||'{}')||{}; }catch(e){ return {}; } }
+  var ed=null;
+  function lockedRows(d){
+    return dayParts(d).rows.filter(function(r){ return r.time&&!r.last; }).map(function(r){
+      var pre=r.title==='Check in'?'from':r.title==='Check out'?'by':'';
+      return {key:'L:'+r.title, locked:true, text:r.title, time:r.time, pre:pre};
+    });
+  }
+  function openPlanEd(d){
+    var free=splitPlan(d.plan).map(function(t,i){ return {key:'F'+i+':'+t, text:t}; });
+    var locked=lockedRows(d), L=layouts()[d.date], rows=[];
+    if(L&&L.length){
+      var pool=free.slice();
+      L.forEach(function(k){
+        if(k.indexOf('L:')===0){ var lr=locked.filter(function(x){return x.key===k;})[0]; if(lr&&rows.indexOf(lr)<0) rows.push(lr); }
+        else { var t=k.slice(2), f=pool.filter(function(x){return x.text===t;})[0]; if(f){ rows.push(f); pool.splice(pool.indexOf(f),1); } }
+      });
+      pool.forEach(function(f){ rows.push(f); });
+      locked.forEach(function(lr){ if(rows.indexOf(lr)<0) rows.push(lr); });
+    } else {
+      rows=locked.filter(function(r){return r.time<'12:00';}).concat(free,locked.filter(function(r){return r.time>='12:00';}));
+    }
+    ed={d:d, date:d.date, prev:d.plan||'', rows:rows, n:0};
+    var dd=parseDay(d.date);
+    $('peSub').textContent=[dd?wmd(dd):'', d.location].filter(Boolean).join(' · ');
+    drawPlanEd(); drawSun(d);
+    $('planEd').hidden=false; lockScroll();
+    var inp=$('peList').querySelector('.per.add input'); if(inp) try{ inp.focus({preventScroll:true}); }catch(e){ inp.focus(); }
+  }
+  function closePlanEd(){ $('planEd').hidden=true; ed=null; if(!scrim.classList.contains('open')) unlockScroll(); }
+  function readRows(){   // DOM order + typed text → ed.rows
+    var list=$('peList'), byKey={}; ed.rows.forEach(function(r){ byKey[r.key]=r; });
+    ed.rows=[].slice.call(list.querySelectorAll('.per[data-key]')).map(function(el){
+      var r=byKey[el.getAttribute('data-key')], inp=el.querySelector('input'); if(r&&inp) r.text=inp.value; return r;
+    }).filter(Boolean);
+  }
+  function addFree(text){
+    text=String(text||'').trim(); if(!text) return;
+    readRows(); ed.n++; ed.rows.push({key:'N'+ed.n+':'+text, text:text}); drawPlanEd();
+    var inp=$('peList').querySelector('.per.add input'); if(inp) inp.focus();
+  }
+  var GRIP='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
+  function drawPlanEd(){
+    var list=$('peList'); list.innerHTML='';
+    ed.rows.forEach(function(r){
+      var el;
+      if(r.locked){
+        el=h('div','per',[h('span','lk',I('padlock')),h('span','lt',r.text),h('span','tm',r.pre?[h('span',null,r.pre+' '),r.time]:r.time)]);
+      } else {
+        var hd=h('button','hd'); hd.type='button'; hd.setAttribute('aria-label','Drag to reorder '+r.text); hd.innerHTML=GRIP;
+        var inp=h('input'); inp.value=r.text; inp.setAttribute('aria-label','Stop'); inp.maxLength=200;
+        var rm=h('button','rm','✕'); rm.type='button'; rm.setAttribute('aria-label','Remove '+r.text);
+        rm.onclick=function(){ readRows(); ed.rows=ed.rows.filter(function(x){return x!==r;}); drawPlanEd(); };
+        el=h('div','per',[hd,inp,rm]); dragRow(hd,el);
+      }
+      el.setAttribute('data-key',r.key); list.appendChild(el);
+    });
+    var ai=h('input'); ai.placeholder='Add a plan…'; ai.setAttribute('aria-label','Add a plan'); ai.maxLength=200; ai.setAttribute('enterkeyhint','done');
+    var ab=h('button','addbtn','Add'); ab.type='button'; ab.hidden=true;
+    ai.oninput=function(){ ab.hidden=!ai.value.trim(); };
+    ai.onkeydown=function(e){ if(e.key==='Enter'){ e.preventDefault(); addFree(ai.value); } };
+    ab.onclick=function(){ addFree(ai.value); };
+    list.appendChild(h('div','per add',[h('span','plus','+'),ai,ab]));
+  }
+  // Drag a free stop by its ⋮⋮ handle; locked (booked) rows stay put and stops move around them.
+  function dragRow(handle,el){
+    handle.addEventListener('pointerdown',function(e){
+      e.preventDefault(); var list=$('peList'); el.classList.add('drag');
+      function move(ev){
+        var y=ev.clientY, rows=[].slice.call(list.querySelectorAll('.per[data-key]')).filter(function(x){return x!==el;}), before=list.querySelector('.per.add');
+        for(var i=0;i<rows.length;i++){ var b=rows[i].getBoundingClientRect(); if(y<b.top+b.height/2){ before=rows[i]; break; } }
+        if(el.nextSibling!==before) list.insertBefore(el,before);
+      }
+      // listen on the window: moving the row in the page drops the handle's pointer capture
+      function up(){ el.classList.remove('drag'); window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); window.removeEventListener('pointercancel',up); readRows(); }
+      window.addEventListener('pointermove',move); window.addEventListener('pointerup',up); window.addEventListener('pointercancel',up);
+    });
+  }
+  // Sunrise / sunset for the day's place (NOAA approximation), shown in this phone's time zone.
+  function sunTimes(lat,lng,date){
+    var rad=Math.PI/180, day=Math.floor((Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())-Date.UTC(date.getFullYear(),0,0))/864e5);
+    function calc(rise){
+      var t=day+((rise?6:18)-lng/15)/24, M=0.9856*t-3.289;
+      var L=(M+1.916*Math.sin(M*rad)+0.020*Math.sin(2*M*rad)+282.634)%360; if(L<0) L+=360;
+      var RA=Math.atan(0.91764*Math.tan(L*rad))/rad; RA=(RA+360)%360; RA+=Math.floor(L/90)*90-Math.floor(RA/90)*90; RA/=15;
+      var sinD=0.39782*Math.sin(L*rad), cosD=Math.cos(Math.asin(sinD));
+      var cosH=(Math.cos(90.833*rad)-sinD*Math.sin(lat*rad))/(cosD*Math.cos(lat*rad)); if(cosH>1||cosH<-1) return null;
+      var H=(rise?360-Math.acos(cosH)/rad:Math.acos(cosH)/rad)/15, T=H+RA-0.06571*t-6.622, UT=((T-lng/15)%24+24)%24;
+      return new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())+UT*36e5);
+    }
+    return {rise:calc(true), set:calc(false)};
+  }
+  // Local time at the place (so a preview from home shows Évora's times, not Vancouver's).
+  var TZ={CL:'America/Santiago',AR:'America/Argentina/Buenos_Aires',BO:'America/La_Paz',PE:'America/Lima',EC:'America/Guayaquil',CO:'America/Bogota',BR:'America/Sao_Paulo',UY:'America/Montevideo',PY:'America/Asuncion',
+    PT:'Europe/Lisbon',ES:'Europe/Madrid',FR:'Europe/Paris',IT:'Europe/Rome',DE:'Europe/Berlin',GB:'Europe/London',IE:'Europe/Dublin',NL:'Europe/Amsterdam',GR:'Europe/Athens',CH:'Europe/Zurich',MX:'America/Mexico_City',JP:'Asia/Tokyo',NZ:'Pacific/Auckland'};
+  function placeTz(p){ if(!p) return undefined; if(p.country==='CL'&&p.lat<-46) return 'America/Punta_Arenas'; return TZ[p.country]; }
+  function hm(dt,tz){ if(!dt) return ''; var o={hour:'2-digit',minute:'2-digit',hour12:false}; if(tz) o.timeZone=tz; try{ return dt.toLocaleTimeString('en-GB',o); }catch(e){ delete o.timeZone; return dt.toLocaleTimeString('en-GB',o); } }
+  function drawSun(d){
+    var box=$('peSun'); box.innerHTML='';
+    var p=placeInfo(dayPlace(d)), dd=parseDay(d.date); if(!p||!dd) return;
+    var st=sunTimes(p.lat,p.lng,dd); if(!st.rise||!st.set) return;
+    var tz=placeTz(p);
+    box.appendChild(I('sunrise')); box.appendChild(document.createTextNode('Sunrise '+hm(st.rise,tz)));
+    box.appendChild(h('span',null,' · ')); box.appendChild(I('sunset')); box.appendChild(document.createTextNode('Sunset '+hm(st.set,tz)));
+  }
+  function savePlanEd(){
+    readRows();
+    var pending=$('peList').querySelector('.per.add input'); if(pending&&pending.value.trim()){ ed.n++; ed.rows.push({key:'N'+ed.n+':'+pending.value.trim(), text:pending.value.trim()}); }
+    var plan=ed.rows.filter(function(r){return !r.locked;}).map(function(r){return r.text.trim();}).filter(Boolean).join(' · ');
+    var date=ed.date, prev=ed.prev, d=ed.d;
+    var L=layouts(); L[date]=ed.rows.filter(function(r){return r.locked||r.text.trim();}).map(function(r){return r.locked?r.key:'F:'+r.text.trim();});
+    store.set(KEY_LAYOUT,JSON.stringify(L));
+    closePlanEd();
+    if(plan===prev){ refreshAfterPlan(); return; }
+    d.plan=plan;
+    if(state.demo){ toast('Demo trip: saved on this phone only'); refreshAfterPlan(); return; }
+    var P=pendingPlans(); P[date]={plan:plan, prev:P[date]?P[date].prev:prev, at:Date.now()}; setPending(P);
+    refreshAfterPlan(); flushPending();
+  }
+  function refreshAfterPlan(){ render(); if(dayIdx>=0) renderDay(dayIdx,0); }
+  var toastT=null;
+  function toast(msg){ var t=$('toast'); t.innerHTML=''; t.appendChild(I('tick')); t.appendChild(document.createTextNode(msg)); t.hidden=false; clearTimeout(toastT); toastT=setTimeout(function(){ t.hidden=true; },3000); }
+  function postPlan(date,item,force){
+    var url=store.get(KEY_URL); if(!url) return Promise.reject(new Error('No sheet'));
+    var key=''; try{ key=new URL(url).searchParams.get('key')||''; }catch(e){}
+    return fetch(url.split('?')[0],{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({key:key, action:'plan', date:date, plan:item.plan, prev:item.prev, force:!!force})}).then(function(r){ return r.json(); });
+  }
+  var flushing=null;
+  function flushPending(){
+    if(flushing) return flushing;
+    var P=pendingPlans(), dates=Object.keys(P);
+    if(!dates.length||!navigator.onLine||state.demo||!store.get(KEY_URL)) return Promise.resolve();
+    flushing=dates.reduce(function(chain,date){
+      return chain.then(function(){
+        return postPlan(date,P[date]).then(function(j){
+          if(j&&j.ok) planSaved(date,j.plan);
+          else if(j&&j.conflict) showConflict(date,P[date],j.current);
+        }).catch(function(){});
+      });
+    },Promise.resolve()).then(function(){ flushing=null; });
+    return flushing;
+  }
+  function planSaved(date,plan){
+    var P=pendingPlans(); delete P[date]; setPending(P);
+    ((state.data&&state.data.days)||[]).forEach(function(d){ if(d.date===date) d.plan=plan; });
+    if(!state.demo&&state.data) store.set(KEY_DATA,JSON.stringify(state.data));
+    state.justSaved=state.justSaved||{}; state.justSaved[date]=Date.now();
+    var dd=parseDay(date); toast('Plan for '+(dd?md(dd):date)+' updated in your sheet');
+    refreshAfterPlan(); setTimeout(refreshAfterPlan,3100);
+  }
+  var cf=null;
+  function showConflict(date,item,current){
+    cf={date:date, item:item, current:current};
+    var dd=parseDay(date);
+    $('cfSub').textContent='The plan for '+(dd?wmd(dd):date)+' was changed in your sheet after your last sync. Which one should stay?';
+    $('cfSheetTxt').textContent=current||'(empty)'; $('cfMineTxt').textContent=item.plan||'(empty)';
+    show($('cfSheet'));
+  }
+  $('cfKeepMine').onclick=function(){ if(!cf) return; var c=cf; cf=null; $('cfSheet').classList.remove('open'); hideAll();
+    postPlan(c.date,c.item,true).then(function(j){ if(j&&j.ok) planSaved(c.date,j.plan); }).catch(function(){}); };
+  $('cfUseSheet').onclick=function(){ if(!cf) return; var c=cf; cf=null; $('cfSheet').classList.remove('open'); hideAll();
+    var P=pendingPlans(); delete P[c.date]; setPending(P);
+    ((state.data&&state.data.days)||[]).forEach(function(d){ if(d.date===c.date) d.plan=c.current; });
+    if(state.data) store.set(KEY_DATA,JSON.stringify(state.data)); render(); };
+  $('peCancel').onclick=closePlanEd;
+  $('peSave').onclick=savePlanEd;
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!$('planEd').hidden){ e.preventDefault(); closePlanEd(); } });
 
   // ---------- currency converter (during the trip) ----------
   // Rates come from the feed (fx.rates, per 1 USD). The local currency follows the country of the place
@@ -1632,7 +1892,7 @@
     if(/^[0-9.]$/.test(e.key)||e.key==='Backspace'){ var bs=$('fxKeys').querySelectorAll('button'); var idx='123456789.0'.indexOf(e.key); var b=e.key==='Backspace'?bs[11]:bs[idx]; if(b){ b.click(); e.preventDefault(); } } });
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'){ if($('mapFull').classList.contains('open')) closeMapFull(); else if($('driver').classList.contains('open')) closeDriver(); else hideAll(); return; }
-    if(dayIdx>=0 && !$('driver').classList.contains('open') && !/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){
+    if(dayIdx>=0 && $('planEd').hidden && !$('driver').classList.contains('open') && !/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||'')){
       if(e.key==='ArrowLeft') stepDay(-1); else if(e.key==='ArrowRight') stepDay(1);
     }
   });
