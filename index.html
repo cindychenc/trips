@@ -1520,16 +1520,16 @@
     }
     return w(n);
   }
-  var CUR_WORDS={es:{CLP:['peso','pesos'],ARS:['peso','pesos'],COP:['peso','pesos'],MXN:['peso','pesos'],UYU:['peso','pesos'],BOB:['boliviano','bolivianos'],PEN:['sol','soles'],PYG:['guaraní','guaraníes'],EUR:['euro','euros'],USD:['dólar','dólares']},
-                 pt:{EUR:['euro','euros'],BRL:['real','reais'],USD:['dólar','dólares']}};
+  var CUR_WORDS={es:{CLP:['peso','pesos'],ARS:['peso','pesos'],COP:['peso','pesos'],MXN:['peso','pesos'],UYU:['peso','pesos'],BOB:['boliviano','bolivianos'],PEN:['sol','soles'],PYG:['guaraní','guaraníes'],EUR:['euro','euros'],USD:['dólar','dólares'],CAD:['dólar canadiense','dólares canadienses']},
+                 pt:{EUR:['euro','euros'],BRL:['real','reais'],USD:['dólar','dólares'],CAD:['dólar canadense','dólares canadenses']}};
   var SAY={ // stressed syllable in capitals
     cero:'SEH-roh',uno:'OO-noh',un:'oon',dos:'dohs',tres:'trehs',cuatro:'KWAH-troh',cinco:'SEEN-koh',seis:'says',siete:'SYEH-teh',ocho:'OH-choh',nueve:'NWEH-beh',diez:'dyehs',once:'OHN-seh',doce:'DOH-seh',trece:'TREH-seh',catorce:'kah-TOHR-seh',quince:'KEEN-seh',
     'dieciséis':'dyeh-see-SAYS',diecisiete:'dyeh-see-SYEH-teh',dieciocho:'dyeh-see-OH-choh',diecinueve:'dyeh-see-NWEH-beh',veinte:'BAYN-teh','veintiún':'bayn-tee-OON',veintiuno:'bayn-tee-OO-noh','veintidós':'bayn-tee-DOHS','veintitrés':'bayn-tee-TREHS',veinticuatro:'bayn-tee-KWAH-troh',veinticinco:'bayn-tee-SEEN-koh','veintiséis':'bayn-tee-SAYS',veintisiete:'bayn-tee-SYEH-teh',veintiocho:'bayn-tee-OH-choh',veintinueve:'bayn-tee-NWEH-beh',
     treinta:'TRAYN-tah',cuarenta:'kwah-REHN-tah',cincuenta:'seen-KWEHN-tah',sesenta:'seh-SEHN-tah',setenta:'seh-TEHN-tah',ochenta:'oh-CHEHN-tah',noventa:'noh-BEHN-tah',y:'ee',cien:'syehn',ciento:'SYEHN-toh',doscientos:'dohs-SYEHN-tohs',trescientos:'trehs-SYEHN-tohs',cuatrocientos:'kwah-troh-SYEHN-tohs',quinientos:'kee-NYEHN-tohs',seiscientos:'says-SYEHN-tohs',setecientos:'seh-teh-SYEHN-tohs',ochocientos:'oh-choh-SYEHN-tohs',novecientos:'noh-beh-SYEHN-tohs',
-    mil:'meel','millón':'mee-YOHN',millones:'mee-YOH-nehs',de:'deh',con:'kohn',peso:'PEH-soh',pesos:'PEH-sohs',boliviano:'boh-lee-BYAH-noh',bolivianos:'boh-lee-BYAH-nohs',sol:'sohl',soles:'SOH-lehs','guaraní':'gwah-rah-NEE','guaraníes':'gwah-rah-NEE-ehs','dólar':'DOH-lahr','dólares':'DOH-lah-rehs'};
+    mil:'meel','millón':'mee-YOHN',millones:'mee-YOH-nehs',de:'deh',con:'kohn',peso:'PEH-soh',pesos:'PEH-sohs',boliviano:'boh-lee-BYAH-noh',bolivianos:'boh-lee-BYAH-nohs',sol:'sohl',soles:'SOH-lehs','guaraní':'gwah-rah-NEE','guaraníes':'gwah-rah-NEE-ehs','dólar':'DOH-lahr','dólares':'DOH-lah-rehs',canadiense:'kah-nah-DYEHN-seh',canadienses:'kah-nah-DYEHN-sehs'};
   var SAY_PT={zero:'ZEH-roo',um:'oong',dois:'doysh','três':'traysh',quatro:'KWAH-troo',cinco:'SEEN-koo',seis:'saysh',sete:'SEH-tuh',oito:'OY-too',nove:'NOH-vuh',dez:'desh',onze:'OHN-zuh',doze:'DOH-zuh',treze:'TREH-zuh',catorze:'kah-TOR-zuh',quatorze:'kwah-TOR-zee',quinze:'KEEN-zuh',dezasseis:'deh-zah-SAYSH',dezassete:'deh-zah-SEH-tuh',dezoito:'deh-ZOY-too',dezanove:'deh-zah-NOH-vuh',dezesseis:'deh-zeh-SAYS',dezessete:'deh-zeh-SEH-chee',dezenove:'deh-zeh-NOH-vee',
     vinte:'VEEN-tuh',trinta:'TREEN-tah',quarenta:'kwah-REN-tah',cinquenta:'seen-KWEN-tah',sessenta:'seh-SEN-tah',setenta:'seh-TEN-tah',oitenta:'oy-TEN-tah',noventa:'noo-VEN-tah',e:'ee',cem:'sayng',cento:'SEN-too',duzentos:'doo-ZEN-toosh',trezentos:'treh-ZEN-toosh',quatrocentos:'kwah-troo-SEN-toosh',quinhentos:'kee-NYEN-toosh',seiscentos:'saysh-SEN-toosh',setecentos:'seh-tuh-SEN-toosh',oitocentos:'oy-too-SEN-toosh',novecentos:'noh-vuh-SEN-toosh',
-    mil:'meel','milhão':'mee-LYOWNG','milhões':'mee-LYOYNSH',de:'duh',euro:'EH-oo-roo',euros:'EH-oo-roosh',real:'hay-AHL',reais:'hay-AYSH','cêntimos':'SEN-tee-moosh','centavos':'sen-TAH-voosh','dólar':'DOH-lar','dólares':'DOH-lah-resh'};
+    mil:'meel','milhão':'mee-LYOWNG','milhões':'mee-LYOYNSH',de:'duh',euro:'EH-oo-roo',euros:'EH-oo-roosh',real:'hay-AHL',reais:'hay-AYSH','cêntimos':'SEN-tee-moosh','centavos':'sen-TAH-voosh','dólar':'DOH-lar','dólares':'DOH-lah-resh',canadense:'kah-nah-DEN-suh',canadenses:'kah-nah-DEN-suhsh'};
   function sayAmount(v,cur,lang,br){
     var cw=(CUR_WORDS[lang]||{})[cur]; if(!cw||!isFinite(v)||v<0||v>=1e9) return null;
     var dec=!NODEC[cur]&&v<1000, whole=Math.floor(dec?v+1e-9:Math.round(v)), cents=dec?Math.round((v-whole)*100):0;
@@ -1539,7 +1539,7 @@
     if(lang==='es') words=apoES(words);
     if(whole>=1e6&&whole%1e6===0) words+=' de';
     words+=' '+(whole===1?cw[0]:cw[1]);
-    if(cents) words+=lang==='es'?' con '+esWords(cents):' e '+W(cents)+' '+(cur==='BRL'?'centavos':'cêntimos');
+    if(cents) words+=lang==='es'?' con '+esWords(cents):' e '+W(cents)+' '+(cur==='EUR'?'cêntimos':'centavos');
     var dict=lang==='es'?SAY:SAY_PT;
     return {text:words, guide:words.split(' ').map(function(t){ return dict[t]||t; }).join(' ')};
   }
@@ -1552,8 +1552,9 @@
     var box=$('fxSay'); box.innerHTML='';
     var cc=fxCountry(), lang=LANG_OF[cc], L=PRICE_PHRASES[lang]; if(!L) return;
     var br=cc==='BR';
-    var n=parseFloat(fx.amt)||0, local=fx.swapped?n:n*rateOf(fx.home,fx.cur);
-    var s=sayAmount(local,fx.cur,lang,br);
+    // say the amount you're typing: the local money, or CAD / USD when that's on top
+    var n=parseFloat(fx.amt)||0, sayCur=fx.swapped?fx.cur:fx.home;
+    var s=sayAmount(n,sayCur,lang,br);
     if(s){
       var nb=h('button','saybar num',[('speechSynthesis' in window)?h('span','sayic',I('speaker')):null,h('span','saytx',[h('b',null,s.text),h('span',null,s.guide)])]);
       nb.type='button'; nb.setAttribute('aria-label','Say '+s.text); nb.onclick=function(){ speak(s.text,lang,br); };
