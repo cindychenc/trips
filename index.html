@@ -1690,7 +1690,8 @@
   }
   function openPlanEd(d){
     var free=splitPlan(d.plan).map(function(t,i){ return {key:'F'+i+':'+t, text:t}; });
-    var locked=lockedRows(d).sort(function(a,b){return a.time<b.time?-1:a.time>b.time?1:0;}), L=layouts()[d.date], rows=[];
+    function byTime(a,b){return a.time<b.time?-1:a.time>b.time?1:0;}
+    var locked=lockedRows(d).sort(byTime), L=layouts()[d.date], rows=[];
     if(L&&L.length){
       var pool=free.slice();
       L.forEach(function(k){
@@ -1698,7 +1699,18 @@
         else { var t=k.slice(2), f=pool.filter(function(x){return x.text===t;})[0]; if(f){ rows.push(f); pool.splice(pool.indexOf(f),1); } }
       });
       pool.forEach(function(f){ rows.push(f); });
-      locked.forEach(function(lr){ if(rows.indexOf(lr)<0) rows.push(lr); });
+      // booked times always run in time order: refill the locked slots sorted by time
+      var slots=[], have=[];
+      rows.forEach(function(r,i){ if(r.locked){ slots.push(i); have.push(r); } });
+      have.sort(byTime); slots.forEach(function(i,k){ rows[i]=have[k]; });
+      // bookings added since the layout was saved go in at their time, not at the end
+      locked.forEach(function(lr){
+        if(rows.indexOf(lr)>=0) return;
+        var at=-1, last=-1;
+        for(var i=0;i<rows.length;i++){ if(rows[i].locked){ if(rows[i].time>lr.time){ at=i; break; } last=i; } }
+        if(at<0) at=last>=0?last+1:(lr.time<'12:00'?0:rows.length);
+        rows.splice(at,0,lr);
+      });
     } else {
       rows=locked.filter(function(r){return r.time<'12:00';}).concat(free,locked.filter(function(r){return r.time>='12:00';}));
     }
