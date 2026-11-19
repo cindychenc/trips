@@ -1633,7 +1633,7 @@
         var dot=null;
         if(g.key.charAt(0)==='p'){ dot=h('i'); dot.style.cssText='width: 12px; height: 12px; border-radius: 6px; flex: none; background: '+darken(g.phase.colour); }
         var ps=parseDay(g.phase.start), pe=parseDay(g.phase.end);
-        var gsub=g.key==='~pre'?(start?'No date or before '+md(start):'No date'):g.key==='~post'?(end?'After '+md(end):''):ps&&pe?md(ps)+' – '+md(pe):'';
+        var gsub=g.key==='~pre'?'':g.key==='~post'?(end?'After '+md(end):''):ps&&pe?md(ps)+' – '+md(pe):'';
         var gt=h('span','t-h3',String(g.phase.name||'Other')); gt.style.flex='1'; var gh=h('div',null,[dot,gt,h('span','t-small',gsub)]);
         gh.style.cssText='display: flex; align-items: center; gap: 10px; margin: 26px 0 10px';
         vb.appendChild(gh); vb.appendChild(card(g.items.map(itemRow)));
