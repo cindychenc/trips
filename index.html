@@ -1544,7 +1544,7 @@
         vt.appendChild(sh("Let's get ready",'first'));
         vt.appendChild(h('div','tdleft',tbItems.length?plural(tbItems.length,'to do')+' left':'✓ All to dos done'));
         if(tbItems.length){
-          var next=tbItems.slice().sort(function(a,b){ var x=a.date||'9999', y=b.date||'9999'; return x<y?-1:x>y?1:0; }).slice(0,2);
+          var next=tbItems.slice().sort(function(a,b){ var x=a.date||'0000', y=b.date||'0000'; return x<y?-1:x>y?1:0; }).slice(0,2);  // undated first, then soonest
           var strip=h('div','todostrip');
           next.forEach(function(it){
             var gen=it.type==='general', dd=parseDay(it.date);
