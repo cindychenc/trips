@@ -1191,6 +1191,7 @@
   function legKind(s){
     var d0=s.days[0]; if(!d0) return 'drive';
     var S=segs(); if(S&&S.some(function(g){return g.type==='flight'&&g.date===d0.date;})) return 'flight';
+    if(S&&S.some(function(g){return g.type==='bus'&&g.date===d0.date&&tIcon(g.kind)==='boat';})) return 'boat';
     return /✈/.test(String(d0.flights||''))||(!S&&String(d0.flights||'').trim()&&!/^\s*✱/.test(d0.flights))?'flight':'drive';
   }
   function uniqStops(stops){
@@ -1206,6 +1207,15 @@
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   // Numbered pin with the place name underneath (as in the design).
   function pinIcon(n,on,name){ var s=on?34:28; return L.divIcon({className:'mpin'+(on?' on':''),html:'<span>'+n+'</span>'+(name?'<em>'+esc(name)+'</em>':''),iconSize:[s,s],iconAnchor:[s/2,s/2]}); }
+  // A soft curve between two stops (no routing service): bends to the left of the direction of travel,
+  // so a there-and-back pair draws as two separate arcs. Flights bend most, boats a little, ground legs gently.
+  function curveLL(a,b,bend){
+    var la=a[0]||a.lat, lo=a[1]||a.lng, lb=b[0]||b.lat, lob=b[1]||b.lng;
+    var c=Math.cos((la+lb)/2*Math.PI/180)||1, x0=lo*c, x1=lob*c, dx=x1-x0, dy=lb-la;
+    var cx=(x0+x1)/2-dy*bend, cy=(la+lb)/2+dx*bend, out=[];
+    for(var i=0;i<=24;i++){ var t=i/24, u=1-t; out.push([u*u*la+2*u*t*cy+t*t*lb, (u*u*x0+2*u*t*cx+t*t*x1)/c]); }
+    return out;
+  }
   function drawMap(el,phaseName,opts){
     opts=opts||{};
     var ms=mapStops(phaseName), pins=uniqStops(ms);
@@ -1214,10 +1224,12 @@
     var m=L.map(el,{zoomControl:false,attributionControl:true,dragging:live,touchZoom:live,doubleClickZoom:live,scrollWheelZoom:live,boxZoom:false,keyboard:false,tap:false,zoomSnap:0.25});
     m.attributionControl.setPrefix(false);
     L.tileLayer(TILE_URL,{subdomains:'abcd',maxZoom:18,attribution:TILE_ATTR,crossOrigin:true,referrerPolicy:'strict-origin-when-cross-origin'}).addTo(m);
-    var pts=[], prev=null, markers=[];
+    var pts=[], prev=null, markers=[], drawn={};
     // route follows every visit (there and back again); one pin per place
     ms.filter(function(s){return s.ll;}).forEach(function(s){
-      if(prev&&prev.ll&&prev.name!==s.name) L.polyline([prev.ll,s.ll],{color:'#111',weight:live?3.5:3,opacity:.9,dashArray:legKind(s)==='flight'?'7 7':null,interactive:false}).addTo(m);
+      var pk=prev&&[prev.name,s.name].sort().join('\u0000');
+      if(prev&&prev.ll&&prev.name!==s.name&&!drawn[pk]){ var k=legKind(s); drawn[pk]=1;
+        L.polyline(curveLL(prev.ll,s.ll,k==='flight'?.24:k==='boat'?.16:.1),{color:'#111',weight:live?3.5:3,opacity:.9,dashArray:k==='flight'?'7 7':k==='boat'?'1 7':null,lineCap:'round',smoothFactor:0,interactive:false}).addTo(m); }
       prev=s;
     });
     pins.forEach(function(s,i){
