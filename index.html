@@ -493,6 +493,7 @@
   .wxwarn{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;margin:0 12px 12px;padding:10px 12px;border-radius:12px;background:var(--tbTint);color:#6B3A26;font-size:13px;font-weight:600;line-height:1.4}
   .wxwarn .ic{width:16px;height:16px;color:var(--tb);margin-top:1px}
   .wxfoot{padding:0 16px 12px;font-size:12px;font-weight:600;color:var(--text3)}.wxfoot.old{color:var(--tb)}
+  .cbar .tt{cursor:pointer}
 </style>
 </head>
 <body>
@@ -2184,6 +2185,12 @@
   $('previewIn').onchange=function(){ state.preview=this.value||null; render(); };
   $('clearPreview').onclick=function(){ state.preview=null; $('previewIn').value=''; render(); };
 
+  // Tap the compact sticky header (not its buttons) to scroll back to the top.
+  $('cbar').addEventListener('click',function(e){
+    if(e.target.closest('button,a')) return;
+    var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    try{ window.scrollTo({top:0,behavior:rm?'auto':'smooth'}); }catch(x){ window.scrollTo(0,0); }
+  });
   window.addEventListener('online',function(){ sync(); });
   window.addEventListener('offline',render);
   document.addEventListener('visibilitychange',function(){
