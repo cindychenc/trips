@@ -1538,11 +1538,22 @@
     return dayParts(d).rows.filter(function(r){ return r.time&&!r.last; }).map(function(r){
       var pre=r.title==='Check in'?'from':r.title==='Check out'?'by':'';
       return {key:'L:'+r.title, locked:true, text:r.title, time:r.time, pre:pre};
+    }).concat(flightLocks(d));
+  }
+  // Booked flights on this day: departure and landing as locked stops (an overnight flight lands on the next day's list).
+  function flightLocks(d){
+    var out=[];
+    dayParts(d).moves.forEach(function(s){
+      if(s.type!=='flight') return;
+      var no=s.number||'Flight', arr=s.arrivalDate||s.date;
+      if(s.date===d.date && s.departs) out.push({key:'L:dep '+no, locked:true, text:no+' departs '+(s.from||''), time:s.departs, pre:''});
+      if(arr===d.date && s.arrives) out.push({key:'L:arr '+no, locked:true, text:no+' lands '+(s.to||''), time:s.arrives, pre:''});
     });
+    return out;
   }
   function openPlanEd(d){
     var free=splitPlan(d.plan).map(function(t,i){ return {key:'F'+i+':'+t, text:t}; });
-    var locked=lockedRows(d), L=layouts()[d.date], rows=[];
+    var locked=lockedRows(d).sort(function(a,b){return a.time<b.time?-1:a.time>b.time?1:0;}), L=layouts()[d.date], rows=[];
     if(L&&L.length){
       var pool=free.slice();
       L.forEach(function(k){
