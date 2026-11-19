@@ -1,5 +1,5 @@
 // Keeps the app itself on the device so it opens offline. Trip data is stored separately by the page.
-const CACHE = 'trip-app-v87';
+const CACHE = 'trip-app-v88';
 const PHOTOS = 'trip-photos-v1';
 const TILES = 'trip-tiles-v1';
 const MAX_TILES = 2500;

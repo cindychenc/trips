@@ -1229,7 +1229,7 @@
     ms.filter(function(s){return s.ll;}).forEach(function(s){
       var pk=prev&&[prev.name,s.name].sort().join('\u0000');
       if(prev&&prev.ll&&prev.name!==s.name&&!drawn[pk]){ var k=legKind(s); drawn[pk]=1;
-        L.polyline(curveLL(prev.ll,s.ll,k==='flight'?.24:k==='boat'?.16:.1),{color:'#111',weight:live?3.5:3,opacity:.9,dashArray:k==='flight'?'7 7':k==='boat'?'1 7':null,lineCap:'round',smoothFactor:0,interactive:false}).addTo(m); }
+        L.polyline(curveLL(prev.ll,s.ll,k==='flight'?.24:k==='boat'?.16:.1),{color:'#111',weight:live?3.5:3,opacity:.9,dashArray:k==='flight'?'7 7':null,lineCap:'round',smoothFactor:0,interactive:false}).addTo(m); }
       prev=s;
     });
     pins.forEach(function(s,i){
