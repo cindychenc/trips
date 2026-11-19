@@ -115,6 +115,11 @@
   .route .line{display:flex;align-items:center;gap:6px;color:#8A8A8A}
   .route .line i{flex:1;border-top:2px dashed #CFCFCF}
   .tcard .btn{margin-top:14px}
+  .abx{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;margin-top:14px;padding:12px 14px;border-radius:14px;background:#F4EEE5}
+  .abx .ic{width:20px;height:20px;color:#7A5528}
+  .abx b{display:block;font-weight:800;font-size:16px;line-height:1.2;color:var(--ink)}
+  .abx span span{display:block;font-size:13px;color:#6B5A44;margin-top:2px}
+  .todaycard .abx{background:rgba(244,238,229,.85)}
   .tbcard{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;background:var(--tbTint);border-radius:18px;padding:14px 16px}
   .tbcard .t-label{color:var(--tb)}
   .tbcard .s{display:block;font-size:13px;color:#6B3A26;margin-top:2px}
@@ -850,7 +855,33 @@
     }
     return card(kids,true,'stay');
   }
-  function moveCard(s){
+  // Airport → country, for "at the airport by" (domestic 2 h, international 3 h). Unknown airports count as international.
+  var AIRPORT_CC=(function(){ var m={}, t={
+    CL:'SCL BBA PUQ PNT CJC ANF IQQ ARI CCP PMC ZAL LSC ZCO ZOS PZS IPC GXQ',
+    AR:'EZE AEP BRC FTE USH SLA JUJ MDZ COR IGR TUC REL CRD NQN PSS RGL ROS ENO',
+    BO:'LPB VVI CBB UYU SRE TJA RIB',
+    PE:'LIM CUZ AQP JUL PIU TRU IQT PEM TCQ ATA AYP',
+    BR:'GRU GIG BSB CNF SSA REC FOR POA CWB FLN IGU',
+    EC:'UIO GYE GPS SCY', CO:'BOG MDE CTG CLO SMR', UY:'MVD PDP', PY:'ASU AGT',
+    CA:'YVR YYZ YUL YYC YEG YOW YHZ YWG YXE YQR YYJ YLW',
+    US:'LAX SFO SEA JFK EWR MIA IAH DFW ORD ATL BOS DEN LAS PHX',
+    MX:'MEX CUN GDL', PA:'PTY', ES:'MAD BCN AGP PMI SVQ VLC',
+    PT:'LIS OPO FAO FNC PDL'};
+    Object.keys(t).forEach(function(c){ t[c].split(' ').forEach(function(a){ m[a]=c; }); }); return m; })();
+  function airportBy(s){
+    if(s.type!=='flight' || !/^\d{1,2}:\d{2}$/.test(s.departs||'')) return null;
+    // a connection (another flight lands at this airport earlier that day): no airport time
+    var conn=(segs()||[]).some(function(o){ return o!==s && o.type==='flight' && o.to===s.from && (o.arrivalDate||o.date)===s.date && o.arrives && o.arrives<s.departs; });
+    if(conn) return null;
+    var a=AIRPORT_CC[String(s.from||'').toUpperCase()], b=AIRPORT_CC[String(s.to||'').toUpperCase()];
+    var dom=!!(a&&b&&a===b), hrs=dom?2:3, own=String(s.airportBy||'').trim(), mins=hrs*60, by='';
+    var m=own.match(/^(\d{1,2}):(\d{2})$/), hm=own.match(/^(\d+(?:\.\d+)?)\s*h/i), mm=own.match(/^(\d+)\s*min/i);
+    if(m) by=('0'+m[1]).slice(-2)+':'+m[2]; else if(hm) mins=Math.round(parseFloat(hm[1])*60); else if(mm) mins=+mm[1];
+    if(!by){ var t=s.departs.split(':'), x=(+t[0])*60+(+t[1])-mins; x=(x+1440)%1440; by=('0'+Math.floor(x/60)).slice(-2)+':'+('0'+x%60).slice(-2); }
+    var lead=m?'your time':(mins%60?(mins>=60?Math.floor(mins/60)+' h '+(mins%60)+' min':mins+' min'):(mins/60)+' h')+' before';
+    return {by:by, sub:lead+(own?'':(dom?' · domestic flight':' · international flight'))};
+  }
+  function moveCard(s,date){
     var isF=s.type==='flight', label=isF?'Flight':(s.kind||'Transfer');
     var title=isF?(s.number||'Flight'):(s.company||[s.from,s.to].filter(Boolean).join(' → ')||label);
     var nextDay=isF&&s.arrivalDate&&s.arrivalDate>s.date;
@@ -859,6 +890,8 @@
     function end(code,tm){ var long=String(code||'').length>4; return h('div',null,[h('span','code'+(long?' long':''),code||'—'),tm?h('span','tm',tm):null]); }
     var right=end(s.to,s.arrives); right.style.textAlign='right';
     var kids=[head,h('div','route',[end(s.from,s.departs),h('div','line',[h('i'),I(isF?'plane':tIcon(s.kind)),h('i')]),right])];
+    var ab=isF&&(!date||s.date===date)?airportBy(s):null;
+    if(ab) kids.push(h('div','abx',[I('clock'),h('span',null,[h('b',null,'At the airport by '+ab.by),h('span',null,ab.sub)])]));
     if(isF && s.statusLink){ var b=linkbtn('Check flight status','secondary','ext',s.statusLink); b.classList.add('btn-block'); kids.push(b); }
     return h('div','tcard',kids);
   }
@@ -918,7 +951,7 @@
     if(!opts.planInline) out.push(planCard(d.plan,'Plan',d));
     if(p.tonight && p.tonight.name) out.push(stayCard(p.tonight,d));
     if(p.rows.length) out.push(card(p.rows.map(timeRow)));
-    p.moves.forEach(function(s){ out.push(moveCard(s)); });
+    p.moves.forEach(function(s){ out.push(moveCard(s,d.date)); });
     if(d.notes) out.push(card(row(tile('note','stay'),'Notes',rich(h('span'),d.notes))));
     return {nodes:out, parts:p};
   }
