@@ -453,6 +453,8 @@
   .typ{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:11px;background:var(--fill);font-weight:700;font-size:12px;color:var(--text2);margin-left:6px;vertical-align:1px}
   .typ.first{margin-left:0}
   .row.date>span>.s{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere} /* long plans: 3 lines then … */
+  .row .x .tl{display:flex;gap:6px;align-items:flex-start}
+  .row .x .tlic{width:14px;height:14px;flex:none;margin-top:2px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
   .row .x.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .donecount{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:600;font-size:14px;color:var(--text3)}
   .donecount .ic{width:16px;height:16px;color:#2E6B47;stroke-width:2.6}
@@ -719,6 +721,19 @@
   function isToBookLine(l){return /^\s*✱/.test(l);}
   function cleanToBook(l){return l.replace(/^\s*✱\s*/,'').replace(/^to book\s*[·:-]?\s*/i,'').trim();}
   function travelLines(d){return [d.flights,d.car,d.transfers].filter(Boolean).join('\n');}
+  // Travel lines for day rows, each with its kit icon (plane, steering wheel, bus); to-book lines keep the star.
+  function travelNode(d){
+    var out=h('span','x'), n=0;
+    [['flights','plane'],['car','car'],['transfers','bus']].forEach(function(k){
+      String(d[k[0]]||'').split('\n').forEach(function(l){
+        l=l.replace(/^[✈🚗🚌⛴]\s*/u,''); if(!l.trim()) return;
+        var line=h('span','tl');
+        if(isToBookLine(l)) rich(line,l); else { line.appendChild(I(k[1],'tlic')); rich(line,l); }
+        out.appendChild(line); n++;
+      });
+    });
+    return n?out:null;
+  }
 
   // ---------- components ----------
   function iconbtn(n,label,cls,onclick){var b=h('button','iconbtn'+(cls?' '+cls:''),I(n)); b.type='button'; b.setAttribute('aria-label',label); b.title=label; if(onclick) b.onclick=onclick; return b;}
@@ -901,10 +916,10 @@
     return {nodes:out, parts:p};
   }
   function dayRow(x,isToday){
-    var dd=parseDay(x.date), extra=travelLines(x);
+    var dd=parseDay(x.date), extra=travelNode(x);
     var tb=['stay','flights','car','transfers'].some(function(k){return /✱/.test(String(x[k]||''));})||checkItems(state.data).some(function(c){return c.date===x.date;});
     return row(dtile(isToday?'Today':(dd?WD[dd.getDay()]:''),dd?dd.getDate():x.day,isToday),x.location||x.plan||'—',x.location?rich(h('span'),x.plan||''):'',
-      [tb?h('span','star',STAR()):null,CHEV()],extra?rich(h('span','x'),extra):null,'top date'+(isToday?' hi':''),function(){openDay(x);});
+      [tb?h('span','star',STAR()):null,CHEV()],extra,'top date'+(isToday?' hi':''),function(){openDay(x);});
   }
 
   // ---------- to-book items ----------
