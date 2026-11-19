@@ -649,6 +649,8 @@
     speaker:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
     del:'<path d="M21 5H9l-6 7 6 7h12zM17 9l-6 6M11 9l6 6"/>',
     bed:'<path d="M3 18v-7m0 4h18v3m0-3v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
+    train:'<path d="M8 3h8a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z"/><path d="M5 10.5h14M12 3v7.5"/><path d="M8.5 14h.01M15.5 14h.01"/><path d="M8.5 17L6 21M15.5 17L18 21"/>',
+    boat:'<path d="M2.5 14h19l-2.3 4.3a1.5 1.5 0 0 1-1.3.7H6.1a1.5 1.5 0 0 1-1.3-.7z"/><path d="M5.5 14V9.5A1.5 1.5 0 0 1 7 8h10a1.5 1.5 0 0 1 1.5 1.5V14"/><path d="M9.5 8V4.5h5V8"/><path d="M9 11h.01M12 11h.01M15 11h.01"/>',
     bus:'<path d="M4.5 17.5H3A1.5 1.5 0 0 1 1.5 16V6A1.5 1.5 0 0 1 3 4.5h15.7a1.5 1.5 0 0 1 1.5 1.2l1.3 6.3v4a1.5 1.5 0 0 1-1.5 1.5h-.5M8.5 17.5h7"/><rect x="3.8" y="7.5" width="4" height="3.5" rx="1"/><rect x="10.8" y="7.5" width="4" height="3.5" rx="1"/><path d="M17.4 7.5h2.4l.8 4.2-3.2-1.2z"/><circle cx="6.5" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/>',
     plane:'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
     car:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M3.3 10.5c2.6-.6 5-.6 6.6.4M20.7 10.5c-2.6-.6-5-.6-6.6.4M12 14.2V21"/>',
@@ -721,6 +723,9 @@
   function isToBookLine(l){return /^\s*✱/.test(l);}
   function cleanToBook(l){return l.replace(/^\s*✱\s*/,'').replace(/^to book\s*[·:-]?\s*/i,'').trim();}
   function travelLines(d){return [d.flights,d.car,d.transfers].filter(Boolean).join('\n');}
+  // Transfer icon by its TYPE (Train / Ferry / Bus …) or the line text.
+  function tIcon(k){ k=String(k||'').toLowerCase(); return /train|rail|tren|metro|tram|tranv/.test(k)?'train':/boat|ferry|ferri|barco|lancha|catamar|cruise|crucero|ship|navimag|water ?taxi/.test(k)?'boat':'bus'; }
+  function isMove(n){ return n==='plane'||n==='bus'||n==='train'||n==='boat'; }
   // Travel lines for day rows, each with its kit icon (plane, steering wheel, bus); to-book lines keep the star.
   function travelNode(d){
     var out=h('span','x'), n=0;
@@ -728,7 +733,7 @@
       String(d[k[0]]||'').split('\n').forEach(function(l){
         l=l.replace(/^[✈🚗🚌⛴]\s*/u,''); if(!l.trim()) return;
         var line=h('span','tl');
-        if(isToBookLine(l)) rich(line,l); else { line.appendChild(I(k[1],'tlic')); rich(line,l); }
+        if(isToBookLine(l)) rich(line,l); else { line.appendChild(I(k[1]==='bus'?tIcon(l):k[1],'tlic')); rich(line,l); }
         out.appendChild(line); n++;
       });
     });
@@ -778,7 +783,7 @@
         } else if(s.type==='flight' && s.date<date && s.arrivalDate===date && booked(s)){
           out.hasFlight=true; out.moves.push(s);   // overnight flight landing today (e.g. the flight in on day 1)
         } else if(s.date===date){
-          if(!booked(s)){ out.tobook.push({icon:s.type==='flight'?'plane':'bus',links:s.type==='bus'?busLinks(s,d):null,title:s.type==='flight'?('Flight'+(s.number?' '+s.number:'')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')):((s.kind||'Transfer')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')+(s.company?' · '+s.company:''))}); return; }
+          if(!booked(s)){ out.tobook.push({icon:s.type==='flight'?'plane':tIcon(s.kind),links:s.type==='bus'?busLinks(s,d):null,title:s.type==='flight'?('Flight'+(s.number?' '+s.number:'')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')):((s.kind||'Transfer')+(s.from&&s.to?' · '+s.from+' → '+s.to:'')+(s.company?' · '+s.company:''))}); return; }
           if(s.type==='flight') out.hasFlight=true; else out.hasTransfer=true;
           out.moves.push(s);
         }
@@ -786,7 +791,7 @@
     } else {
       // older feed: build the same pieces from the day's text
       ['stay','flights','car','transfers'].forEach(function(k){
-        String(d[k]||'').split('\n').forEach(function(l){ if(isToBookLine(l)) out.tobook.push({icon:k==='stay'?'bed':k==='car'?'car':k==='flights'?'plane':'bus',title:cleanToBook(l)||'To book'}); });
+        String(d[k]||'').split('\n').forEach(function(l){ if(isToBookLine(l)) out.tobook.push({icon:k==='stay'?'bed':k==='car'?'car':k==='flights'?'plane':tIcon(l),title:cleanToBook(l)||'To book'}); });
       });
       var si=stayInfo(d); if(si) out.tonight={name:si.name,address:si.address,place:si.place,nights:d.nights||'',via:''};
       String(d.keyTimes||'').split('\n').forEach(function(l){
@@ -795,7 +800,7 @@
         out.rows.push({icon:/check-?out/.test(low)?'door':/check-?in/.test(low)?'key':'clock',title:m?(title||'At'):l,sub:m?m[3]:'',text:true,time:m?m[2]:''});
       });
       [['flights','plane'],['car','car'],['transfers','bus']].forEach(function(k){
-        String(d[k[0]]||'').split('\n').forEach(function(l){ if(!l.trim()||isToBookLine(l)) return; out.rows.push({icon:k[1],title:l.replace(/^[✈🚗🚌⛴]\s*/u,''),sub:'',text:true,time:'',last:true}); });
+        String(d[k[0]]||'').split('\n').forEach(function(l){ if(!l.trim()||isToBookLine(l)) return; out.rows.push({icon:k[1]==='bus'?tIcon(l):k[1],title:l.replace(/^[✈🚗🚌⛴]\s*/u,''),sub:'',text:true,time:'',last:true}); });
       });
       out.hasFlight=!!String(d.flights||'').trim(); out.hasCar=!!String(d.car||'').trim(); out.hasTransfer=!!String(d.transfers||'').trim();
     }
@@ -821,7 +826,7 @@
   function timeRow(r){
     var sub=r.sub?(r.sub.nodeType?r.sub:r.link?h('span',null,nameNode(r.sub)):(r.text?rich(h('span'),r.sub):r.sub)):'';
     var title=r.text?rich(h('span'),r.title):r.title;
-    return row(tile(r.icon,r.icon==='plane'||r.icon==='bus'?'move':'stay'),title,sub,r.time?h('span','t-time',r.time):null);
+    return row(tile(r.icon,isMove(r.icon)?'move':'stay'),title,sub,r.time?h('span','t-time',r.time):null);
   }
   // "Booked via" → that site's bookings page. These are universal links, so on a phone they open the app when it's installed.
   // Only general "my trips" pages, never a specific booking.
@@ -847,11 +852,11 @@
     var isF=s.type==='flight', label=isF?'Flight':(s.kind||'Transfer');
     var title=isF?(s.number||'Flight'):(s.company||[s.from,s.to].filter(Boolean).join(' → ')||label);
     var nextDay=isF&&s.arrivalDate&&s.arrivalDate>s.date;
-    var head=h('div','head',[tile(isF?'plane':'bus','move'),h('span',null,[h('span','t-label',label),h('span','t-h3',title)]),nextDay?pill('Arrives +1'):null]);
+    var head=h('div','head',[tile(isF?'plane':tIcon(s.kind),'move'),h('span',null,[h('span','t-label',label),h('span','t-h3',title)]),nextDay?pill('Arrives +1'):null]);
     head.children[1].children[1].style.display='block';
     function end(code,tm){ var long=String(code||'').length>4; return h('div',null,[h('span','code'+(long?' long':''),code||'—'),tm?h('span','tm',tm):null]); }
     var right=end(s.to,s.arrives); right.style.textAlign='right';
-    var kids=[head,h('div','route',[end(s.from,s.departs),h('div','line',[h('i'),I(isF?'plane':'bus'),h('i')]),right])];
+    var kids=[head,h('div','route',[end(s.from,s.departs),h('div','line',[h('i'),I(isF?'plane':tIcon(s.kind)),h('i')]),right])];
     if(isF && s.statusLink){ var b=linkbtn('Check flight status','secondary','ext',s.statusLink); b.classList.add('btn-block'); kids.push(b); }
     return h('div','tcard',kids);
   }
@@ -983,7 +988,7 @@
       return row(tile(checkIcon(it.ctype),'cl'),it.title,sub,[r.t?el('span','rel'+(r.soon&&daysBetween(today(),dd)>=0?' soon':''),r.t):null,day?CHEV():null],it.note?h('span','x clamp',it.note):null,'top',
         day?function(){openDay(day);}:null);
     }
-    return row(tile(it.type==='stay'?'bed':it.type==='flight'?'plane':it.type==='car'?'car':'bus','tb'),it.title,itemWhen(it),[el('span','rel'+(r.soon?' soon':''),r.t),CHEV()],null,null,
+    return row(tile(it.type==='stay'?'bed':it.type==='flight'?'plane':it.type==='car'?'car':tIcon(it.title),'tb'),it.title,itemWhen(it),[el('span','rel'+(r.soon?' soon':''),r.t),CHEV()],null,null,
       function(){ var d=(state.data.days||[]).filter(function(x){return x.date===it.date;})[0]; if(d) openDay(d); });
   }
   function setTab(t){ state.tab=t; render(); window.scrollTo(0,0); }
@@ -1377,7 +1382,7 @@
           var strip=h('div','todostrip');
           next.forEach(function(it){
             var gen=it.type==='general', dd=parseDay(it.date);
-            var ico=gen?tile(checkIcon(it.ctype),'cl'):tile(it.type==='stay'?'bed':it.type==='flight'?'plane':it.type==='car'?'car':'bus','tb');
+            var ico=gen?tile(checkIcon(it.ctype),'cl'):tile(it.type==='stay'?'bed':it.type==='flight'?'plane':it.type==='car'?'car':tIcon(it.title),'tb');
             var when=gen?[dd?wmd(dd):'',it.ctype].filter(Boolean).join(' · '):[dd?wmd(dd):'',it.nights?plural(+it.nights,'night'):''].filter(Boolean).join(' · ');
             var c=h('button','tdcard',[ico,h('span','tdt',it.title),h('span','tdw',when)]);
             var day=dd?(data.days||[]).filter(function(x){return x.date===it.date;})[0]:null;
