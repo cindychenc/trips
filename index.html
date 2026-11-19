@@ -1289,7 +1289,10 @@
     mf.sel=i;
     mf.map._markers.forEach(function(mk,k){ mk.setIcon(pinIcon(k+1,k===i,mf.map._pins[k].name)); mk.setZIndexOffset(k===i?1000:0); });
     Array.prototype.forEach.call($('mfCards').children,function(c,k){ c.classList.toggle('on',k===i); });
-    if(pan){ var m=mf.map, pt=m.project(m._pins[i].ll,m.getZoom()).add([0,90]); m.panTo(m.unproject(pt,m.getZoom()),{animate:true}); }  // a bit above centre, clear of the cards
+    // zoom in close to the selected pin (town level), a bit above centre so the cards don't cover it
+    if(pan){ var m=mf.map, z=Math.max(m.getZoom(),13), pt=m.project(m._pins[i].ll,z).add([0,90]);
+      var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(rm) m.setView(m.unproject(pt,z),z,{animate:false}); else m.flyTo(m.unproject(pt,z),z,{duration:.7}); }
   }
   function openMapFull(name){
     if(!hasMap(name)) return;
