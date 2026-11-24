@@ -630,6 +630,7 @@
     if(!base||base.indexOf('/macros/s/__')>=0) return null;
     return {code:code, prefix:prefix, url:base+'?key='+code};
   }
+  function setHash(){ var c=store.get(KEY_CODE), w=c?'#'+c:''; if(location.hash!==w){ try{ history.replaceState(null,'',location.pathname+location.search+w); }catch(e){} } }
   function showCode(p){return (p.prefix?p.prefix+'-':'')+p.code.slice(0,3)+'-'+p.code.slice(3);}
   var store={
     get:function(k){try{return localStorage.getItem(k);}catch(e){return null;}},
@@ -2218,11 +2219,11 @@
   $('setClose').onclick=hideAll;
   $('saveUrl').onclick=function(){
     var u=$('urlIn').value.trim(), p=parseCode(u);
-    if(p){ store.set(KEY_URL,p.url); store.set(KEY_CODE,showCode(p)); hideAll(); sync(); return; }
+    if(p){ store.set(KEY_URL,p.url); store.set(KEY_CODE,showCode(p)); setHash(); keepStorage(); hideAll(); sync(); return; }
     if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)){ $('urlErr').textContent='Type the 6-character code from Trip → Get app link (like K7P-4QX).'; return; }
-    store.set(KEY_URL,u); store.del(KEY_CODE); hideAll(); sync();
+    store.set(KEY_URL,u); store.del(KEY_CODE); setHash(); keepStorage(); hideAll(); sync();
   };
-  $('useDemo').onclick=function(){ store.del(KEY_URL); store.del(KEY_CODE); store.del(KEY_DATA); store.del(KEY_SYNC); state.data=DEMO; state.demo=true; state.error=''; hideAll(); render(); };
+  $('useDemo').onclick=function(){ store.del(KEY_URL); store.del(KEY_CODE); store.del(KEY_DATA); store.del(KEY_SYNC); setHash(); state.data=DEMO; state.demo=true; state.error=''; hideAll(); render(); };
   $('previewIn').onchange=function(){ state.preview=this.value||null; render(); };
   $('clearPreview').onclick=function(){ state.preview=null; $('previewIn').value=''; render(); };
 
@@ -2238,13 +2239,19 @@
     if(document.visibilityState==='visible'){ var at=+store.get(KEY_SYNC)||0; if(Date.now()-at>10*60*1000) sync(); else { render(); fetchWx(); } }
   });
 
-  // trips.boringcase.com/#K7P-4QX sets up this device, then the code is taken out of the address bar.
+  // trips.boringcase.com/#K7P-4QX sets up this device. The code stays in the address (#K7P-4QX), so a home-screen
+  // shortcut made from this page carries it: if the phone or browser clears the app's storage, opening the shortcut
+  // sets the device up again instead of falling back to the demo trip.
   (function(){
     var hs=decodeURIComponent(location.hash.slice(1)), p=hs&&parseCode(hs);
-    if(!hs) return;
-    try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){}
     if(p && store.get(KEY_URL)!==p.url){ store.set(KEY_URL,p.url); store.set(KEY_CODE,showCode(p)); store.del(KEY_DATA); store.del(KEY_SYNC); }
+    var code=store.get(KEY_CODE), want=code?'#'+code:'';
+    if(location.hash!==want){ try{ history.replaceState(null,'',location.pathname+location.search+want); }catch(e){} }
   })();
+  // Ask the browser to keep this site's storage even when the phone is low on space (granted quietly in Chrome
+  // for home-screen apps; elsewhere it may be ignored).
+  function keepStorage(){ try{ if(navigator.storage&&navigator.storage.persist&&store.get(KEY_URL)) navigator.storage.persist().catch(function(){}); }catch(e){} }
+  keepStorage();
 
   loadCached(); render(); sync();
   if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
